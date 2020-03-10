@@ -2,6 +2,7 @@
 
 library(LaplacesDemon)
 library(pryr)
+library(transport)
 
 
 #' Evaluate performance
