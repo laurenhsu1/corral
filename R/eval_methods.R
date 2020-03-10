@@ -26,6 +26,17 @@ cumtotal <- function(vals, ref){
   return(sum(vals < ref))
 }
 
+#' Observations --> discrete probabilities
+#'
+#' @param obs vector, with the observations
+#' @param numbins int, the number of evenly sized bins to discretize the observations to
+#' @param startbin double, the starting value for the smallest bin. Defaults to taking the minimum of obs
+#' @param endbin double, the ending value for the smallest bin. Defaults to taking the maximum of obs (plus a tiny decimal to ensure full range of obs is captured)
+#'
+#' @return dataframe, results has rows corresponding to each bin with columns for probability ('prob'), cumulative frequency ('cumfreq'), and frequency ('freq') of observations falling into that bin. The 'bins' column indicates the end of the bin (start is the preceding column)
+#' @export
+#'
+#' @examples
 obs2probs <- function(obs, numbins = 100, startbin = min(obs), endbin = max(obs) + .00001){
   bins <- seq(from = startbin, to = endbin, length.out = numbins)
   result <- data.frame(bins)
