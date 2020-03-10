@@ -1,5 +1,5 @@
 # corral
-Dimensionality reduction and batch integration methods for single cell data
+*Dimensionality reduction and batch integration methods for single cell data*
 
 corral is a package to perform correspondence analysis on count data, particularly for single-cell (e.g., RNA-seq).
 
