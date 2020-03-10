@@ -1,0 +1,11 @@
+Package: corral
+Title: Correspondence Analysis for Single Cell
+Version: 1.0
+Date: 2020-02-21
+Author: Lauren Hsu
+Maintainer: Lauren Hsu <lrnshoe@gmail.com>
+Description: Performs correspondence analysis on single and multiple tables
+Suggests: SingleCellExperiment, irlba, Matrix
+License: GPL-2
+RoxygenNote: 7.0.2
+Encoding: UTF-8
