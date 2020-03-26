@@ -1,14 +1,9 @@
-# All the functions related to any specific step in the methods' workflows
-
-library(Matrix)
-library(SingleCellExperiment)
-library(irlba)
-
 #' Compute Singular Value Decomposition (SVD)
 #'
 #' @param preproc_mat matrix, pre-processed input; can be sparse or full [pre-processing can be performed using corral_preproc or pca_preproc from this package]
 #' @param method character, the algorithm to be used for svd. Default is irl. Currently supports 'irl' for irbla::irlba or 'svd' for stats::svd
 #' @param ncomp numeric, number of components (if using irlba); Default is 10
+#' @param ... other parameters for the svd and irlba functions can also be utilized. See those documentation for options.
 #'
 #' @return SVD result. List of matrices, dvu, d is  diagonal matrix with the eigenvalues
 #' @export
@@ -36,15 +31,15 @@ compsvd <- function(preproc_mat, method = c('irl','svd')[1], ncomp = 10, ...){
 #' @export
 #'
 #' @examples
-#' mat_coa <- coa_preproc(my_matrix)
-#' coa_output <- compsvd(mat_coa)
+#' mat_corral <- corral_preproc(my_matrix)
+#' corral_output <- compsvd(mat_corral)
 corral_preproc <- function(inp_mat, rtype = c('standardized','indexed')[1]){
-  if(!is(inp_mat, "dgCMatrix")) {sp_mat <- Matrix(inp_mat, sparse = TRUE)}  # convert to a sparse matrix
+  if(!is(inp_mat, "dgCMatrix")) {sp_mat <- Matrix::Matrix(inp_mat, sparse = TRUE)}  # convert to a sparse matrix
   else {sp_mat <- inp_mat}
   N <- sum(sp_mat)
   sp_mat <- sp_mat/N
-  row.w <- rowSums(sp_mat)
-  col.w <- colSums(sp_mat)
+  row.w <- Matrix::rowSums(sp_mat)
+  col.w <- Matrix::colSums(sp_mat)
   sp_mat <- sp_mat/row.w
   sp_mat <- sweep(sp_mat, 2, col.w, "/") - 1
   if (any(is.na(sp_mat))) {
@@ -60,29 +55,6 @@ corral_preproc <- function(inp_mat, rtype = c('standardized','indexed')[1]){
   }
 }
 
-
-#' Principal components analysis (PCA) preprocessing
-#'
-#' @param inp_mat matrix of logcounts; can be sparse or full
-#' @param type character, default, runs correlation-based (using 'corr' argument); can also run covariance-based (using 'cov' argument)
-#'
-#' @return preprocessed sparse matrix upon which compsvd can be run to complete PCA routine
-#' @export
-#'
-#' @examples
-#' mat_pca <- pca_preproc(my_matrix, type = 'cov')
-#' pca_output <- compsvd(mat_pca)
-pca_preproc <- function(inp_mat, type = 'corr'){
-  if(type == 'corr'){
-    scale_bool <- TRUE
-    }
-  else if(type == 'cov'){
-    scale_bool <- FALSE
-  }
-  return(scale(inp_mat, scale = scale_bool, center = TRUE))
-}
-
-
 #' Correspondence analysis on a single matrix
 #'
 #' @param inp_mat matrix, raw or lognormed counts (no negative values)
@@ -93,10 +65,10 @@ pca_preproc <- function(inp_mat, type = 'corr'){
 #' @export
 #'
 #' @examples
-#' result <- coa(my_matrix)
-#' result <- coa(my_matrix, method = 'svd')
-#' result <- coa(my_matrix, method = 'irl', ncomp = 30)
-corral <- function(inp_mat, method = c('irl','svd')[1], ncomp = 10, ...){
+#' result <- corral_mat(my_matrix)
+#' result <- corral_mat(my_matrix, method = 'svd')
+#' result <- corral_mat(my_matrix, method = 'irl', ncomp = 30)
+corral_mat <- function(inp_mat, method = c('irl','svd')[1], ncomp = 10, ...){
   preproc_mat <- corral_preproc(inp_mat)
   result <- compsvd(preproc_mat, method, ncomp)
   w <- get_w(inp_mat)
@@ -108,22 +80,29 @@ corral <- function(inp_mat, method = c('irl','svd')[1], ncomp = 10, ...){
   return(result)
 }
 
-#' Multi-table correspondence analysis
+#' Correspondence analysis on a single matrix (SingleCellExperiment)
 #'
-#' @param mat_list list of input matrices; input matrices should be counts (raw or log). Matrices should be aligned row-wise by common features (either by sample or by gene)
-#' @param method character, the algorithm to be used for svd. Default is irl. Currently supports 'irl' for irbla::irlba or 'svd' for stats::svd
-#' @param ncomp numeric, number of components (if using irlba); Default is 10
+#' @param inp_sce SingleCellExperiment; raw or lognormed counts (no negative values)
+#' @param method character; the algorithm to be used for svd. Default is irl. Currently supports 'irl' for irbla::irlba or 'svd' for stats::svd
+#' @param ncomp numeric; number of components (if using irlba); Default is 10
+#' @param whichmat accessor function; defaults to counts, can also use logcounts or normcounts if available
 #'
-#' @return list with the correspondence analysis matrix decomposition result
+#' @return SCE with the SVD output in the reducedDim portion under 'corral'
 #' @export
 #'
 #' @examples
-#' corralm(mat_list)
-corralm <- function(mat_list, method = c('irl','svd')[1], ncomp = 10, ...){
-  preproc_mats <- lapply(mat_list, corral_preproc, rtype = 'indexed')
-  concatted <- list2mat(matlist = preproc_mats, direction = 'c')
-  result <- compsvd(concatted, method = method, ncomp = ncomp)
-  # add in the correspondence coordinates
-  return(result)
+#' result <- corral_sce(my_sce)
+#' result <- corral_sce(my_sce, method = 'svd')
+#' result <- corral_sce(my_sce, method = 'irl', ncomp = 30, whichmat = logcounts)
+#' 
+#' # example on how to add UMAP based on corral above, with 'scater' package
+#' library(scater)
+#' result <- runUMAP(result, dimred = 'corral', name = 'corral_UMAP')
+#' result <- runTSNE(result, dimred = 'corral', name = 'corral_TSNE')
+#' 
+corral_sce <- function(inp_sce, method = c('irl','svd')[1], ncomp = 10, whichmat = counts,...){
+  inp_mat <- whichmat(inp_sce)
+  svd_output <- corral_mat(inp_mat)
+  SingleCellExperiment::reducedDim(inp_sce,'corral') <- svd_output$v
+  return(inp_sce)
 }
-

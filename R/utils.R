@@ -39,7 +39,7 @@ list2mat <- function(matlist, direction = c('c','r')[1]){
 #' @param thissvd list outputted from svd function (svd or irlba)
 #' @param preproc_mat matrix of pre-processed values (optional) - important to include if the svd is only partial as this is used to compute the sum of eigenvalues
 #'
-#' @return
+#' @return vector of percent variance explained values, indexed by PC
 #' @export
 #'
 #' @examples
@@ -63,12 +63,12 @@ get_pct_var_exp_svd <- function(thissvd, preproc_mat = thissvd$d){
 #' lapply(my_matlist, get_w)
 get_w <- function(inp_mat){
   w <- list()
-  if(!is(inp_mat, "dgCMatrix")) {sp_mat <-Matrix(inp_mat, sparse = TRUE)}  # convert to a sparse matrix
+  if(!is(inp_mat, "dgCMatrix")) {sp_mat <- Matrix(inp_mat, sparse = TRUE)}  # convert to a sparse matrix
   else {sp_mat <- inp_mat}
   N <- sum(sp_mat)
   sp_mat <- sp_mat/N
-  w[['row.w']] <- rowSums(sp_mat)
-  w[['col.w']] <- colSums(sp_mat)
+  w[['row.w']] <- Matrix::rowSums(sp_mat)
+  w[['col.w']] <- Matrix::colSums(sp_mat)
   return(w)
 }
 

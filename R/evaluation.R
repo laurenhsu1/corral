@@ -1,9 +1,4 @@
-# Functions for evaluating performance of the methods
-
-library(LaplacesDemon)
-library(pryr)
-library(transport)
-
+# Functions for evaluating performance with respect to software / computing, as well as results for dimensionality reduction and batch integration.
 
 #' Evaluate performance
 #'
@@ -15,7 +10,7 @@ library(transport)
 #' @examples
 #' perf_report <- eval_perf(my_corral <- corral(my_matrix))
 eval_perf <- function(routine){
-  mem_ch <- mem_change(timing <- system.time(routine))
+  mem_ch <- pryr::mem_change(timing <- system.time(routine))
   perf_report <- list()
   perf_report[['time']] <- timing
   perf_report[['memory change']] <- mem_ch
@@ -62,23 +57,25 @@ make_costmat <- function(matdim, mincost = 1, maxcost = 10){
 }
 
 
+#' Earthmover distance
+#' i.e., wasserstein distance with L1 (p_param = 1); can also use other penalties > 1
+#' (Not technically earthmover distance if using other p_param values)
+#'
+#' @param batch1 matrix; probably a dimension from an embedding (must match in dim with batch2)
+#' @param batch2 matrix; probably a dimension from an embedding (must match in dim with batch1)
+#' @param whichdim int; which dimension (i.e., column) from the embeddings is used. defaults on first
+#' @param numbins int; number of bins for the probability discretization (defaults to 100)
+#' @param p_param int; penalty parameter for wasserstein distance. Defaults to 1, which corresonds to earthmover.
+#'
+#' @return double; the distance
+#' @export
+#'
+#' @examples
 earthmover_dist <- function(batch1, batch2, whichdim = 1, numbins = 100, p_param = 1){
-  # i.e., wasserstein distance with L1 (p_param = 1); can also use other penalties > 1
-  # (Not technically earthmover distance if using other p_param values)
   minval <- min(min(batch1), min(batch2))
   maxval <- max(max(batch1), max(batch2)) + .00001
   df_1 <- obs2probs(obs = batch1[,whichdim], numbins = numbins, startbin = minval, endbin = maxval)
   df_2 <- obs2probs(obs = batch2[,whichdim], numbins = numbins, startbin = minval, endbin = maxval)
   costmat <- make_costmat(matdim = numbins)
-  wasserstein(df_1$probs, df_2$probs, costm = costmat, p = p_param)
+  transport::wasserstein(df_1$probs, df_2$probs, costm = costmat, p = p_param)
 }
-
-# write the KLD wrapper
-
-
-
-# bring in the var ratio method from frontiers paper
-
-
-
-

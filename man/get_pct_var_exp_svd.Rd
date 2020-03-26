@@ -12,7 +12,7 @@ get_pct_var_exp_svd(thissvd, preproc_mat = thissvd$d)
 \item{preproc_mat}{matrix of pre-processed values (optional) - important to include if the svd is only partial as this is used to compute the sum of eigenvalues}
 }
 \value{
-
+vector of percent variance explained values, indexed by PC
 }
 \description{
 Compute percent of variance explained
