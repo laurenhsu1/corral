@@ -23,7 +23,7 @@ plot_embedding(
 
 \item{xpc}{int; which PC to put on the x-axis (defaults to 1)}
 
-\item{ypc}{int; which PC to put on the y-axis (defaults to the one after xpc)}
+\item{ypc}{int; which PC to put on the y-axis (defaults to the one after \code{xpc})}
 
 \item{plot_title}{char; title of plot (defaults to titling based on \code{xpc} and \code{ypc})}
 
@@ -33,7 +33,7 @@ plot_embedding(
 
 \item{ellipse_vec}{OPTIONAL vector; length should correspond to the number of rows in embedding, and each element of the vector classifies that cell (entry) in the embedding to that particular class, and elements of the same class will be circled in an ellipse. (e.g., this could be indicating the cell type or cell line; works best for attributes intended to be compact)}
 
-\item{saveplot}{boolean; whether or not to save the plot, defaults TRUE}
+\item{saveplot}{boolean; whether or not to save the plot, defaults \code{TRUE}}
 
 \item{plotfn}{char; what the filename is to be called. (defaults to making a name based on \code{plot_title} and \code{xpc})}
 
@@ -50,6 +50,10 @@ Plot selected PCs from an embedding
 \examples{
 
 embed_mat <- corralm(list_of_mats)
-plot_embedding(embedding = embed_mat, xpc = 1, plot_title = 'corralm plot',color_vec = cell_type_vec, color_title = 'cell type')
+plot_embedding(embedding = embed_mat, 
+               xpc = 1, 
+               plot_title = 'corralm plot',
+               color_vec = cell_type_vec, 
+               color_title = 'cell type')
 
 }

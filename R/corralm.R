@@ -76,7 +76,7 @@ corralm_sce <- function(sce, splitby, method = c('irl','svd')[1], ncomp = 10, wh
 #' @examples
 corralm <- function(inp,...){
   if(is(inp,'SingleCellExperiment')){
-    corralm_sce(inp_sce = inp, ...)
+    corralm_sce(sce = inp, ...)
   }
   else if(is(inp,'list')){
     if(is(inp[[1]],'SingleCellExperiment')){

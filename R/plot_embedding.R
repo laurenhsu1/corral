@@ -2,12 +2,12 @@
 #'
 #' @param embedding matrix or other tabular format where columns correspond to PCs and rows correspond to cells (entries)
 #' @param xpc int; which PC to put on the x-axis (defaults to 1)
-#' @param ypc int; which PC to put on the y-axis (defaults to the one after xpc)
+#' @param ypc int; which PC to put on the y-axis (defaults to the one after \code{xpc})
 #' @param plot_title char; title of plot (defaults to titling based on \code{xpc} and \code{ypc})
 #' @param color_vec vector; length should correspond to the number of rows in embedding, and each element of the vector classifies that cell (entry) in the embedding to that particular class, which will be colored the same. (e.g., this could be indicating which batch each cell is from)
 #' @param color_title char; what attribute the colors represent
 #' @param ellipse_vec OPTIONAL vector; length should correspond to the number of rows in embedding, and each element of the vector classifies that cell (entry) in the embedding to that particular class, and elements of the same class will be circled in an ellipse. (e.g., this could be indicating the cell type or cell line; works best for attributes intended to be compact)
-#' @param saveplot boolean; whether or not to save the plot, defaults TRUE
+#' @param saveplot boolean; whether or not to save the plot, defaults \code{TRUE}
 #' @param plotfn char; what the filename is to be called. (defaults to making a name based on \code{plot_title} and \code{xpc})
 #' @param showplot boolean; whether or not to show the plot, defaults \code{TRUE}
 #' @param returngg boolean; whether or not to return a \code{\link{ggplot2}} object, defaults \code{FALSE}
@@ -21,7 +21,11 @@
 #' @examples
 #' 
 #' embed_mat <- corralm(list_of_mats)
-#' plot_embedding(embedding = embed_mat, xpc = 1, plot_title = 'corralm plot',color_vec = cell_type_vec, color_title = 'cell type')
+#' plot_embedding(embedding = embed_mat, 
+#'                xpc = 1, 
+#'                plot_title = 'corralm plot',
+#'                color_vec = cell_type_vec, 
+#'                color_title = 'cell type')
 #' 
 plot_embedding <- function(embedding, xpc = 1, ypc = xpc + 1, plot_title = paste0('PC',xpc,' by PC',ypc), color_vec, color_title, ellipse_vec = NULL, saveplot = TRUE, plotfn = paste(plot_title,xpc, sep = '_'), showplot = TRUE, returngg = FALSE){
   xvar <- as.name(paste('X',xpc,sep = ''))
@@ -93,15 +97,34 @@ plot_embedding <- function(embedding, xpc = 1, ypc = xpc + 1, plot_title = paste
 #' sce <- corralm(sce, 'Method')
 #' 
 #' # to plot and show only
-#' plot_embedding_sce(sce = sce, which_embedding = 'corralm', xpc = 1, plot_title = 'corralm: PC1 by PC2',color_attr = "Method", ellipse_attr = 'cell_type')
+#' plot_embedding_sce(sce = sce, 
+#'                    which_embedding = 'corralm', 
+#'                    xpc = 1, 
+#'                    plot_title = 'corralm: PC1 by PC2',
+#'                    color_attr = "Method", 
+#'                    ellipse_attr = 'cell_type')
 #' 
 #' # to return ggplot2 object and display, but not save
-#' corralm_ggplot <- plot_embedding_sce(sce = sce, which_embedding = 'corralm', xpc = 1, plot_title = 'corralm: PC1 by PC2',color_attr = 'Method', ellipse_attr = 'cell_type', returngg = TRUE, saveplot = FALSE)
+#' corralm_ggplot <- plot_embedding_sce(sce = sce, 
+#'                                      which_embedding = 'corralm', 
+#'                                      xpc = 1, 
+#'                                      plot_title = 'corralm: PC1 by PC2',
+#'                                      color_attr = 'Method', 
+#'                                      ellipse_attr = 'cell_type', 
+#'                                      returngg = TRUE, 
+#'                                      saveplot = FALSE)
 #' 
 #' # or, to plot UMAP, using 'scater' package:
 #' library(scater)
-#' result <- runUMAP(sce, dimred = 'corralm', name = 'corralm_UMAP')
-#' plot_embedding_sce(sce = result, which_embedding = 'corralm_UMAP', xpc = 1, plot_title = 'corralm UMAP: PC1 by PC2',color_attr = "Method", ellipse_attr = 'cell_type')
+#' result <- runUMAP(sce, 
+#'                   dimred = 'corralm', 
+#'                   name = 'corralm_UMAP')
+#' plot_embedding_sce(sce = result, 
+#'                    which_embedding = 'corralm_UMAP', 
+#'                    xpc = 1, 
+#'                    plot_title = 'corralm UMAP: PC1 by PC2',
+#'                    color_attr = "Method", 
+#'                    ellipse_attr = 'cell_type')
 #' 
 plot_embedding_sce <- function(sce, which_embedding, color_attr, color_title = color_attr, ellipse_attr = NULL, ...){
   embed_mat <- SingleCellExperiment::reducedDim(sce, which_embedding)

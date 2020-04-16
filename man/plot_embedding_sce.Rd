@@ -37,14 +37,33 @@ Plot selected PCs from an embedding saved in a SingleCellExperiment object
 sce <- corralm(sce, 'Method')
 
 # to plot and show only
-plot_embedding_sce(sce = sce, which_embedding = 'corralm', xpc = 1, plot_title = 'corralm: PC1 by PC2',color_attr = "Method", ellipse_attr = 'cell_type')
+plot_embedding_sce(sce = sce, 
+                   which_embedding = 'corralm', 
+                   xpc = 1, 
+                   plot_title = 'corralm: PC1 by PC2',
+                   color_attr = "Method", 
+                   ellipse_attr = 'cell_type')
 
 # to return ggplot2 object and display, but not save
-corralm_ggplot <- plot_embedding_sce(sce = sce, which_embedding = 'corralm', xpc = 1, plot_title = 'corralm: PC1 by PC2',color_attr = 'Method', ellipse_attr = 'cell_type', returngg = TRUE, saveplot = FALSE)
+corralm_ggplot <- plot_embedding_sce(sce = sce, 
+                                     which_embedding = 'corralm', 
+                                     xpc = 1, 
+                                     plot_title = 'corralm: PC1 by PC2',
+                                     color_attr = 'Method', 
+                                     ellipse_attr = 'cell_type', 
+                                     returngg = TRUE, 
+                                     saveplot = FALSE)
 
 # or, to plot UMAP, using 'scater' package:
 library(scater)
-result <- runUMAP(sce, dimred = 'corralm', name = 'corralm_UMAP')
-plot_embedding_sce(sce = result, which_embedding = 'corralm_UMAP', xpc = 1, plot_title = 'corralm UMAP: PC1 by PC2',color_attr = "Method", ellipse_attr = 'cell_type')
+result <- runUMAP(sce, 
+                  dimred = 'corralm', 
+                  name = 'corralm_UMAP')
+plot_embedding_sce(sce = result, 
+                   which_embedding = 'corralm_UMAP', 
+                   xpc = 1, 
+                   plot_title = 'corralm UMAP: PC1 by PC2',
+                   color_attr = "Method", 
+                   ellipse_attr = 'cell_type')
 
 }
