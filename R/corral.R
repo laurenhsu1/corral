@@ -129,7 +129,7 @@ corral_sce <- function(inp_sce, method = c('irl','svd')[1], ncomp = 10, whichmat
 #' 
 #' This is a wrapper for \code{\link{corral_mat}} and \code{\link{corral_sce}}. See those functions for the list of possible parameters.
 #'
-#' @param inp matrix (any type), or \code(SingleCellExperiment). If using \code(SingleCellExperiment), then include the \code{whichmat} argument to specify which slot to use (defaults to \code{counts}).
+#' @param inp matrix (any type), or \code{SingleCellExperiment}. If using \code{SingleCellExperiment}, then include the \code{whichmat} argument to specify which slot to use (defaults to \code{counts}).
 #' @param ... 
 #'
 #' @return For matrix input, returns list with the correspondence analysis matrix decomposition result (u,v,d are the raw svd output; SCu and SCv are the standard coordinates; PCu and PCv are the principal coordinates)
