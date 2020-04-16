@@ -7,7 +7,7 @@
 corralm(inp, ...)
 }
 \arguments{
-\item{inp}{list of matrices (any type), \code(SingleCellExperiment), or list of \code(SingleCellExperiment)s. If using \code(SingleCellExperiment), then include the \code{whichmat} argument to specify which slot to use (defaults to \code{counts}).}
+\item{inp}{list of matrices (any type), \code{SingleCellExperiment}, or list of \code{SingleCellExperiment}s. If using \code{SingleCellExperiment}, then include the \code{whichmat} argument to specify which slot to use (defaults to \code{counts}).}
 
 \item{...}{}
 }

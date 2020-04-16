@@ -59,7 +59,7 @@ corralm_sce <- function(sce, splitby, method = c('irl','svd')[1], ncomp = 10, wh
 #' 
 #' This is a wrapper for \code{\link{corralm_matlist}} and \code{\link{corral_sce}}. See those functions for the list of possible parameters.
 #'
-#' @param inp list of matrices (any type), \code(SingleCellExperiment), or list of \code(SingleCellExperiment)s. If using \code(SingleCellExperiment), then include the \code{whichmat} argument to specify which slot to use (defaults to \code{counts}).
+#' @param inp list of matrices (any type), \code{SingleCellExperiment}, or list of \code{SingleCellExperiment}s. If using \code{SingleCellExperiment}, then include the \code{whichmat} argument to specify which slot to use (defaults to \code{counts}).
 #' @param ... 
 #'
 #' @return For a list of matrices input, returns list with the correspondence analysis matrix decomposition result
