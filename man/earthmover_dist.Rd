@@ -9,9 +9,9 @@ i.e., wasserstein distance with L1 (p_param = 1); can also use other penalties >
 earthmover_dist(batch1, batch2, whichdim = 1, numbins = 100, p_param = 1)
 }
 \arguments{
-\item{batch1}{matrix; probably a dimension from an embedding (must match in dim with batch2)}
+\item{batch1}{matrix; subset of observations from an embedding correponding to some attribute (e.g., batch or phenotype)}
 
-\item{batch2}{matrix; probably a dimension from an embedding (must match in dim with batch1)}
+\item{batch2}{matrix; subset of observations from an embedding correponding to some attribute (e.g., batch or phenotype)}
 
 \item{whichdim}{int; which dimension (i.e., column) from the embeddings is used. defaults on first}
 
@@ -20,10 +20,14 @@ earthmover_dist(batch1, batch2, whichdim = 1, numbins = 100, p_param = 1)
 \item{p_param}{int; penalty parameter for wasserstein distance. Defaults to 1, which corresonds to earthmover.}
 }
 \value{
-double; the distance
+num; the distance
 }
 \description{
 Earthmover distance
 i.e., wasserstein distance with L1 (p_param = 1); can also use other penalties > 1
 (Not technically earthmover distance if using other p_param values)
+}
+\examples{
+# To compare distributions of reduced dimension values to assess similarity, e.g. as a metric for batch integration
+earthmover_dist(embedding[which(batch == 1),],embedding[which(batch == 2),]) 
 }

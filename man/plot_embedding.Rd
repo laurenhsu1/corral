@@ -25,7 +25,7 @@ plot_embedding(
 
 \item{ypc}{int; which PC to put on the y-axis (defaults to the one after xpc)}
 
-\item{plot_title}{char; title of plot (defaults to titling based on xpc and ypc)}
+\item{plot_title}{char; title of plot (defaults to titling based on \code{xpc} and \code{ypc})}
 
 \item{color_vec}{vector; length should correspond to the number of rows in embedding, and each element of the vector classifies that cell (entry) in the embedding to that particular class, which will be colored the same. (e.g., this could be indicating which batch each cell is from)}
 
@@ -35,14 +35,14 @@ plot_embedding(
 
 \item{saveplot}{boolean; whether or not to save the plot, defaults TRUE}
 
-\item{plotfn}{char; what the filename is to be called. (defaults to making a name based on plot title and xpc)}
+\item{plotfn}{char; what the filename is to be called. (defaults to making a name based on \code{plot_title} and \code{xpc})}
 
-\item{showplot}{boolean; whether or not to show the plot, defaults TRUE}
+\item{showplot}{boolean; whether or not to show the plot, defaults \code{TRUE}}
 
-\item{returngg}{boolean; whether or not to return a ggplot2 object, defaults FALSE}
+\item{returngg}{boolean; whether or not to return a \code{\link{ggplot2}} object, defaults \code{FALSE}}
 }
 \value{
-default none; options to display plot (showplot), save plot (saveplot), and/or return ggplot2 object (returngg)
+default none; options to display plot (\code{showplot}), save plot (\code{saveplot}), and/or return \code{\link{ggplot2}} object (\code{returngg})
 }
 \description{
 Plot selected PCs from an embedding

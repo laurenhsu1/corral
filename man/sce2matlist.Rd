@@ -4,7 +4,7 @@
 \alias{sce2matlist}
 \title{SingleCellExperiment to list of matrices}
 \usage{
-sce2matlist(sce, splitby, to_include = NULL, whichmat = counts)
+sce2matlist(sce, splitby, to_include = NULL, whichmat = "counts")
 }
 \arguments{
 \item{sce}{SingleCellExperiment that is to be separated into list of count matrices}
@@ -13,7 +13,7 @@ sce2matlist(sce, splitby, to_include = NULL, whichmat = counts)
 
 \item{to_include}{(optional) character vector; determines which values from the "splitby" column will be included in the outputted matlist. NULL is the default, and will result in selecting all elements}
 
-\item{whichmat}{accessor; defaults to counts, can also use any other ones that have been computed/stored in the SCE (e.g., logcounts or normcounts)}
+\item{whichmat}{character; defaults to \code{counts}, can also use \code{logcounts} or \code{normcounts} if stored in the \code{sce} object}
 }
 \value{
 list of matrices

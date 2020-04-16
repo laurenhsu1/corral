@@ -10,7 +10,7 @@ fix_na(x)
 \item{x}{matrix of values for which na values should be changed to 0}
 }
 \value{
-fixed matrix
+fixed matrix, where na values are set to 0
 }
 \description{
 Fix NA

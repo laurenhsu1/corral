@@ -15,7 +15,7 @@ corral_preproc(inp_mat, rtype = c("standardized", "indexed")[1])
 sparse matrix, preprocessed, upon which compsvd can be run to complete CA routine
 }
 \description{
-Correspondence analysis preprocessing (not intended to be called directly)
+This function performs the row and column scaling pre-processing operations, prior to SVD, for the corral methods. See \code{\link{corral}} for single matrix correspondence analysis and \code{\link{corralm}} for multi-matrix correspondence analysis.
 }
 \examples{
 mat_corral <- corral_preproc(my_matrix)

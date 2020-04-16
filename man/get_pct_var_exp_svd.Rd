@@ -7,7 +7,7 @@
 get_pct_var_exp_svd(thissvd, preproc_mat = thissvd$d)
 }
 \arguments{
-\item{thissvd}{list outputted from svd function (svd or irlba)}
+\item{thissvd}{list outputted from an svd function (svd, irlba; can also take output from \code{\link{corral_mat}} and \code{\link{corralm_matlist}})}
 
 \item{preproc_mat}{matrix of pre-processed values (optional) - important to include if the svd is only partial as this is used to compute the sum of eigenvalues}
 }

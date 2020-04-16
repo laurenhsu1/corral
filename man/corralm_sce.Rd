@@ -2,26 +2,35 @@
 % Please edit documentation in R/corralm.R
 \name{corralm_sce}
 \alias{corralm_sce}
-\title{Multi-table correspondence analysis}
+\title{Multi-table correspondence analysis (SingleCellExperiment)}
 \usage{
-corralm_sce(sce, splitby, method = c("irl", "svd")[1], ncomp = 10, ...)
+corralm_sce(
+  sce,
+  splitby,
+  method = c("irl", "svd")[1],
+  ncomp = 10,
+  whichmat = "counts",
+  ...
+)
 }
 \arguments{
-\item{sce}{SingleCellExperiment; containing the data to be integrated. Default is to use the counts, and to include all of the data in the integration. These can be changed by passing additional arguments. See sce2matlist function documentation for list of available parameters.}
+\item{sce}{SingleCellExperiment; containing the data to be integrated. Default is to use the counts, and to include all of the data in the integration. These can be changed by passing additional arguments. See \code{\link{sce2matlist}} function documentation for list of available parameters.}
 
-\item{splitby}{character; name of the attribute from colData that should be used to separate the SCE}
+\item{splitby}{character; name of the attribute from \code{colData} that should be used to separate the SCE}
 
 \item{method}{character; the algorithm to be used for svd. Default is irl. Currently supports 'irl' for irbla::irlba or 'svd' for stats::svd}
 
 \item{ncomp}{numeric; number of components (if using irlba); Default is 10}
 
-\item{...}{for additional parameters, see the sce2matlist function}
+\item{whichmat}{character; defaults to \code{counts}, can also use \code{logcounts} or \code{normcounts} if stored in the \code{sce} object}
+
+\item{...}{for additional parameters, see \code{\link{sce2matlist}}}
 }
 \value{
 list with the correspondence analysis matrix decomposition result
 }
 \description{
-Multi-table correspondence analysis
+Multi-table correspondence analysis (SingleCellExperiment)
 }
 \examples{
 result <- corralm_sce(my_sce, 'platform')

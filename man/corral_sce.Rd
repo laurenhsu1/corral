@@ -8,7 +8,7 @@ corral_sce(
   inp_sce,
   method = c("irl", "svd")[1],
   ncomp = 10,
-  whichmat = counts,
+  whichmat = "counts",
   ...
 )
 }
@@ -19,10 +19,10 @@ corral_sce(
 
 \item{ncomp}{numeric; number of components (if using irlba); Default is 10}
 
-\item{whichmat}{accessor function; defaults to counts, can also use logcounts or normcounts if available}
+\item{whichmat}{character; defaults to \code{counts}, can also use \code{logcounts} or \code{normcounts} if stored in the \code{sce} object}
 }
 \value{
-SCE with the SVD output in the reducedDim portion under 'corral'
+SCE with the embeddings in the \code{reducedDim} slot \code{corral}
 }
 \description{
 Correspondence analysis on a single matrix (SingleCellExperiment)
@@ -30,7 +30,7 @@ Correspondence analysis on a single matrix (SingleCellExperiment)
 \examples{
 result <- corral_sce(my_sce)
 result <- corral_sce(my_sce, method = 'svd')
-result <- corral_sce(my_sce, method = 'irl', ncomp = 30, whichmat = logcounts)
+result <- corral_sce(my_sce, method = 'irl', ncomp = 30, whichmat = 'logcounts')
 
 # example on how to add UMAP based on corral above, with 'scater' package
 library(scater)

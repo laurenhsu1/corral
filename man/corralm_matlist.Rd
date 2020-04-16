@@ -2,12 +2,12 @@
 % Please edit documentation in R/corralm.R
 \name{corralm_matlist}
 \alias{corralm_matlist}
-\title{Multi-table correspondence analysis}
+\title{Multi-table correspondence analysis (list of matrices)}
 \usage{
-corralm_matlist(mat_list, method = c("irl", "svd")[1], ncomp = 10, ...)
+corralm_matlist(matlist, method = c("irl", "svd")[1], ncomp = 10, ...)
 }
 \arguments{
-\item{mat_list}{list of input matrices; input matrices should be counts (raw or log). Matrices should be aligned row-wise by common features (either by sample or by gene)}
+\item{matlist}{list of input matrices; input matrices should be counts (raw or log). Matrices should be aligned row-wise by common features (either by sample or by gene)}
 
 \item{method}{character, the algorithm to be used for svd. Default is irl. Currently supports 'irl' for irbla::irlba or 'svd' for stats::svd}
 
@@ -17,8 +17,8 @@ corralm_matlist(mat_list, method = c("irl", "svd")[1], ncomp = 10, ...)
 list with the correspondence analysis matrix decomposition result
 }
 \description{
-Multi-table correspondence analysis
+Multi-table correspondence analysis (list of matrices)
 }
 \examples{
-corralm(mat_list)
+corralm(matlist)
 }

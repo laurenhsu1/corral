@@ -14,20 +14,20 @@ plot_embedding_sce(
 )
 }
 \arguments{
-\item{sce}{SingleCellExperiment object; contains the embedding within the 'reducedDim' slot}
+\item{sce}{\code{\link{SingleCellExperiment}} object; contains the embedding within the \code{reducedDim} slot}
 
 \item{which_embedding}{character; for the embedding to plot}
 
-\item{color_attr}{character; name of the attribute within colData to use for assigning colors (in lieu of "color_vec" in the plot_embedding function)}
+\item{color_attr}{character; name of the attribute within \code{colData} to use for assigning colors (in lieu of \code{color_vec} in the \code{\link{plot_embedding}} function)}
 
-\item{color_title}{character; title to use for colors legend, defaults to the same as color_attr}
+\item{color_title}{character; title to use for colors legend, defaults to the same as \code{color_attr}}
 
-\item{ellipse_attr}{OPTIONAL character; name of the attribute within colData to use for drawing ellipse(s) (in lieu of "ellipse_vec" in the plot_embedding function)}
+\item{ellipse_attr}{OPTIONAL character; name of the attribute within \code{colData} to use for drawing ellipse(s) (in lieu of \code{ellipse_vec} in the \code{\link{plot_embedding}} function)}
 
-\item{...}{additional optional arguments - see plot_embedding function for details on other potential arguments: xpc, ypc, plot_title, color_title (if title is different from color_attr), saveplot, plotfn, showplot, returngg}
+\item{...}{additional optional arguments - see \code{\link{plot_embedding}} function for details on other potential arguments: \code{xpc}, \code{ypc}, \code{plot_title}, \code{color_title} (if title is different from \code{color_attr}), \code{saveplot}, \code{plotfn}, \code{showplot}, \code{returngg}}
 }
 \value{
-default none; options to display plot (showplot), save plot (saveplot), and/or return ggplot2 object (returngg)
+default none; options to display plot (\code{showplot}), save plot (\code{saveplot}), and/or return \code{\link{ggplot2}} object (\code{returngg})
 }
 \description{
 Plot selected PCs from an embedding saved in a SingleCellExperiment object
