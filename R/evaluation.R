@@ -6,6 +6,8 @@
 #'
 #' @return list with 'time' and 'memory change' as elements
 #' @export
+#' 
+#' @importFrom pryr mem_change
 #'
 #' @examples
 #' perf_report <- eval_perf(my_corral <- corral(my_matrix))
@@ -17,7 +19,7 @@ eval_perf <- function(routine){
   return(perf_report)
 }
 
-cumtotal <- function(vals, ref){
+.cumtotal <- function(vals, ref){
   return(sum(vals < ref))
 }
 
@@ -38,7 +40,7 @@ obs2probs <- function(obs, numbins = 100, startbin = min(obs), endbin = max(obs)
   result[1,'cumfreq'] <- 0
   result[1, 'freq'] <- 0
   for (ind in 2:(numbins)){
-    cumsum <- cumtotal(obs, bins[ind])
+    cumsum <- .cumtotal(obs, bins[ind])
     result[ind, 'cumfreq'] <- cumsum
     result[ind, 'freq'] <- cumsum - result[ind - 1, 'cumfreq']
   }
@@ -46,7 +48,7 @@ obs2probs <- function(obs, numbins = 100, startbin = min(obs), endbin = max(obs)
   return(result)
 }
 
-make_costmat <- function(matdim, mincost = 1, maxcost = 10){
+.make_costmat <- function(matdim, mincost = 1, maxcost = 10){
   abval_dif <- function(x,y) {return(abs(x-y))}
   costmat <- matrix(seq(mincost, maxcost,length.out = matdim), matdim, matdim)
   costmat <- sweep(costmat, 
@@ -61,21 +63,25 @@ make_costmat <- function(matdim, mincost = 1, maxcost = 10){
 #' i.e., wasserstein distance with L1 (p_param = 1); can also use other penalties > 1
 #' (Not technically earthmover distance if using other p_param values)
 #'
-#' @param batch1 matrix; probably a dimension from an embedding (must match in dim with batch2)
-#' @param batch2 matrix; probably a dimension from an embedding (must match in dim with batch1)
+#' @param batch1 matrix; subset of observations from an embedding correponding to some attribute (e.g., batch or phenotype)
+#' @param batch2 matrix; subset of observations from an embedding correponding to some attribute (e.g., batch or phenotype)
 #' @param whichdim int; which dimension (i.e., column) from the embeddings is used. defaults on first
 #' @param numbins int; number of bins for the probability discretization (defaults to 100)
 #' @param p_param int; penalty parameter for wasserstein distance. Defaults to 1, which corresonds to earthmover.
 #'
-#' @return double; the distance
+#' @return num; the distance
 #' @export
+#' 
+#' @importFrom transport wasserstein
 #'
 #' @examples
+#' # To compare distributions of reduced dimension values to assess similarity, e.g. as a metric for batch integration
+#' earthmover_dist(embedding[which(batch == 1),],embedding[which(batch == 2),]) 
 earthmover_dist <- function(batch1, batch2, whichdim = 1, numbins = 100, p_param = 1){
   minval <- min(min(batch1), min(batch2))
   maxval <- max(max(batch1), max(batch2)) + .00001
   df_1 <- obs2probs(obs = batch1[,whichdim], numbins = numbins, startbin = minval, endbin = maxval)
   df_2 <- obs2probs(obs = batch2[,whichdim], numbins = numbins, startbin = minval, endbin = maxval)
-  costmat <- make_costmat(matdim = numbins)
+  costmat <- .make_costmat(matdim = numbins)
   transport::wasserstein(df_1$probs, df_2$probs, costm = costmat, p = p_param)
 }

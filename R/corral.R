@@ -7,6 +7,8 @@
 #'
 #' @return SVD result. List of matrices, dvu, d is  diagonal matrix with the eigenvalues
 #' @export
+#' 
+#' @importFrom irlba irlba
 #'
 #' @examples
 #' compsvd(my_matrix)
@@ -24,11 +26,16 @@ compsvd <- function(preproc_mat, method = c('irl','svd')[1], ncomp = 10, ...){
 
 #' Correspondence analysis preprocessing (not intended to be called directly)
 #'
+#' This function performs the row and column scaling pre-processing operations, prior to SVD, for the corral methods. See \code{\link{corral}} for single matrix correspondence analysis and \code{\link{corralm}} for multi-matrix correspondence analysis.
+#'
 #' @param inp_mat matrix, counts or logcounts; can be sparse or full
 #' @param rtype character indicating what type of residual should be computed; options are "indexed" and "standardized"; defaults to 'standardized'
 #'
 #' @return sparse matrix, preprocessed, upon which compsvd can be run to complete CA routine
 #' @export
+#' 
+#' @importFrom Matrix Matrix rowSums colSums
+#' @importClassesFrom Matrix dgCMatrix
 #'
 #' @examples
 #' mat_corral <- corral_preproc(my_matrix)
@@ -64,6 +71,10 @@ corral_preproc <- function(inp_mat, rtype = c('standardized','indexed')[1]){
 #' @return list with the correspondence analysis matrix decomposition result (u,v,d are the raw svd output; SCu and SCv are the standard coordinates; PCu and PCv are the principal coordinates)
 #' @export
 #'
+#' @importFrom irlba irlba
+#' @importFrom Matrix Matrix rowSums colSums
+#' @importClassesFrom Matrix dgCMatrix
+#'
 #' @examples
 #' result <- corral_mat(my_matrix)
 #' result <- corral_mat(my_matrix, method = 'svd')
@@ -85,24 +96,58 @@ corral_mat <- function(inp_mat, method = c('irl','svd')[1], ncomp = 10, ...){
 #' @param inp_sce SingleCellExperiment; raw or lognormed counts (no negative values)
 #' @param method character; the algorithm to be used for svd. Default is irl. Currently supports 'irl' for irbla::irlba or 'svd' for stats::svd
 #' @param ncomp numeric; number of components (if using irlba); Default is 10
-#' @param whichmat accessor function; defaults to counts, can also use logcounts or normcounts if available
+#' @param whichmat character; defaults to \code{counts}, can also use \code{logcounts} or \code{normcounts} if stored in the \code{sce} object
 #'
-#' @return SCE with the SVD output in the reducedDim portion under 'corral'
+#' @return SCE with the embeddings in the \code{reducedDim} slot \code{corral}
 #' @export
+#' 
+#' @importFrom irlba irlba
+#' @importFrom Matrix Matrix rowSums colSums
+#' @importFrom SingleCellExperiment reducedDim
+#' @importClassesFrom Matrix dgCMatrix
+#' @importClassesFrom SingleCellExperiment SingleCellExperiment
 #'
 #' @examples
 #' result <- corral_sce(my_sce)
 #' result <- corral_sce(my_sce, method = 'svd')
-#' result <- corral_sce(my_sce, method = 'irl', ncomp = 30, whichmat = logcounts)
+#' result <- corral_sce(my_sce, method = 'irl', ncomp = 30, whichmat = 'logcounts')
 #' 
 #' # example on how to add UMAP based on corral above, with 'scater' package
 #' library(scater)
 #' result <- runUMAP(result, dimred = 'corral', name = 'corral_UMAP')
 #' result <- runTSNE(result, dimred = 'corral', name = 'corral_TSNE')
 #' 
-corral_sce <- function(inp_sce, method = c('irl','svd')[1], ncomp = 10, whichmat = counts,...){
-  inp_mat <- whichmat(inp_sce)
+corral_sce <- function(inp_sce, method = c('irl','svd')[1], ncomp = 10, whichmat = 'counts',...){
+  inp_mat <- assay(inp_sce, whichmat)
   svd_output <- corral_mat(inp_mat)
   SingleCellExperiment::reducedDim(inp_sce,'corral') <- svd_output$v
   return(inp_sce)
+}
+
+
+#' Correspondence analysis for a single matrix
+#' 
+#' This is a wrapper for \code{\link{corral_mat}} and \code{\link{corral_sce}}. See those functions for the list of possible parameters.
+#'
+#' @param inp matrix (any type), or \code(SingleCellExperiment). If using \code(SingleCellExperiment), then include the \code{whichmat} argument to specify which slot to use (defaults to \code{counts}).
+#' @param ... 
+#'
+#' @return For matrix input, returns list with the correspondence analysis matrix decomposition result (u,v,d are the raw svd output; SCu and SCv are the standard coordinates; PCu and PCv are the principal coordinates)
+#' For SingleCellExperiment input, returns the SCE with embeddings in the reducedDim portion under 'corral'
+#' @export
+#' 
+#' @importFrom irlba irlba
+#' @importFrom Matrix Matrix rowSums colSums
+#' @importFrom SingleCellExperiment reducedDim
+#' @importClassesFrom Matrix dgCMatrix
+#' @importClassesFrom SingleCellExperiment SingleCellExperiment
+#'
+#' @examples
+corral <- function(inp,...){
+  if(is(inp,"SingleCellExperiment")){
+    corral_sce(inp_sce = inp, ...)
+  }
+  else{
+    corral_mat(inp_mat = inp, ...)
+  }
 }

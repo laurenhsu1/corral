@@ -3,17 +3,20 @@
 #' @param embedding matrix or other tabular format where columns correspond to PCs and rows correspond to cells (entries)
 #' @param xpc int; which PC to put on the x-axis (defaults to 1)
 #' @param ypc int; which PC to put on the y-axis (defaults to the one after xpc)
-#' @param plot_title char; title of plot (defaults to titling based on xpc and ypc)
+#' @param plot_title char; title of plot (defaults to titling based on \code{xpc} and \code{ypc})
 #' @param color_vec vector; length should correspond to the number of rows in embedding, and each element of the vector classifies that cell (entry) in the embedding to that particular class, which will be colored the same. (e.g., this could be indicating which batch each cell is from)
 #' @param color_title char; what attribute the colors represent
 #' @param ellipse_vec OPTIONAL vector; length should correspond to the number of rows in embedding, and each element of the vector classifies that cell (entry) in the embedding to that particular class, and elements of the same class will be circled in an ellipse. (e.g., this could be indicating the cell type or cell line; works best for attributes intended to be compact)
 #' @param saveplot boolean; whether or not to save the plot, defaults TRUE
-#' @param plotfn char; what the filename is to be called. (defaults to making a name based on plot title and xpc)
-#' @param showplot boolean; whether or not to show the plot, defaults TRUE
-#' @param returngg boolean; whether or not to return a ggplot2 object, defaults FALSE
+#' @param plotfn char; what the filename is to be called. (defaults to making a name based on \code{plot_title} and \code{xpc})
+#' @param showplot boolean; whether or not to show the plot, defaults \code{TRUE}
+#' @param returngg boolean; whether or not to return a \code{\link{ggplot2}} object, defaults \code{FALSE}
 #'
-#' @return default none; options to display plot (showplot), save plot (saveplot), and/or return ggplot2 object (returngg)
+#' @return default none; options to display plot (\code{showplot}), save plot (\code{saveplot}), and/or return \code{\link{ggplot2}} object (\code{returngg})
 #' @export
+#' 
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggthemes scale_color_few
 #'
 #' @examples
 #' 
@@ -70,15 +73,20 @@ plot_embedding <- function(embedding, xpc = 1, ypc = xpc + 1, plot_title = paste
 
 #' Plot selected PCs from an embedding saved in a SingleCellExperiment object
 #'
-#' @param sce SingleCellExperiment object; contains the embedding within the 'reducedDim' slot
+#' @param sce \code{\link{SingleCellExperiment}} object; contains the embedding within the \code{reducedDim} slot
 #' @param which_embedding character; for the embedding to plot
-#' @param color_attr character; name of the attribute within colData to use for assigning colors (in lieu of "color_vec" in the plot_embedding function)
-#' @param color_title character; title to use for colors legend, defaults to the same as color_attr
-#' @param ellipse_attr OPTIONAL character; name of the attribute within colData to use for drawing ellipse(s) (in lieu of "ellipse_vec" in the plot_embedding function)
-#' @param ... additional optional arguments - see plot_embedding function for details on other potential arguments: xpc, ypc, plot_title, color_title (if title is different from color_attr), saveplot, plotfn, showplot, returngg
+#' @param color_attr character; name of the attribute within \code{colData} to use for assigning colors (in lieu of \code{color_vec} in the \code{\link{plot_embedding}} function)
+#' @param color_title character; title to use for colors legend, defaults to the same as \code{color_attr}
+#' @param ellipse_attr OPTIONAL character; name of the attribute within \code{colData} to use for drawing ellipse(s) (in lieu of \code{ellipse_vec} in the \code{\link{plot_embedding}} function)
+#' @param ... additional optional arguments - see \code{\link{plot_embedding}} function for details on other potential arguments: \code{xpc}, \code{ypc}, \code{plot_title}, \code{color_title} (if title is different from \code{color_attr}), \code{saveplot}, \code{plotfn}, \code{showplot}, \code{returngg}
 #' 
-#' @return default none; options to display plot (showplot), save plot (saveplot), and/or return ggplot2 object (returngg)
+#' @return default none; options to display plot (\code{showplot}), save plot (\code{saveplot}), and/or return \code{\link{ggplot2}} object (\code{returngg})
 #' @export
+#' 
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggthemes scale_color_few
+#' @importFrom SingleCellExperiment colData reducedDim
+#' @importClassesFrom SingleCellExperiment SingleCellExperiment
 #'
 #' @examples
 #' 
