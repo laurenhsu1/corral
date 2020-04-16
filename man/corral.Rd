@@ -7,7 +7,7 @@
 corral(inp, ...)
 }
 \arguments{
-\item{inp}{matrix (any type), or \code(SingleCellExperiment). If using \code(SingleCellExperiment), then include the \code{whichmat} argument to specify which slot to use (defaults to \code{counts}).}
+\item{inp}{matrix (any type), or \code{SingleCellExperiment}. If using \code{SingleCellExperiment}, then include the \code{whichmat} argument to specify which slot to use (defaults to \code{counts}).}
 
 \item{...}{}
 }
