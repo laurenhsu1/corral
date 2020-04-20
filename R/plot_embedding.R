@@ -39,7 +39,8 @@ plot_embedding <- function(embedding, xpc = 1, ypc = xpc + 1, plot_title = paste
   # pct_var_exp <- get_pct_var_exp_svd(thissvd)
   #xlab = paste('PC ',xpc,' (', round(pct_var_exp[xpc]*100),'% of variance explained)', sep = '' )
   #ylab = paste('PC ',xpc + 1,' (', round(pct_var_exp[xpc + 1]*100),'% of variance explained)', sep = '' )
-  
+
+  colnames(embedding) <- NULL
   df <- cbind(data.frame(embedding),color_vec)
   colvar <- as.name(unlist(colnames(df)[dim(df)[2]]))
   
