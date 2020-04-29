@@ -3,11 +3,17 @@ title: "Alignment & batch integration of single cell data with corralm"
 author: 
 - name: Lauren Hsu
   affiliation: Harvard School of Public Health; Dana-Farber Cancer Institute
+- name: "Aedin Culhane"
+  affiliation: Department of Data Sciences, Dana-Farber Cancer Institute, Department of Biostatistics, Harvard TH Chan School of Public Health
 date: "4/28/2020"
 output:
   BiocStyle::html_document:
     toc_float: true
 bibliography: ref.bib
+vignette: |
+  %\VignetteIndexEntry{corralm}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
