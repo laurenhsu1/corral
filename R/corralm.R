@@ -14,10 +14,11 @@
 #' @examples
 #' corralm(matlist)
 corralm_matlist <- function(matlist, method = c('irl','svd')[1], ncomp = 10, ...){
+  dims <- unlist(lapply(scmix_matlist,dim))
+  if(length(unique(dims)) > 1) {stop('If performing multi-table analysis, the matrices must be matched by rows; currently the dimensions do not match. \nIf they are matched by columns, then transpose the matrices.')}
   preproc_mats <- lapply(matlist, corral_preproc, rtype = 'indexed')
   concatted <- list2mat(matlist = preproc_mats, direction = 'c')
   result <- compsvd(concatted, method = method, ncomp = ncomp)
-  # TODO add in the correspondence coordinates
   return(result)
 }
 

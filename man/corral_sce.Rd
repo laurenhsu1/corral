@@ -9,6 +9,7 @@ corral_sce(
   method = c("irl", "svd")[1],
   ncomp = 10,
   whichmat = "counts",
+  fullout = FALSE,
   ...
 )
 }
@@ -20,9 +21,11 @@ corral_sce(
 \item{ncomp}{numeric; number of components (if using irlba); Default is 10}
 
 \item{whichmat}{character; defaults to \code{counts}, can also use \code{logcounts} or \code{normcounts} if stored in the \code{sce} object}
+
+\item{fullout}{boolean; whether the function will return the full \code{corral} output as a list, or a SingleCellExperiment; defaults to SingleCellExperiment (\code{FALSE}). To get back the \code{\link{corral_mat}}-style output, set this to \code{TRUE}.}
 }
 \value{
-SCE with the embeddings in the \code{reducedDim} slot \code{corral}
+(default) SCE with the embeddings in the \code{reducedDim} slot \code{corral}. Also can return the same output as \code{\link{corral_mat}}.
 }
 \description{
 Correspondence analysis on a single matrix (SingleCellExperiment)

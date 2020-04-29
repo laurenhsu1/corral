@@ -7,12 +7,12 @@
 corral(inp, ...)
 }
 \arguments{
-\item{inp}{matrix (any type), or \code{SingleCellExperiment}. If using \code{SingleCellExperiment}, then include the \code{whichmat} argument to specify which slot to use (defaults to \code{counts}).}
+\item{inp}{matrix (any type), \code{SingleCellExperiment}, or \code{SummarizedExperiment}. If using \code{SingleCellExperiment} or \code{SummarizedExperiment}, then include the \code{whichmat} argument to specify which slot to use (defaults to \code{counts}).}
 
 \item{...}{}
 }
 \value{
-For matrix input, returns list with the correspondence analysis matrix decomposition result (u,v,d are the raw svd output; SCu and SCv are the standard coordinates; PCu and PCv are the principal coordinates)
+For matrix and \code{SummarizedExperiment} input, returns list with the correspondence analysis matrix decomposition result (u,v,d are the raw svd output; SCu and SCv are the standard coordinates; PCu and PCv are the principal coordinates)
 For SingleCellExperiment input, returns the SCE with embeddings in the reducedDim portion under 'corral'
 }
 \description{

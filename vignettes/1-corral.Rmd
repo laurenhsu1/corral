@@ -1,0 +1,134 @@
+---
+title: "Dimensionality reduction of single cell data with corral"
+author: 
+- name: Lauren Hsu
+  affiliation: Harvard School of Public Health; Dana-Farber Cancer Institute
+date: "4/28/2020"
+output:
+  BiocStyle::html_document:
+    toc_float: true
+bibliography: ref.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+
+Correspondence analysis is a 
+
+# Loading packages and data
+
+We will use the `Zhengmix4eq` dataset from the `r Biocpkg('DuoClustering2018')` package.
+
+```{r, message = FALSE}
+library(corral)
+library(SingleCellExperiment)
+library(ggplot2)
+library(DuoClustering2018)
+zm4eq.sce <- sce_full_Zhengmix4eq()
+```
+
+This dataset includes approximately 4,000 pre-sorted and annotated cells of 4 types mixed by Duo et al. in approximately equal proportions [@zmdata]. The cells were sampled from a "Massively parallel digital transcriptional profiling of single cells" [@zheng].
+
+```{r}
+zm4eq.sce
+table(colData(zm4eq.sce)$phenoid)
+```
+
+
+# `corral` on `r Biocpkg('SingleCellExperiment')`
+
+We will run `corral` directly on the raw count data:
+
+```{r}
+zm4eq.sce <- corral(inp = zm4eq.sce, 
+                    whichmat = 'counts')
+
+zm4eq.sce
+```
+
+We can use `plot_embedding` to visualize the output:
+
+```{r}
+plot_embedding_sce(sce = zm4eq.sce,
+                   which_embedding = 'corral',
+                   plot_title = 'corral on Zhengmix4eq',
+                   color_attr = 'phenoid',
+                   color_title = 'cell type',
+                   saveplot = FALSE)
+```
+
+Using the `scater` package, we can also add and visualize `umap` and `tsne` embeddings based on the `corral` output:
+
+```{r}
+library(scater)
+library(gridExtra) # so we can arrange the plots side by side
+
+zm4eq.sce <- runUMAP(zm4eq.sce,
+                     dimred = 'corral',
+                     name = 'corral_UMAP')
+zm4eq.sce <- runTSNE(zm4eq.sce,
+                     dimred = 'corral',
+                     name = 'corral_TSNE')
+
+ggplot_umap <- plot_embedding_sce(sce = zm4eq.sce,
+                                  which_embedding = 'corral_UMAP',
+                                  plot_title = 'Zhengmix4eq corral with UMAP',
+                                  color_attr = 'phenoid',
+                                  color_title = 'cell type',
+                                  returngg = TRUE,
+                                  showplot = FALSE,
+                                  saveplot = FALSE)
+
+ggplot_tsne <- plot_embedding_sce(sce = zm4eq.sce,
+                                  which_embedding = 'corral_TSNE',
+                                  plot_title = 'Zhengmix4eq corral with tSNE',
+                                  color_attr = 'phenoid',
+                                  color_title = 'cell type',
+                                  returngg = TRUE,
+                                  showplot = FALSE,
+                                  saveplot = FALSE)
+
+multiplot(ggplot_umap, ggplot_tsne, cols = 2)
+
+```
+
+The `corral` embeddings stored in the `reducedDim` slot can be used in downstream analysis, such as for clustering or trajectory analysis.
+
+# `corral` on matrix
+
+`corral` can also be performed on a matrix (or matrix-like) input.
+
+```{r}
+zm4eq.countmat <- assay(zm4eq.sce,'counts')
+zm4eq.countcorral <- corral(zm4eq.countmat)
+```
+
+The output is in a `list` format, including the SVD output (`u`,`d`,`v`), the standard coordinates (`SCu`,`SCv`), and the principal coordinates (`PCu`,`PCv`).
+
+```{r}
+lapply(zm4eq.countcorral, dim)
+```
+
+We can use `plot_embedding` to visualize the output:
+(the embeddings are in the `v` matrix because these data are by genes in the rows and have cells in the columns; if this were reversed, with cells in the rows and genes/features in the column, then the cell embeddings would instead be in the `u` matrix.)
+```{r}
+celltype_vec <- colData(zm4eq.sce)$phenoid
+plot_embedding(embedding = zm4eq.countcorral$v,
+               plot_title = 'corral on Zhengmix4eq',
+               color_vec = celltype_vec,
+               color_title = 'cell type',
+               saveplot = FALSE)
+```
+
+The output is the same as above with the `SingleCellExperiment`, and can be passed as the low-dimension embedding for downstream analysis. Similarly, UMAP and tSNE can be computed for visualization. (Note that in performing SVD, the direction of the axes doesn't matter so they may be flipped between runs, as `corral` and `corralm` use `irlba` to perform fast approximation.)
+
+# Session information
+
+```{r}
+sessionInfo()
+```
+
+# References
