@@ -1,37 +1,45 @@
-#' Compute Singular Value Decomposition (SVD)
+#' compsvd -Compute Singular Value Decomposition (SVD)
 #'
-#' @param preproc_mat matrix, pre-processed input; can be sparse or full [pre-processing can be performed using corral_preproc or pca_preproc from this package]
-#' @param method character, the algorithm to be used for svd. Default is irl. Currently supports 'irl' for irbla::irlba or 'svd' for stats::svd
-#' @param ncomp numeric, number of components (if using irlba); Default is 10
+#' @param mat matrix can be sparse or full, pre-processed input [pre-processing can be performed using corral_preproc or pca_preproc from this package]
+#' @param method character, the algorithm to be used for svd. Default is irl. Currently supports 'irl' for irlba::irlba or 'svd' for stats::svd
+#' @param ncomp numeric, number of components; Default is 10. svd computes all comp and ignore parameter ncomp.
 #' @param ... other parameters for the svd and irlba functions can also be utilized. See those documentation for options.
 #'
-#' @return SVD result. List of matrices, dvu, d is  diagonal matrix with the eigenvalues
+#' @return SVD result. List of matrices, dvu, 
+#' d is  diagonal matrix with the eigenvalues
+#' u
+#' v
+#' 
 #' @export
 #' 
 #' @importFrom irlba irlba
 #'
 #' @examples
+#' my_matrix<-matrix(sample(0:10, 500, replace=TRUE), ncol=25)
 #' compsvd(my_matrix)
 #' compsvd(my_matrix, method = 'svd')
-#' compsvd(my_matrix, method = 'irl', ncomp = 20)
-compsvd <- function(preproc_mat, method = c('irl','svd')[1], ncomp = 10, ...){
-  if(method == 'irl'){
-    return(irlba::irlba(preproc_mat, nv = ncomp, ...))
+#' compsvd(my_matrix, method = 'irl', ncomp = 5)
+compsvd <- function(mat, method = c("irl","svd")[1], ncomp = 10, ...){
+  if(method == "irl"){
+    return(irlba::irlba(mat, nv = ncomp, ...))
   }
-  else if(method == 'svd'){
-    return(svd(preproc_mat, nv = ncomp, ...))
+  else if(method == "svd"){
+    return(svd(mat, nv = ncomp, ...))
+  }
+  else {
+    print("Your provided method was not understood. Used irlba.")
+    return(irlba::irlba(mat, nv = ncomp, ...))
   }
 }
-
 
 #' Correspondence analysis preprocessing (not intended to be called directly)
 #'
 #' This function performs the row and column scaling pre-processing operations, prior to SVD, for the corral methods. See \code{\link{corral}} for single matrix correspondence analysis and \code{\link{corralm}} for multi-matrix correspondence analysis.
 #'
-#' @param inp_mat matrix, counts or logcounts; can be sparse or full
+#' @param inp_mat matrix, numeric, counts or logcounts; can be sparse Matrix or matrix
 #' @param rtype character indicating what type of residual should be computed; options are "indexed" and "standardized"; defaults to 'standardized'
 #'
-#' @return sparse matrix, preprocessed, upon which compsvd can be run to complete CA routine
+#' @return sparse matrix, preprocessed matrix which is input to compsvd to run CA routine
 #' @export
 #' 
 #' @importFrom Matrix Matrix rowSums colSums
@@ -41,6 +49,8 @@ compsvd <- function(preproc_mat, method = c('irl','svd')[1], ncomp = 10, ...){
 #' mat_corral <- corral_preproc(my_matrix)
 #' corral_output <- compsvd(mat_corral)
 corral_preproc <- function(inp_mat, rtype = c('standardized','indexed')[1]){
+  
+  # CHECK INPUT MATRIX. Call Function
   if(!is(inp_mat, "dgCMatrix")) {sp_mat <- Matrix::Matrix(inp_mat, sparse = TRUE)}  # convert to a sparse matrix
   else {sp_mat <- inp_mat}
   N <- sum(sp_mat)
@@ -64,7 +74,7 @@ corral_preproc <- function(inp_mat, rtype = c('standardized','indexed')[1]){
 
 #' Correspondence analysis on a single matrix
 #'
-#' @param inp_mat matrix, raw or lognormed counts (no negative values)
+#' @param inp_mat matrix or any matrix that can be converted using function Matrix, numeric raw or lognormed counts (no negative values)
 #' @param method character, the algorithm to be used for svd. Default is irl. Currently supports 'irl' for irbla::irlba or 'svd' for stats::svd
 #' @param ncomp numeric, number of components (if using irlba); Default is 10
 #'
@@ -76,9 +86,10 @@ corral_preproc <- function(inp_mat, rtype = c('standardized','indexed')[1]){
 #' @importClassesFrom Matrix dgCMatrix
 #'
 #' @examples
+#' my_matrix<-matrix(sample(0:10, 5000, replace=TRUE), ncol=25)
 #' result <- corral_mat(my_matrix)
 #' result <- corral_mat(my_matrix, method = 'svd')
-#' result <- corral_mat(my_matrix, method = 'irl', ncomp = 30)
+#' result <- corral_mat(my_matrix, method = 'irl', ncomp = 10)
 corral_mat <- function(inp_mat, method = c('irl','svd')[1], ncomp = 10, ...){
   preproc_mat <- corral_preproc(inp_mat,...)
   result <- compsvd(preproc_mat, method, ncomp)

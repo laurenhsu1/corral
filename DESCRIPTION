@@ -10,9 +10,8 @@ Imports: ggplot2,
          irlba, 
          Matrix, 
          SingleCellExperiment, 
-         transport
+         transport,pryr
 Suggests: LaplacesDemon, 
-          pryr, 
           scater
 License: GPL-2
 RoxygenNote: 7.0.2

@@ -3,11 +3,20 @@ title: "Dimensionality reduction of single cell data with corral"
 author: 
 - name: Lauren Hsu
   affiliation: Harvard School of Public Health; Dana-Farber Cancer Institute
+- name: "Aedin Culhane"
+  affiliation: Department of Data Sciences, Dana-Farber Cancer Institute, Department of Biostatistics, Harvard TH Chan School of Public Health
 date: "4/28/2020"
 output:
   BiocStyle::html_document:
     toc_float: true
+  BiocStyle::pdf_document: default
+
+package: BiocStyle
 bibliography: ref.bib
+vignette: |
+  %\VignetteIndexEntry{corral}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}

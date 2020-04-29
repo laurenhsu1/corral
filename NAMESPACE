@@ -22,6 +22,7 @@ export(scaled_var_comparison)
 export(scaled_var_df_by_attr)
 export(scaled_var_vec_by_attr)
 export(sce2matlist)
+
 importClassesFrom(Matrix,dgCMatrix)
 importClassesFrom(SingleCellExperiment,SingleCellExperiment)
 importFrom(Matrix,Matrix)
@@ -34,3 +35,5 @@ importFrom(ggthemes,scale_color_few)
 importFrom(irlba,irlba)
 importFrom(pryr,mem_change)
 importFrom(transport,wasserstein)
+
+
