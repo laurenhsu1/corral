@@ -1,6 +1,6 @@
 Package: corral
 Title: Correspondence Analysis for Single Cell Data
-Version: 1.0
+Version: 1.0.0
 Date: 2020-02-21
 Author: Lauren Hsu
 Maintainer: Lauren Hsu <lrnshoe@gmail.com>
@@ -13,6 +13,7 @@ Imports: ggplot2,
          transport,pryr
 Suggests: LaplacesDemon, 
           scater
+biocViews: SingleCellData, DimensionReduction, PrincipalComponent        
 License: GPL-2
 RoxygenNote: 7.0.2
 Encoding: UTF-8
