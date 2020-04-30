@@ -4,20 +4,21 @@
 \alias{corral_preproc}
 \title{Correspondence analysis preprocessing (not intended to be called directly)}
 \usage{
-corral_preproc(inp_mat, rtype = c("standardized", "indexed")[1])
+corral_preproc(inp, rtype = c("standardized", "indexed")[1])
 }
 \arguments{
-\item{inp_mat}{matrix, counts or logcounts; can be sparse or full}
+\item{inp}{matrix, numeric, counts or logcounts; can be sparse Matrix or matrix}
 
 \item{rtype}{character indicating what type of residual should be computed; options are "indexed" and "standardized"; defaults to 'standardized'}
 }
 \value{
-sparse matrix, preprocessed, upon which compsvd can be run to complete CA routine
+sparse matrix, processed for input to \code{compsvd} to finish CA routine
 }
 \description{
 This function performs the row and column scaling pre-processing operations, prior to SVD, for the corral methods. See \code{\link{corral}} for single matrix correspondence analysis and \code{\link{corralm}} for multi-matrix correspondence analysis.
 }
 \examples{
-mat_corral <- corral_preproc(my_matrix)
-corral_output <- compsvd(mat_corral)
+mat <- matrix(sample(0:10, 500, replace=TRUE), ncol=25)
+mat_corral <- corral_preproc(mat)
+corral_output <- compsvd(mat_corral, ncomp = 5)
 }

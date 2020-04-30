@@ -19,13 +19,15 @@
 #' @importFrom ggthemes scale_color_few
 #'
 #' @examples
-#' 
-#' embed_mat <- corralm(list_of_mats)
+#' listofmats <- list(matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20),matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20))
+#' embed_mat <- corralm(listofmats, ncomp = 5)$v
+#' cell_type_vec <- sample(c('type1','type2','type3'),100,replace = TRUE)
 #' plot_embedding(embedding = embed_mat, 
 #'                xpc = 1, 
 #'                plot_title = 'corralm plot',
 #'                color_vec = cell_type_vec, 
-#'                color_title = 'cell type')
+#'                color_title = 'cell type',
+#'                saveplot = FALSE)
 #' 
 plot_embedding <- function(embedding, xpc = 1, ypc = xpc + 1, plot_title = paste0('PC',xpc,' by PC',ypc), color_vec, color_title, ellipse_vec = NULL, saveplot = TRUE, plotfn = paste(plot_title,xpc, sep = '_'), showplot = TRUE, returngg = FALSE){
   xvar <- as.name(paste('X',xpc,sep = ''))
@@ -94,8 +96,11 @@ plot_embedding <- function(embedding, xpc = 1, ypc = xpc + 1, plot_title = paste
 #' @importClassesFrom SingleCellExperiment SingleCellExperiment
 #'
 #' @examples
-#' 
-#' sce <- corralm(sce, 'Method')
+#' library(DuoClustering2018)
+#' sce <- sce_full_Zhengmix4eq()[1:100,sample(1:3500,100,replace = FALSE)]
+#' # for illustrative purposes only; would not actually use splitby = "phenoid"
+#' # would instead use a batch or platform attribute
+#' sce <- corralm(sce, splitby = 'phenoid')
 #' 
 #' # to plot and show only
 #' plot_embedding_sce(sce = sce, 
@@ -103,7 +108,8 @@ plot_embedding <- function(embedding, xpc = 1, ypc = xpc + 1, plot_title = paste
 #'                    xpc = 1, 
 #'                    plot_title = 'corralm: PC1 by PC2',
 #'                    color_attr = "Method", 
-#'                    ellipse_attr = 'cell_type')
+#'                    ellipse_attr = 'cell_type',
+#'                    saveplot = FALSE)
 #' 
 #' # to return ggplot2 object and display, but not save
 #' corralm_ggplot <- plot_embedding_sce(sce = sce, 
@@ -124,8 +130,9 @@ plot_embedding <- function(embedding, xpc = 1, ypc = xpc + 1, plot_title = paste
 #'                    which_embedding = 'corralm_UMAP', 
 #'                    xpc = 1, 
 #'                    plot_title = 'corralm UMAP: PC1 by PC2',
-#'                    color_attr = "Method", 
-#'                    ellipse_attr = 'cell_type')
+#'                    color_attr = "phenoid", 
+#'                    ellipse_attr = 'phenoid',
+#'                    saveplot = FALSE)
 #' 
 plot_embedding_sce <- function(sce, which_embedding, color_attr, color_title = color_attr, ellipse_attr = NULL, ...){
   embed_mat <- SingleCellExperiment::reducedDim(sce, which_embedding)

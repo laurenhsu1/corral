@@ -29,5 +29,7 @@ i.e., wasserstein distance with L1 (p_param = 1); can also use other penalties >
 }
 \examples{
 # To compare distributions of reduced dimension values to assess similarity, e.g. as a metric for batch integration
+embedding <- matrix(sample(x = seq(0,10,.1),1000, replace = TRUE),ncol = 5)
+batch <- matrix(sample(c(1,2),200, replace = TRUE))
 earthmover_dist(embedding[which(batch == 1),],embedding[which(batch == 2),]) 
 }

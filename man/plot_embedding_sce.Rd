@@ -33,8 +33,11 @@ default none; options to display plot (\code{showplot}), save plot (\code{savepl
 Plot selected PCs from an embedding saved in a SingleCellExperiment object
 }
 \examples{
-
-sce <- corralm(sce, 'Method')
+library(DuoClustering2018)
+sce <- sce_full_Zhengmix4eq()[1:100,sample(1:3500,100,replace = FALSE)]
+# for illustrative purposes only; would not actually use splitby = "phenoid"
+# would instead use a batch or platform attribute
+sce <- corralm(sce, splitby = 'phenoid')
 
 # to plot and show only
 plot_embedding_sce(sce = sce, 
@@ -42,7 +45,8 @@ plot_embedding_sce(sce = sce,
                    xpc = 1, 
                    plot_title = 'corralm: PC1 by PC2',
                    color_attr = "Method", 
-                   ellipse_attr = 'cell_type')
+                   ellipse_attr = 'cell_type',
+                   saveplot = FALSE)
 
 # to return ggplot2 object and display, but not save
 corralm_ggplot <- plot_embedding_sce(sce = sce, 
@@ -63,7 +67,8 @@ plot_embedding_sce(sce = result,
                    which_embedding = 'corralm_UMAP', 
                    xpc = 1, 
                    plot_title = 'corralm UMAP: PC1 by PC2',
-                   color_attr = "Method", 
-                   ellipse_attr = 'cell_type')
+                   color_attr = "phenoid", 
+                   ellipse_attr = 'phenoid',
+                   saveplot = FALSE)
 
 }

@@ -2,12 +2,21 @@
 title: "Alignment & batch integration of single cell data with corralm"
 author: 
 - name: Lauren Hsu
-  affiliation: Harvard School of Public Health; Dana-Farber Cancer Institute
+  affiliation: Harvard TH Chan School of Public Health; Dana-Farber Cancer Institute
+- name: Aedin Culhane
+  affiliation: Department of Data Sciences, Dana-Farber Cancer Institute, Department of Biostatistics, Harvard TH Chan School of Public Health
 date: "4/28/2020"
 output:
   BiocStyle::html_document:
     toc_float: true
+  BiocStyle::pdf_document: default
+package: BiocStyle
 bibliography: ref.bib
+vignette: |
+  %\VignetteIndexEntry{alignment with corral}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
 ---
 
 ```{r setup, include=FALSE}
@@ -18,7 +27,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Data from different experimental platforms and/or batches exhibit systematic variation -- i.e., batch effects. Therefore, when conducting joint analysis of data from different batches, a key first step is to align the datasets.
 
-`corralm` is a multi-table adaptation of correspondence analysis designed for single-cell data, which applies multi-dimensional optimized scaling and matrix factorization to compute integrated embeddings across the datasets. These embeddings can then be used in downstream analyses, such as clustering, cell type classification, trajectory analysis, etc.
+`corralm` is a multi-table adaptation of correspondence analysis designed for single-cell data, which applies multi-dimensional optimized scaling and matrix factorization to compute integrated embeddings across the datasets. These embeddings can then be used in downstream analyses, such as clustering, cell type classification, trajectory analysis, etc. 
+
+See the vignette for `corral` for dimensionality reduction of a single matrix of single-cell data.
 
 # Loading packages and data
 

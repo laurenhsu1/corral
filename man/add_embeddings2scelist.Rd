@@ -4,7 +4,7 @@
 \alias{add_embeddings2scelist}
 \title{Add embeddings to SCE}
 \usage{
-add_embeddings2scelist(scelist, embeddings, slotname = "corral")
+add_embeddings2scelist(scelist, embeddings, slotname = "corralm")
 }
 \arguments{
 \item{scelist}{list of SingleCellExperiments; to which the corresponding embeddings should be added}
@@ -18,4 +18,11 @@ list of SingleCellExperiments with respective embeddings stored in them
 }
 \description{
 Add embeddings to SCE
+}
+\examples{
+library(DuoClustering2018)
+sce <- sce_full_Zhengmix4eq()
+scelist <- list(sce,sce)
+embeddings <- matrix(sample(seq(0,20,1),dim(sce)[2]*6,replace = TRUE),nrow = dim(sce)[2]*2)
+scelist <- add_embeddings2scelist(scelist, embeddings)
 }

@@ -48,12 +48,14 @@ default none; options to display plot (\code{showplot}), save plot (\code{savepl
 Plot selected PCs from an embedding
 }
 \examples{
-
-embed_mat <- corralm(list_of_mats)
+listofmats <- list(matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20),matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20))
+embed_mat <- corralm(listofmats, ncomp = 5)$v
+cell_type_vec <- sample(c('type1','type2','type3'),100,replace = TRUE)
 plot_embedding(embedding = embed_mat, 
                xpc = 1, 
                plot_title = 'corralm plot',
                color_vec = cell_type_vec, 
-               color_title = 'cell type')
+               color_title = 'cell type',
+               saveplot = FALSE)
 
 }

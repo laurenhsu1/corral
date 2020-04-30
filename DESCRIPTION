@@ -1,8 +1,8 @@
 Package: corral
 Title: Correspondence Analysis for Single Cell Data
-Version: 1.0
+Version: 1.0.0
 Date: 2020-02-21
-Author: Lauren Hsu
+Author: Lauren Hsu & Aedin Culhane
 Maintainer: Lauren Hsu <lrnshoe@gmail.com>
 Description: Performs and plots correspondence analysis on single and multiple tables of single cell count data.
 Imports: ggplot2, 
@@ -11,9 +11,14 @@ Imports: ggplot2,
          Matrix, 
          SingleCellExperiment, 
          transport
-Suggests: LaplacesDemon, 
-          pryr, 
-          scater
+Suggests: CellBench,
+          DuoClustering2018,
+          knitr,
+          LaplacesDemon,
+          scater,
+          testthat
 License: GPL-2
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
+VignetteBuilder: knitr
+biocViews: SingleCell, DimensionReduction, Visualization, BatchEffect, PrincipalComponent, Preprocessing
 Encoding: UTF-8

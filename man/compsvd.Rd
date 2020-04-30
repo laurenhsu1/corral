@@ -2,27 +2,33 @@
 % Please edit documentation in R/corral.R
 \name{compsvd}
 \alias{compsvd}
-\title{Compute Singular Value Decomposition (SVD)}
+\title{compsvd: Compute Singular Value Decomposition (SVD)}
 \usage{
-compsvd(preproc_mat, method = c("irl", "svd")[1], ncomp = 10, ...)
+compsvd(mat, method = c("irl", "svd")[1], ncomp = 10, ...)
 }
 \arguments{
-\item{preproc_mat}{matrix, pre-processed input; can be sparse or full [pre-processing can be performed using corral_preproc or pca_preproc from this package]}
+\item{mat}{matrix, pre-processed input; can be sparse or full (pre-processing can be performed using \code{\link{corral_preproc}}from this package)}
 
-\item{method}{character, the algorithm to be used for svd. Default is irl. Currently supports 'irl' for irbla::irlba or 'svd' for stats::svd}
+\item{method}{character, the algorithm to be used for svd. Default is irl. Currently supports 'irl' for irlba::irlba or 'svd' for stats::svd}
 
-\item{ncomp}{numeric, number of components (if using irlba); Default is 10}
+\item{ncomp}{numeric, number of components; Default is 10}
 
 \item{...}{other parameters for the svd and irlba functions can also be utilized. See those documentation for options.}
 }
 \value{
-SVD result. List of matrices, dvu, d is  diagonal matrix with the eigenvalues
+SVD result - a list with the following elements:
+\describe{
+    \item{d}{a vector of the diagonal singular values of the input \code{mat}. Note that using \code{svd} will result in the full set of singular values, while \code{irlba} will only compute the first \code{ncomp} singular values.}
+    \item{u}{a matrix of with the left singular vectors of \code{mat} in the columns}
+    \item{v}{a matrix of with the right singular vectors of \code{mat} in the columns}
+}
 }
 \description{
-Compute Singular Value Decomposition (SVD)
+Computes SVD.
 }
 \examples{
-compsvd(my_matrix)
-compsvd(my_matrix, method = 'svd')
-compsvd(my_matrix, method = 'irl', ncomp = 20)
+mat <- matrix(sample(0:10, 500, replace=TRUE), ncol=25)
+compsvd(mat)
+compsvd(mat, method = 'svd')
+compsvd(mat, method = 'irl', ncomp = 5)
 }

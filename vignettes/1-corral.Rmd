@@ -2,12 +2,20 @@
 title: "Dimensionality reduction of single cell data with corral"
 author: 
 - name: Lauren Hsu
-  affiliation: Harvard School of Public Health; Dana-Farber Cancer Institute
+  affiliation: Harvard TH Chan School of Public Health; Dana-Farber Cancer Institute
+- name: Aedin Culhane
+  affiliation: Department of Data Sciences, Dana-Farber Cancer Institute, Department of Biostatistics, Harvard TH Chan School of Public Health
 date: "4/28/2020"
 output:
   BiocStyle::html_document:
     toc_float: true
+  BiocStyle::pdf_document: default
+package: BiocStyle
 bibliography: ref.bib
+vignette: |
+  %\VignetteIndexEntry{dim reduction with corral}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
@@ -16,7 +24,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Introduction
 
-Correspondence analysis is a 
+Single-cell 'omics analysis enables high-resolution characterization of heterogeneous populations of cells by quantifying measurements in individual cells and thus provides a fuller, more nuanced picture into the complexity and heterogeneity between cells. However, the data also present new and significant challenges as compared to previous approaches, especially as single-cell data are much larger and sparser than data generated from bulk sequencing methods. Dimensionality reduction is a key step in the single-cell analysis to address the high dimensionality and sparsity of these data, and to enable the application of more complex, computationally expensive downstream pipelines.
+
+Correspondence analysis (CA) is a matrix factorization method, and is similar to principal components analysis (PCA). Whereas PCA is designed for application to continuous, approximately normally distributed data, CA is appropriate for non-negative, count-based data that are in the same additive scale. `corral` implements CA for dimensionality reduction of a single matrix of single-cell data. 
+
+See the vignette for `corralm` for the multi-table adaptation of CA for single-cell batch alignment/integration.
 
 # Loading packages and data
 

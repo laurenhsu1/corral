@@ -1,10 +1,14 @@
 #' Multi-table correspondence analysis (list of matrices)
 #'
-#' @param matlist list of input matrices; input matrices should be counts (raw or log). Matrices should be aligned row-wise by common features (either by sample or by gene)
-#' @param method character, the algorithm to be used for svd. Default is irl. Currently supports 'irl' for irbla::irlba or 'svd' for stats::svd
-#' @param ncomp numeric, number of components (if using irlba); Default is 10
-#'
-#' @return list with the correspondence analysis matrix decomposition result
+#' @param matlist (for \code{corralm_matlist}) list of input matrices; input matrices should be counts (raw or log). Matrices should be aligned row-wise by common features (either by sample or by gene)
+#' @inheritParams compsvd
+#' @return When run on a list of matrices, a list with the correspondence analysis matrix decomposition result, with indices corresponding to the concatenated matrices (in order of the list):
+#' \describe{
+#'     \item{d}{a vector of the diagonal singular values of the input \code{mat}}
+#'     \item{u}{a matrix of with the left singular vectors of \code{mat} in the columns}
+#'     \item{v}{a matrix of with the right singular vectors of \code{mat} in the columns. When cells are in the columns, these are the cell embeddings.}
+#' }
+#' @rdname corralm
 #' @export
 #' 
 #' @importFrom irlba irlba
@@ -12,10 +16,10 @@
 #' @importClassesFrom Matrix dgCMatrix
 #'
 #' @examples
-#' corralm(matlist)
+#' listofmats <- list(matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20),matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20))
+#' corralm_matlist(listofmats)
 corralm_matlist <- function(matlist, method = c('irl','svd')[1], ncomp = 10, ...){
-  dims <- unlist(lapply(scmix_matlist,dim))
-  if(length(unique(dims)) > 1) {stop('If performing multi-table analysis, the matrices must be matched by rows; currently the dimensions do not match. \nIf they are matched by columns, then transpose the matrices.')}
+  .check_dims(matlist)
   preproc_mats <- lapply(matlist, corral_preproc, rtype = 'indexed')
   concatted <- list2mat(matlist = preproc_mats, direction = 'c')
   result <- compsvd(concatted, method = method, ncomp = ncomp)
@@ -24,14 +28,14 @@ corralm_matlist <- function(matlist, method = c('irl','svd')[1], ncomp = 10, ...
 
 #' Multi-table correspondence analysis (SingleCellExperiment)
 #'
-#' @param sce SingleCellExperiment; containing the data to be integrated. Default is to use the counts, and to include all of the data in the integration. These can be changed by passing additional arguments. See \code{\link{sce2matlist}} function documentation for list of available parameters.
+#' @param sce (for \code{corralm_sce}) SingleCellExperiment; containing the data to be integrated. Default is to use the counts, and to include all of the data in the integration. These can be changed by passing additional arguments. See \code{\link{sce2matlist}} function documentation for list of available parameters.
 #' @param splitby character; name of the attribute from \code{colData} that should be used to separate the SCE
-#' @param method character; the algorithm to be used for svd. Default is irl. Currently supports 'irl' for irbla::irlba or 'svd' for stats::svd
-#' @param ncomp numeric; number of components (if using irlba); Default is 10
 #' @param whichmat character; defaults to \code{counts}, can also use \code{logcounts} or \code{normcounts} if stored in the \code{sce} object
+#' @inheritParams compsvd
 #' @param ... for additional parameters, see \code{\link{sce2matlist}}
 #'
-#' @return list with the correspondence analysis matrix decomposition result
+#' @return For SingleCellExperiment input, returns the SCE with embeddings in the reducedDim slot 'corralm' 
+#' @rdname corralm
 #' @export
 #' 
 #' @importFrom irlba irlba
@@ -41,7 +45,11 @@ corralm_matlist <- function(matlist, method = c('irl','svd')[1], ncomp = 10, ...
 #' @importClassesFrom SingleCellExperiment SingleCellExperiment
 #'
 #' @examples
-#' result <- corralm_sce(my_sce, 'platform')
+#' library(DuoClustering2018)
+#' sce <- sce_full_Zhengmix4eq()[1:100,sample(1:3500,100,replace = FALSE)]
+#' # for illustrative purposes only; would not actually use splitby = "phenoid"
+#' # would instead use a batch or platform attribute
+#' result <- corralm_sce(sce, splitby = 'phenoid')
 #' 
 #' #' # example on how to add UMAP/tsne based on corralm above, with 'scater' package
 #' library(scater)
@@ -56,16 +64,17 @@ corralm_sce <- function(sce, splitby, method = c('irl','svd')[1], ncomp = 10, wh
   return(sce)
 }
 
-#' Multi-table correspondence analysis
+#' Multi-table adaptation of correspondence analysis
 #' 
-#' This is a wrapper for \code{\link{corralm_matlist}} and \code{\link{corral_sce}}. See those functions for the list of possible parameters.
+#' This multi-table adaptation of correpondence analysis applies the same scaling technique and enables data alignment by finding a set of embeddings for each dataset within shared latent space.
+#' 
+#' \code{corralm} is a wrapper for \code{\link{corralm_matlist}} and \code{\link{corralm_sce}}, and can be called on any of the acceptable input types (see \code{inp} below).
 #'
 #' @param inp list of matrices (any type), \code{SingleCellExperiment}, or list of \code{SingleCellExperiment}s. If using \code{SingleCellExperiment}, then include the \code{whichmat} argument to specify which slot to use (defaults to \code{counts}).
 #' @param ... 
 #'
-#' @return For a list of matrices input, returns list with the correspondence analysis matrix decomposition result
-#' For SingleCellExperiment input, returns the SCE with embeddings in the reducedDim slot 'corral'
-#' For a list of SingleCellExperiments, returns a list of the SCEs with the embeddings in the respective reducedDim slot 'corral'
+#' @return For a list of \code{\link{SingleCellExperiment}}s, returns a list of the SCEs with the embeddings in the respective \code{reducedDim} slot 'corralm'
+#' @rdname corralm
 #' @export
 #' 
 #' @importFrom irlba irlba
@@ -75,6 +84,15 @@ corralm_sce <- function(sce, splitby, method = c('irl','svd')[1], ncomp = 10, wh
 #' @importClassesFrom SingleCellExperiment SingleCellExperiment
 #'
 #' @examples
+#' listofmats <- list(matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20),matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20))
+#' corralm(listofmats)
+#' 
+#' library(DuoClustering2018)
+#' sce <- sce_full_Zhengmix4eq()[1:100,sample(1:3500,100,replace = FALSE)]
+#' # for illustrative purposes only; would not actually use splitby = "phenoid"
+#' # would instead use a batch or platform attribute
+#' result <- corralm(sce, splitby = 'phenoid')
+#' 
 corralm <- function(inp,...){
   if(is(inp,'SingleCellExperiment')){
     corralm_sce(sce = inp, ...)

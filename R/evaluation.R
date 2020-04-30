@@ -1,39 +1,22 @@
 # Functions for evaluating performance with respect to software / computing, as well as results for dimensionality reduction and batch integration.
 
-#' Evaluate performance
-#'
-#' @param routine code to be evaluated
-#'
-#' @return list with 'time' and 'memory change' as elements
-#' @export
-#' 
-#' @importFrom pryr mem_change
-#'
-#' @examples
-#' perf_report <- eval_perf(my_corral <- corral(my_matrix))
-eval_perf <- function(routine){
-  mem_ch <- pryr::mem_change(timing <- system.time(routine))
-  perf_report <- list()
-  perf_report[['time']] <- timing
-  perf_report[['memory change']] <- mem_ch
-  return(perf_report)
-}
-
 .cumtotal <- function(vals, ref){
   return(sum(vals < ref))
 }
 
 #' Observations --> discrete probabilities
 #'
-#' @param obs vector, with the observations
+#' @param obs vector of numeric, with the observations
 #' @param numbins int, the number of evenly sized bins to discretize the observations to
-#' @param startbin double, the starting value for the smallest bin. Defaults to taking the minimum of obs
-#' @param endbin double, the ending value for the smallest bin. Defaults to taking the maximum of obs (plus a tiny decimal to ensure full range of obs is captured)
+#' @param startbin numeric, the starting value for the smallest bin. Defaults to taking the minimum of obs
+#' @param endbin numeric, the ending value for the largest bin. Defaults to taking the maximum of obs (plus a tiny decimal to ensure full range of obs is captured)
 #'
 #' @return dataframe, results has rows corresponding to each bin with columns for probability ('prob'), cumulative frequency ('cumfreq'), and frequency ('freq') of observations falling into that bin. The 'bins' column indicates the end of the bin (start is the preceding column)
 #' @export
 #'
 #' @examples
+#' embedding <- matrix(sample(x = seq(0,10,.1),200, replace = TRUE))
+#' disc_probs <- obs2probs(embedding)
 obs2probs <- function(obs, numbins = 100, startbin = min(obs), endbin = max(obs) + .00001){
   bins <- seq(from = startbin, to = endbin, length.out = numbins)
   result <- data.frame(bins)
@@ -76,6 +59,8 @@ obs2probs <- function(obs, numbins = 100, startbin = min(obs), endbin = max(obs)
 #'
 #' @examples
 #' # To compare distributions of reduced dimension values to assess similarity, e.g. as a metric for batch integration
+#' embedding <- matrix(sample(x = seq(0,10,.1),1000, replace = TRUE),ncol = 5)
+#' batch <- matrix(sample(c(1,2),200, replace = TRUE))
 #' earthmover_dist(embedding[which(batch == 1),],embedding[which(batch == 2),]) 
 earthmover_dist <- function(batch1, batch2, whichdim = 1, numbins = 100, p_param = 1){
   minval <- min(min(batch1), min(batch2))

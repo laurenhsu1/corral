@@ -22,5 +22,7 @@ list of matrices
 SingleCellExperiment to list of matrices
 }
 \examples{
-mymatlist <- sce2matlist(sce = mysce, splitby = 'Method', whichmat = logcounts)
+library(DuoClustering2018)
+sce <- sce_full_Zhengmix4eq()
+matlist <- sce2matlist(sce = sce, splitby = 'phenoid', whichmat = logcounts)
 }

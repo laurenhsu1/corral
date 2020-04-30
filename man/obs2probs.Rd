@@ -7,17 +7,21 @@
 obs2probs(obs, numbins = 100, startbin = min(obs), endbin = max(obs) + 1e-05)
 }
 \arguments{
-\item{obs}{vector, with the observations}
+\item{obs}{vector of numeric, with the observations}
 
 \item{numbins}{int, the number of evenly sized bins to discretize the observations to}
 
-\item{startbin}{double, the starting value for the smallest bin. Defaults to taking the minimum of obs}
+\item{startbin}{numeric, the starting value for the smallest bin. Defaults to taking the minimum of obs}
 
-\item{endbin}{double, the ending value for the smallest bin. Defaults to taking the maximum of obs (plus a tiny decimal to ensure full range of obs is captured)}
+\item{endbin}{numeric, the ending value for the largest bin. Defaults to taking the maximum of obs (plus a tiny decimal to ensure full range of obs is captured)}
 }
 \value{
 dataframe, results has rows corresponding to each bin with columns for probability ('prob'), cumulative frequency ('cumfreq'), and frequency ('freq') of observations falling into that bin. The 'bins' column indicates the end of the bin (start is the preceding column)
 }
 \description{
 Observations --> discrete probabilities
+}
+\examples{
+embedding <- matrix(sample(x = seq(0,10,.1),200, replace = TRUE))
+disc_probs <- obs2probs(embedding)
 }

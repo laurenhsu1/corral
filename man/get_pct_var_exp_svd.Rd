@@ -18,6 +18,9 @@ vector of percent variance explained values, indexed by PC
 Compute percent of variance explained
 }
 \examples{
+mat <- matrix(sample(seq(0,20,1),100,replace = TRUE),nrow = 10)
+my_svd <- svd(mat)
 get_pct_var_exp_svd(my_svd) # this works if my_svd is a full svd
-get_pct_var_exp_svd(my_svd, preproc_mat = my_mat) # ... otherwise use this 
+my_irl <- irlba::irlba(mat,nv = 2)
+get_pct_var_exp_svd(my_irl, preproc_mat = mat) # ... otherwise use this 
 }
