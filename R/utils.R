@@ -142,3 +142,10 @@ add_embeddings2scelist <- function(scelist,embeddings, slotname = 'corralm'){
   }
   return(scelist)
 }
+
+.batch_sizes <- function(matlist){
+  df <- as.data.frame(do.call(rbind, lapply(matlist,dim)))
+  colnames(df) <- NULL
+  rownames(df) <- names(matlist)
+  return(df)
+}

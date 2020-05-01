@@ -9,9 +9,10 @@
 #'
 #' @return SVD result - a list with the following elements:
 #' \describe{
-#'     \item \code{d}: a vector of the diagonal singular values of the input \code{mat}. Note that using \code{svd} will result in the full set of singular values, while \code{irlba} will only compute the first \code{ncomp} singular values.
-#'     \item \code{u}: a matrix of with the left singular vectors of \code{mat} in the columns
-#'     \item \code{v}: a matrix of with the right singular vectors of \code{mat} in the columns
+#'     \item{\code{d}}{a vector of the diagonal singular values of the input \code{mat}. Note that using \code{svd} will result in the full set of singular values, while \code{irlba} will only compute the first \code{ncomp} singular values.}
+#'     \item{\code{u}}{a matrix of with the left singular vectors of \code{mat} in the columns}
+#'     \item{\code{v}}{a matrix of with the right singular vectors of \code{mat} in the columns}
+#'     \item{\code{eigsum}}{sum of the eigenvalues, for calculating percent variance explained}
 #' }
 #' @export
 #' 
@@ -25,15 +26,17 @@
 compsvd <- function(mat, method = c('irl','svd')[1], ncomp = 10, ...){
   # add ncomp checker against dim of mat
   if(method == 'irl'){
-    return(irlba::irlba(mat, nv = ncomp, ...))
+    result <- irlba::irlba(mat, nv = ncomp, ...)
   }
   else if(method == 'svd'){
-    return(svd(mat, nv = ncomp, nu = ncomp, ...))
+    result <- svd(mat, nv = ncomp, nu = ncomp, ...)
   }
   else {
     print('Your provided method was not understood. Used irlba.')
-    return(irlba::irlba(preproc_mat, nv = ncomp, ...))
+    result <- irlba::irlba(mat, nv = ncomp, ...)
   }
+  result[['eigsum']] <- sum(mat^2)
+  return(result)
 }
 
 
@@ -85,11 +88,12 @@ corral_preproc <- function(inp, rtype = c('standardized','indexed')[1]){
 #'
 #' @return When run on a matrix, a list with the correspondence analysis matrix decomposition result:
 #' \describe{
-#'     \item \code{d}: a vector of the diagonal singular values of the input \code{mat} (from SVD output)
-#'     \item \code{u}: a matrix of with the left singular vectors of \code{mat} in the columns (from SVD output)
-#'     \item \code{v}: a matrix of with the right singular vectors of \code{mat} in the columns. When cells are in the columns, these are the cell embeddings. (from SVD output)
-#'     \item \code{SCu and SCv}: standard coordinates, left and right, respectively
-#'     \item \code{PCu and PCv}: principal coordinates, left and right, respectively
+#'     \item{\code{d}}{a vector of the diagonal singular values of the input \code{mat} (from SVD output)}
+#'     \item{\code{u}}{a matrix of with the left singular vectors of \code{mat} in the columns (from SVD output)}
+#'     \item{\code{v}}{a matrix of with the right singular vectors of \code{mat} in the columns. When cells are in the columns, these are the cell embeddings. (from SVD output)}
+#'     \item{\code{eigsum}}{sum of the eigenvalues for calculating percent variance explained}
+#'     \item{\code{SCu and SCv}}{standard coordinates, left and right, respectively}
+#'     \item{\code{PCu and PCv}}{principal coordinates, left and right, respectively}
 #' }
 #' 
 #' @rdname corral
@@ -115,12 +119,6 @@ corral_mat <- function(inp, method = c('irl','svd')[1], ncomp = 10, ...){
   result[['PCv']] <- sweep(result[['SCv']],2,result$d[1:dim(result$v)[2]],'*')
   class(result) <- c(class(result),"corral")
   return(result)
-}
-
-# TODO add rdname thing 
-# roxygen
-print.corral <- function(inp){
-  print(lapply(inp,dim))
 }
 
 #' corral: Correspondence analysis on a single matrix (SingleCellExperiment)
@@ -204,4 +202,34 @@ corral <- function(inp,...){
   else{
     corral_mat(inp = inp, ...)
   }
+}
+
+
+#' Print method for S3 object corral
+#'
+#' @param inp corral object; the list output from \code{corral_mat}
+#'
+#' @rdname corral
+#'
+#' @return .
+#' @export
+#'
+#' @examples
+print.corral <- function(inp){
+  pct_var_exp <- t(data.frame('percent.Var.explained' = inp$d^2 / inp$eigsum))
+  ncomps <- length(pct_var_exp)
+  colnames(pct_var_exp) <- paste0(rep('PC',ncomps),seq(1,ncomps,1))
+  pct_var_exp <- rbind(pct_var_exp,t(data.frame('cumulative.Var.explained' = cumsum(pct_var_exp[1,]))))
+  cat('corral output summary===========================================\n')
+  cat('Variance explained----------------------------------------------\n')
+  print(round(pct_var_exp[,seq(1,min(8,ncomps),1)],2))
+  cat('\n')
+  cat('Dimensions of output elements-----------------------------------\n')
+  cat('  Singular values (d) :: ')
+  cat(length(inp$d))
+  cat('\n  Left singular vectors & coordinates (u, SCu, PCu) :: ')
+  cat(dim(inp$u))
+  cat('\n  Right singular vectors & coordinates (v, SCv, PCv) :: ')
+  cat(dim(inp$v))
+  cat('\n================================================================\n')
 }

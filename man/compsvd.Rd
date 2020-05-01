@@ -13,14 +13,15 @@ compsvd(mat, method = c("irl", "svd")[1], ncomp = 10, ...)
 
 \item{ncomp}{numeric, number of components; Default is 10}
 
-\item{...}{other parameters for the svd and irlba functions can also be utilized. See those documentation for options.}
+\item{...}{(additional arguments for methods)}
 }
 \value{
 SVD result - a list with the following elements:
 \describe{
-    \item{d}{a vector of the diagonal singular values of the input \code{mat}. Note that using \code{svd} will result in the full set of singular values, while \code{irlba} will only compute the first \code{ncomp} singular values.}
-    \item{u}{a matrix of with the left singular vectors of \code{mat} in the columns}
-    \item{v}{a matrix of with the right singular vectors of \code{mat} in the columns}
+    \item{\code{d}}{a vector of the diagonal singular values of the input \code{mat}. Note that using \code{svd} will result in the full set of singular values, while \code{irlba} will only compute the first \code{ncomp} singular values.}
+    \item{\code{u}}{a matrix of with the left singular vectors of \code{mat} in the columns}
+    \item{\code{v}}{a matrix of with the right singular vectors of \code{mat} in the columns}
+    \item{\code{eigsum}}{sum of the eigenvalues, for calculating percent variance explained}
 }
 }
 \description{

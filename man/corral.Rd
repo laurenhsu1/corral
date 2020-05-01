@@ -4,6 +4,7 @@
 \alias{corral_mat}
 \alias{corral_sce}
 \alias{corral}
+\alias{print.corral}
 \title{corral: Correspondence analysis on a single matrix}
 \usage{
 corral_mat(inp, method = c("irl", "svd")[1], ncomp = 10, ...)
@@ -18,15 +19,17 @@ corral_sce(
 )
 
 corral(inp, ...)
+
+\method{print}{corral}(inp)
 }
 \arguments{
-\item{inp}{matrix (any type), \code{SingleCellExperiment}, or \code{SummarizedExperiment}. If using \code{SingleCellExperiment} or \code{SummarizedExperiment}, then include the \code{whichmat} argument to specify which slot to use (defaults to \code{counts}).}
+\item{inp}{corral object; the list output from \code{corral_mat}}
 
 \item{method}{character, the algorithm to be used for svd. Default is irl. Currently supports 'irl' for irlba::irlba or 'svd' for stats::svd}
 
 \item{ncomp}{numeric, number of components; Default is 10}
 
-\item{...}{}
+\item{...}{(additional arguments for methods)}
 
 \item{whichmat}{character; defaults to \code{counts}, can also use \code{logcounts} or \code{normcounts} if stored in the \code{sce} object}
 
@@ -35,11 +38,12 @@ corral(inp, ...)
 \value{
 When run on a matrix, a list with the correspondence analysis matrix decomposition result:
 \describe{
-    \item{d}{a vector of the diagonal singular values of the input \code{mat} (from SVD output)}
-    \item{u}{a matrix of with the left singular vectors of \code{mat} in the columns (from SVD output)}
-    \item{v}{a matrix of with the right singular vectors of \code{mat} in the columns. When cells are in the columns, these are the cell embeddings. (from SVD output)}
-    \item{SCu and SCv}{standard coordinates, left and right, respectively}
-    \item{PCu and PCv}{principal coordinates, left and right, respectively}
+    \item{\code{d}}{a vector of the diagonal singular values of the input \code{mat} (from SVD output)}
+    \item{\code{u}}{a matrix of with the left singular vectors of \code{mat} in the columns (from SVD output)}
+    \item{\code{v}}{a matrix of with the right singular vectors of \code{mat} in the columns. When cells are in the columns, these are the cell embeddings. (from SVD output)}
+    \item{\code{eigsum}}{sum of the eigenvalues for calculating percent variance explained}
+    \item{\code{SCu and SCv}}{standard coordinates, left and right, respectively}
+    \item{\code{PCu and PCv}}{principal coordinates, left and right, respectively}
 }
 
 When run on a \code{\link{SingleCellExperiment}}, returns a SCE with the embeddings in the \code{reducedDim} slot \code{corral} (default). Also can return the same output as \code{\link{corral_mat}}.
@@ -47,6 +51,8 @@ When run on a \code{\link{SingleCellExperiment}}, returns a SCE with the embeddi
 For matrix and \code{SummarizedExperiment} input, returns list with the correspondence analysis matrix decomposition result (u,v,d are the raw svd output; SCu and SCv are the standard coordinates; PCu and PCv are the principal coordinates)
 
 For \code{SummarizedExperiment} input, returns the same as for a matrix.
+
+.
 }
 \description{
 corral can be used for dimensionality reduction to find a set of low-dimensional embeddings for a count matrix.

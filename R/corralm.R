@@ -4,9 +4,10 @@
 #' @inheritParams compsvd
 #' @return When run on a list of matrices, a list with the correspondence analysis matrix decomposition result, with indices corresponding to the concatenated matrices (in order of the list):
 #' \describe{
-#'     \item \code{d}: a vector of the diagonal singular values of the input \code{mat}
-#'     \item \code{u}: a matrix of with the left singular vectors of \code{mat} in the columns
-#'     \item \code{v}: a matrix of with the right singular vectors of \code{mat} in the columns. When cells are in the columns, these are the cell embeddings.
+#'     \item{\code{d}}{a vector of the diagonal singular values of the input \code{mat} (from SVD output)}
+#'     \item{\code{u}}{a matrix of with the left singular vectors of \code{mat} in the columns (from SVD output)}
+#'     \item{\code{v}}{a matrix of with the right singular vectors of \code{mat} in the columns. When cells are in the columns, these are the cell embeddings. (from SVD output)}
+#'     \item{\code{eigsum}}{sum of the eigenvalues for calculating percent variance explained}
 #' }
 #' @rdname corralm
 #' @export
@@ -16,13 +17,15 @@
 #' @importClassesFrom Matrix dgCMatrix
 #'
 #' @examples
-#' listofmats <- list(matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20),matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20))
+#' listofmats <- list(matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 25),matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 25))
 #' result <- corralm_matlist(listofmats)
 corralm_matlist <- function(matlist, method = c('irl','svd')[1], ncomp = 10, ...){
   .check_dims(matlist)
   preproc_mats <- lapply(matlist, corral_preproc, rtype = 'indexed')
   concatted <- list2mat(matlist = preproc_mats, direction = 'c')
   result <- compsvd(concatted, method = method, ncomp = ncomp)
+  result[['batch_sizes']] <- .batch_sizes(matlist)
+  class(result) <- c(class(result),"corralm")
   return(result)
 }
 
@@ -31,6 +34,7 @@ corralm_matlist <- function(matlist, method = c('irl','svd')[1], ncomp = 10, ...
 #' @param sce (for \code{corralm_sce}) SingleCellExperiment; containing the data to be integrated. Default is to use the counts, and to include all of the data in the integration. These can be changed by passing additional arguments. See \code{\link{sce2matlist}} function documentation for list of available parameters.
 #' @param splitby character; name of the attribute from \code{colData} that should be used to separate the SCE
 #' @param whichmat character; defaults to \code{counts}, can also use \code{logcounts} or \code{normcounts} if stored in the \code{sce} object
+#' @param fullout boolean; whether the function will return the full \code{corral} output as a list, or a SingleCellExperiment; defaults to SingleCellExperiment (\code{FALSE}). To get back the \code{\link{corral_mat}}-style output, set this to \code{TRUE}.
 #' @inheritParams compsvd
 #' @param ... (additional arguments for methods)
 #'
@@ -56,12 +60,18 @@ corralm_matlist <- function(matlist, method = c('irl','svd')[1], ncomp = 10, ...
 #' result <- runUMAP(result, dimred = 'corralm', name = 'corralm_UMAP')
 #' result <- runTSNE(result, dimred = 'corralm', name = 'corralm_TSNE')
 #' 
-corralm_sce <- function(sce, splitby, method = c('irl','svd')[1], ncomp = 10, whichmat = 'counts',...){
+corralm_sce <- function(sce, splitby, method = c('irl','svd')[1], ncomp = 10, whichmat = 'counts', fullout = 'false',...){
   if(missing(splitby)) {stop('If performing multi-table analysis with a single SCE, the splitby variable must be specified. \nUse corral to analyze as a single table.')}
   mat_list <- sce2matlist(sce, splitby = splitby, whichmat = whichmat)
   svd_output <- corralm_matlist(mat_list, method = method, ncomp = ncomp)
-  SingleCellExperiment::reducedDim(sce, 'corralm') <- svd_output$v
-  return(sce)
+  if(fullout){
+    class(svd_output) <- c(class(svd_output),"corralm")
+    return(svd_output)
+  }
+  else{
+    SingleCellExperiment::reducedDim(sce, 'corralm') <- svd_output$v
+    return(sce)
+  }
 }
 
 #' Multi-table adaptation of correspondence analysis
@@ -107,4 +117,37 @@ corralm <- function(inp,...){
       corralm_matlist(matlist = inp, ...) 
     }
   }
+}
+
+#' Print method for S3 object corralm
+#'
+#' @param inp corralm object; the list output from \code{corralm_matlist}
+#'
+#' @rdname corralm
+#'
+#' @return .
+#' @export
+#'
+#' @examples
+print.corralm <- function(inp){
+  pct_var_exp <- t(data.frame('percent.Var.explained' = inp$d^2 / inp$eigsum))
+  ncomps <- length(pct_var_exp)
+  colnames(pct_var_exp) <- paste0(rep('PC',ncomps),seq(1,ncomps,1))
+  pct_var_exp <- rbind(pct_var_exp,t(data.frame('cumulative.Var.explained' = cumsum(pct_var_exp[1,]))))
+  cat('corralm output summary==========================================\n')
+  cat('Variance explained----------------------------------------------\n')
+  print(round(pct_var_exp[,seq(1,min(8,ncomps),1)],2))
+  cat('\n')
+  cat('Dimensions of output elements-----------------------------------\n')
+  cat('  Singular values (d) :: ')
+  cat(length(inp$d))
+  cat('\n  Left singular vectors (u) :: ')
+  cat(dim(inp$u))
+  cat('\n  Right singular vectors (v) :: ')
+  cat(dim(inp$v))
+  cat('\n\n')
+  cat('Original batches & sizes (in order)-----------------------------')
+  cat('\n ')
+  cat(paste0(' ',rownames(inp$batch_sizes),' :: ',inp$batch_sizes[,2],'\n'))
+  cat('================================================================\n')
 }
