@@ -180,6 +180,7 @@ corral_sce <- function(inp, method = c('irl','svd')[1], ncomp = 10, whichmat = '
 #' @importFrom irlba irlba
 #' @importFrom Matrix Matrix rowSums colSums
 #' @importFrom SingleCellExperiment reducedDim
+#' @importFrom SummarizedExperiment assay
 #' @importClassesFrom Matrix dgCMatrix
 #' @importClassesFrom SingleCellExperiment SingleCellExperiment
 #'

@@ -94,6 +94,7 @@ get_weights <- function(inp_mat){
 #' @export
 #'
 #' @importFrom SingleCellExperiment colData
+#' @importFrom SummarizedExperiment assay
 #' @importClassesFrom SingleCellExperiment SingleCellExperiment
 #'
 #' @examples
@@ -105,7 +106,7 @@ sce2matlist <- function(sce,splitby,to_include = NULL,whichmat = 'counts'){
     to_include <- unique(as.character(colData(sce)[,splitby]))
   }
   matlist <- list()
-  countmatrix <- assay(sce, whichmat)
+  countmatrix <- SummarizedExperiment::assay(sce, whichmat)
   for(gn in to_include){
     matlist[[gn]] <- countmatrix[,which(colData(sce)[,splitby] == gn)]
   }

@@ -90,7 +90,8 @@ corralm_sce <- function(sce, splitby, method = c('irl','svd')[1], ncomp = 10, wh
 #' @importFrom irlba irlba
 #' @importFrom Matrix Matrix rowSums colSums
 #' @importFrom SingleCellExperiment reducedDim
-#' @importFrom MultiAssayExperiment experiments intersectRows
+#' @importFrom MultiAssayExperiment experiments intersectRows assays
+#' @importFrom SummarizedExperiment assay
 #' @importClassesFrom Matrix dgCMatrix
 #' @importClassesFrom SingleCellExperiment SingleCellExperiment
 #'
@@ -109,22 +110,22 @@ corralm <- function(inp,...){
     corralm_sce(sce = inp, ...)
   }
   else if (is(inp,'ExperimentList')){
-    matlist <- as.list(assays(intersectRows(inp)))
+    matlist <- as.list(MultiAssayExperiment::assays(MultiAssayExperiment::intersectRows(inp)))
     corralm_matlist(matlist = matlist, ...)
   }
   else if (is(inp,'MultiAssayExperiment')){
-    matlist <- as.list(assays(experiments(intersectRows(inp))))
+    matlist <- as.list(MultiAssayExperiment:assays(MultiAssayExperiment:experiments(MultiAssayExperiment:intersectRows(inp))))
     corralm_matlist(matlist = matlist, ...)
   }
   else if(is(inp,'list')){
     if(is(inp[[1]],'SingleCellExperiment')){
-      matlist <- lapply(inp, assay, whichmat)
+      matlist <- lapply(inp, SummarizedExperiment::assay, whichmat)
       res <- corralm_matlist(matlist = matlist, ...)
       add_embeddings2scelist(scelist = inp, embeddings = res$v)
     }
     else if (is(inp[[1]],'SummarizedExperiment')){
       if(missing(whichmat)) {whichmat <- 'counts'}
-      matlist <- lapply(inp, assay, whichmat)
+      matlist <- lapply(inp, SummarizedExperiment::assay, whichmat)
       corralm_matlist(matlist = matlist, ...)
     }
     else{
