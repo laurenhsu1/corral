@@ -5,13 +5,13 @@
 #' @param mat matrix, pre-processed input; can be sparse or full (pre-processing can be performed using \code{\link{corral_preproc}}from this package)
 #' @param method character, the algorithm to be used for svd. Default is irl. Currently supports 'irl' for irlba::irlba or 'svd' for stats::svd
 #' @param ncomp numeric, number of components; Default is 10
-#' @param ... other parameters for the svd and irlba functions can also be utilized. See those documentation for options.
+#' @param ... (additional arguments for methods)
 #'
 #' @return SVD result - a list with the following elements:
 #' \describe{
-#'     \item{d}{a vector of the diagonal singular values of the input \code{mat}. Note that using \code{svd} will result in the full set of singular values, while \code{irlba} will only compute the first \code{ncomp} singular values.}
-#'     \item{u}{a matrix of with the left singular vectors of \code{mat} in the columns}
-#'     \item{v}{a matrix of with the right singular vectors of \code{mat} in the columns}
+#'     \item \code{d}: a vector of the diagonal singular values of the input \code{mat}. Note that using \code{svd} will result in the full set of singular values, while \code{irlba} will only compute the first \code{ncomp} singular values.
+#'     \item \code{u}: a matrix of with the left singular vectors of \code{mat} in the columns
+#'     \item \code{v}: a matrix of with the right singular vectors of \code{mat} in the columns
 #' }
 #' @export
 #' 
@@ -23,6 +23,7 @@
 #' compsvd(mat, method = 'svd')
 #' compsvd(mat, method = 'irl', ncomp = 5)
 compsvd <- function(mat, method = c('irl','svd')[1], ncomp = 10, ...){
+  # add ncomp checker against dim of mat
   if(method == 'irl'){
     return(irlba::irlba(mat, nv = ncomp, ...))
   }
@@ -84,11 +85,11 @@ corral_preproc <- function(inp, rtype = c('standardized','indexed')[1]){
 #'
 #' @return When run on a matrix, a list with the correspondence analysis matrix decomposition result:
 #' \describe{
-#'     \item{d}{a vector of the diagonal singular values of the input \code{mat} (from SVD output)}
-#'     \item{u}{a matrix of with the left singular vectors of \code{mat} in the columns (from SVD output)}
-#'     \item{v}{a matrix of with the right singular vectors of \code{mat} in the columns. When cells are in the columns, these are the cell embeddings. (from SVD output)}
-#'     \item{SCu and SCv}{standard coordinates, left and right, respectively}
-#'     \item{PCu and PCv}{principal coordinates, left and right, respectively}
+#'     \item \code{d}: a vector of the diagonal singular values of the input \code{mat} (from SVD output)
+#'     \item \code{u}: a matrix of with the left singular vectors of \code{mat} in the columns (from SVD output)
+#'     \item \code{v}: a matrix of with the right singular vectors of \code{mat} in the columns. When cells are in the columns, these are the cell embeddings. (from SVD output)
+#'     \item \code{SCu and SCv}: standard coordinates, left and right, respectively
+#'     \item \code{PCu and PCv}: principal coordinates, left and right, respectively
 #' }
 #' 
 #' @rdname corral
@@ -112,7 +113,14 @@ corral_mat <- function(inp, method = c('irl','svd')[1], ncomp = 10, ...){
   result[['SCv']] <- sweep(result$v,1,sqrt(w$col.w),'/')
   result[['PCu']] <- sweep(result[['SCu']],2,result$d[1:dim(result$u)[2]],'*') # Principal coordinates
   result[['PCv']] <- sweep(result[['SCv']],2,result$d[1:dim(result$v)[2]],'*')
+  class(result) <- c(class(result),"corral")
   return(result)
+}
+
+# TODO add rdname thing 
+# roxygen
+print.corral <- function(inp){
+  print(lapply(inp,dim))
 }
 
 #' corral: Correspondence analysis on a single matrix (SingleCellExperiment)
@@ -163,7 +171,7 @@ corral_sce <- function(inp, method = c('irl','svd')[1], ncomp = 10, whichmat = '
 #' \code{corral} is a wrapper for \code{\link{corral_mat}} and \code{\link{corral_sce}}, and can be called on any of the acceptable input types.
 #'
 #' @param inp matrix (any type), \code{SingleCellExperiment}, or \code{SummarizedExperiment}. If using \code{SingleCellExperiment} or \code{SummarizedExperiment}, then include the \code{whichmat} argument to specify which slot to use (defaults to \code{counts}).
-#' @param ... 
+#' @param ... (additional arguments for methods)
 #'
 #' @return For matrix and \code{SummarizedExperiment} input, returns list with the correspondence analysis matrix decomposition result (u,v,d are the raw svd output; SCu and SCv are the standard coordinates; PCu and PCv are the principal coordinates)
 #' @return

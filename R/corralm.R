@@ -4,9 +4,9 @@
 #' @inheritParams compsvd
 #' @return When run on a list of matrices, a list with the correspondence analysis matrix decomposition result, with indices corresponding to the concatenated matrices (in order of the list):
 #' \describe{
-#'     \item{d}{a vector of the diagonal singular values of the input \code{mat}}
-#'     \item{u}{a matrix of with the left singular vectors of \code{mat} in the columns}
-#'     \item{v}{a matrix of with the right singular vectors of \code{mat} in the columns. When cells are in the columns, these are the cell embeddings.}
+#'     \item \code{d}: a vector of the diagonal singular values of the input \code{mat}
+#'     \item \code{u}: a matrix of with the left singular vectors of \code{mat} in the columns
+#'     \item \code{v}: a matrix of with the right singular vectors of \code{mat} in the columns. When cells are in the columns, these are the cell embeddings.
 #' }
 #' @rdname corralm
 #' @export
@@ -17,7 +17,7 @@
 #'
 #' @examples
 #' listofmats <- list(matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20),matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20))
-#' corralm_matlist(listofmats)
+#' result <- corralm_matlist(listofmats)
 corralm_matlist <- function(matlist, method = c('irl','svd')[1], ncomp = 10, ...){
   .check_dims(matlist)
   preproc_mats <- lapply(matlist, corral_preproc, rtype = 'indexed')
@@ -32,7 +32,7 @@ corralm_matlist <- function(matlist, method = c('irl','svd')[1], ncomp = 10, ...
 #' @param splitby character; name of the attribute from \code{colData} that should be used to separate the SCE
 #' @param whichmat character; defaults to \code{counts}, can also use \code{logcounts} or \code{normcounts} if stored in the \code{sce} object
 #' @inheritParams compsvd
-#' @param ... for additional parameters, see \code{\link{sce2matlist}}
+#' @param ... (additional arguments for methods)
 #'
 #' @return For SingleCellExperiment input, returns the SCE with embeddings in the reducedDim slot 'corralm' 
 #' @rdname corralm
@@ -71,7 +71,7 @@ corralm_sce <- function(sce, splitby, method = c('irl','svd')[1], ncomp = 10, wh
 #' \code{corralm} is a wrapper for \code{\link{corralm_matlist}} and \code{\link{corralm_sce}}, and can be called on any of the acceptable input types (see \code{inp} below).
 #'
 #' @param inp list of matrices (any type), \code{SingleCellExperiment}, or list of \code{SingleCellExperiment}s. If using \code{SingleCellExperiment}, then include the \code{whichmat} argument to specify which slot to use (defaults to \code{counts}).
-#' @param ... 
+#' @param ... (additional arguments for methods)
 #'
 #' @return For a list of \code{\link{SingleCellExperiment}}s, returns a list of the SCEs with the embeddings in the respective \code{reducedDim} slot 'corralm'
 #' @rdname corralm

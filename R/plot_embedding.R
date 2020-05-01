@@ -15,7 +15,7 @@
 #' @return default none; options to display plot (\code{showplot}), save plot (\code{saveplot}), and/or return \code{\link{ggplot2}} object (\code{returngg})
 #' @export
 #' 
-#' @importFrom ggplot2 ggplot
+#' @import ggplot2
 #' @importFrom ggthemes scale_color_few
 #'
 #' @examples
@@ -90,7 +90,7 @@ plot_embedding <- function(embedding, xpc = 1, ypc = xpc + 1, plot_title = paste
 #' @return default none; options to display plot (\code{showplot}), save plot (\code{saveplot}), and/or return \code{\link{ggplot2}} object (\code{returngg})
 #' @export
 #' 
-#' @importFrom ggplot2 ggplot
+#' @import ggplot2
 #' @importFrom ggthemes scale_color_few
 #' @importFrom SingleCellExperiment colData reducedDim
 #' @importClassesFrom SingleCellExperiment SingleCellExperiment
