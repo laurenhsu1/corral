@@ -123,7 +123,7 @@ zm4eq.countcorral <- corral(zm4eq.countmat)
 The output is in a `list` format, including the SVD output (`u`,`d`,`v`), the standard coordinates (`SCu`,`SCv`), and the principal coordinates (`PCu`,`PCv`).
 
 ```{r}
-lapply(zm4eq.countcorral, dim)
+zm4eq.countcorral
 ```
 
 We can use `plot_embedding` to visualize the output:

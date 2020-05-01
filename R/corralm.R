@@ -90,10 +90,9 @@ corralm_sce <- function(sce, splitby, method = c('irl','svd')[1], ncomp = 10, wh
 #' @importFrom irlba irlba
 #' @importFrom Matrix Matrix rowSums colSums
 #' @importFrom SingleCellExperiment reducedDim
+#' @importFrom MultiAssayExperiment experiments intersectRows
 #' @importClassesFrom Matrix dgCMatrix
 #' @importClassesFrom SingleCellExperiment SingleCellExperiment
-#' @importClassesFrom SummarizedExperiment SummarizedExperiment
-#' @importClassesFrom MultiAssayExperiment MultiAssayExperiment
 #'
 #' @examples
 #' listofmats <- list(matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20),matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20))
@@ -150,6 +149,8 @@ print.corralm <- function(inp){
   colnames(pct_var_exp) <- paste0(rep('PC',ncomps),seq(1,ncomps,1))
   pct_var_exp <- rbind(pct_var_exp,t(data.frame('cumulative.Var.explained' = cumsum(pct_var_exp[1,]))))
   cat('corralm output summary==========================================\n')
+  cat('  Output "list" includes SVD output (u, d, v) & a table of the\n')
+  cat('  dimensions of the input matrices (batch_sizes)\n')
   cat('Variance explained----------------------------------------------\n')
   print(round(pct_var_exp[,seq(1,min(8,ncomps),1)],2))
   cat('\n')
@@ -160,6 +161,7 @@ print.corralm <- function(inp){
   cat(dim(inp$u))
   cat('\n  Right singular vectors (v) :: ')
   cat(dim(inp$v))
+  cat('\n  See corralm help for details on each output element.')
   cat('\n\n')
   cat('Original batches & sizes (in order)-----------------------------')
   cat('\n ')

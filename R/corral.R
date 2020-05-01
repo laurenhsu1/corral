@@ -182,7 +182,6 @@ corral_sce <- function(inp, method = c('irl','svd')[1], ncomp = 10, whichmat = '
 #' @importFrom SingleCellExperiment reducedDim
 #' @importClassesFrom Matrix dgCMatrix
 #' @importClassesFrom SingleCellExperiment SingleCellExperiment
-#' @importClassesFrom SummarizedExperiment SummarizedExperiment
 #'
 #' @examples
 #' library(DuoClustering2018)
@@ -222,6 +221,8 @@ print.corral <- function(inp){
   colnames(pct_var_exp) <- paste0(rep('PC',ncomps),seq(1,ncomps,1))
   pct_var_exp <- rbind(pct_var_exp,t(data.frame('cumulative.Var.explained' = cumsum(pct_var_exp[1,]))))
   cat('corral output summary===========================================\n')
+  cat('  Output "list" includes standard coordinates (SCu, SCv),\n')
+  cat('  principal coordinates (PCu, PCv), & SVD output (u, d, v)\n')
   cat('Variance explained----------------------------------------------\n')
   print(round(pct_var_exp[,seq(1,min(8,ncomps),1)],2))
   cat('\n')
@@ -232,5 +233,6 @@ print.corral <- function(inp){
   cat(dim(inp$u))
   cat('\n  Right singular vectors & coordinates (v, SCv, PCv) :: ')
   cat(dim(inp$v))
+  cat('\n  See corral help for details on each output element.')
   cat('\n================================================================\n')
 }

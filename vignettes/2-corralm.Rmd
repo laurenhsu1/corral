@@ -124,6 +124,7 @@ Running corralm and visualizing output...
 (the embeddings are in the `v` matrix because these data are matched by genes in the rows and have cells in the columns; if this were reversed, with cells in the rows and genes/features in the column, then the cell embeddings would instead be in the `u` matrix.)
 ```{r}
 scmix_corralm <- corralm(scmix_matlist)
+scmix_corralm
 plot_embedding(embedding = scmix_corralm$v, plot_title = 'corralm on scmix', color_vec = platforms, color_title = 'platform', ellipse_vec = cell_lines, saveplot = FALSE)
 ```
 

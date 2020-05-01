@@ -1,33 +1,36 @@
 Package: corral
 Title: Correspondence Analysis for Single Cell Data
-Version: 0.99.1
+Version: 0.99.2
 Date: 2020-02-21
 Author: Lauren Hsu & Aedin Culhane
-Maintainer: Lauren Hsu <lrnshoe@gmail.com>
-Description: Correspondence analysis (CA) is a matrix factorization method, and is 
-similar to principal components analysis (PCA). Whereas PCA is designed for 
-application to continuous, approximately normally distributed data, CA is 
-appropriate for non-negative, count-based data that are in the same additive scale. 
-The corral package implements CA for dimensionality reduction of a single matrix of 
-single-cell data, as well as a multi-table adaptation of CA that leverages 
-data-optimized scaling to align data generated from different sequencing platforms 
-by projecting into a shared latent space. corral utilizes sparse matrices and a 
-fast implementation of SVD, and can be called directly on Bioconductor objects 
-(e.g., SingleCellExperiment) for easy pipeline integration.
-Imports: ggplot2, 
-         ggthemes, 
-         irlba, 
-         Matrix, 
-         MultiAssayExperiment,
-         SingleCellExperiment, 
-         SummarizedExperiment,
-         transport
-Suggests: CellBench,
-          DuoClustering2018,
-          knitr,
-          LaplacesDemon,
-          scater,
-          testthat
+Maintainer: Lauren Hsu <lrnshoe@gmail.com> & Aedin Culhane <aedin@jimmy.harvard.edu>
+Description: 
+    Correspondence analysis (CA) is a matrix factorization method, and is 
+    similar to principal components analysis (PCA). Whereas PCA is designed for 
+    application to continuous, approximately normally distributed data, CA is 
+    appropriate for non-negative, count-based data that are in the same additive scale. 
+    The corral package implements CA for dimensionality reduction of a single matrix of 
+    single-cell data, as well as a multi-table adaptation of CA that leverages 
+    data-optimized scaling to align data generated from different sequencing platforms 
+    by projecting into a shared latent space. corral utilizes sparse matrices and a 
+    fast implementation of SVD, and can be called directly on Bioconductor objects 
+    (e.g., SingleCellExperiment) for easy pipeline integration.
+Imports: 
+    ggplot2, 
+    ggthemes, 
+    irlba, 
+    Matrix, 
+    MultiAssayExperiment,
+    SingleCellExperiment, 
+    SummarizedExperiment,
+    transport
+Suggests: 
+    CellBench,
+    DuoClustering2018,
+    knitr,
+    LaplacesDemon,
+    scater,
+    testthat
 License: GPL-2
 RoxygenNote: 7.1.0
 VignetteBuilder: knitr
