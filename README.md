@@ -7,6 +7,7 @@ It can be used on a single table for dimensionality reduction, or it can be used
 
 To install the dev version: `devtools::install_github('laurenhsu1/corral')`
 
+Or it can be installed with `BiocManager::install("laurenhsu1/corral", dependencies = TRUE)`
 
 # How to
 
