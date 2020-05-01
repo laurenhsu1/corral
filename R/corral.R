@@ -182,6 +182,7 @@ corral_sce <- function(inp, method = c('irl','svd')[1], ncomp = 10, whichmat = '
 #' @importFrom SingleCellExperiment reducedDim
 #' @importClassesFrom Matrix dgCMatrix
 #' @importClassesFrom SingleCellExperiment SingleCellExperiment
+#' @importClassesFrom SummarizedExperiment SummarizedExperiment
 #'
 #' @examples
 #' library(DuoClustering2018)
