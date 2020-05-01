@@ -80,7 +80,7 @@ corralm_sce <- function(sce, splitby, method = c('irl','svd')[1], ncomp = 10, wh
 #' 
 #' \code{corralm} is a wrapper for \code{\link{corralm_matlist}} and \code{\link{corralm_sce}}, and can be called on any of the acceptable input types (see \code{inp} below).
 #'
-#' @param inp list of matrices (any type), \code{SingleCellExperiment}, or list of \code{SingleCellExperiment}s. If using \code{SingleCellExperiment}, then include the \code{whichmat} argument to specify which slot to use (defaults to \code{counts}).
+#' @param inp list of matrices (any type), a \code{SingleCellExperiment}, list of \code{SingleCellExperiment}s, list of \code{SummarizedExperiment}s, or \code{MultiAssayExperiment}. If using \code{SingleCellExperiment} or \code{SummarizedExperiment}, then include the \code{whichmat} argument to specify which slot to use (defaults to \code{counts}). Additionally, if it is one \code{SingleCellExperiment}, then it is also necessary to include the \code{splitby} argument to specify the batches. For a \code{MultiAssayExperiment}, it will take the intersect of the features across all the assays, and use those to match the matrices; to use a different subset, select desired subsets then call \code{corral}
 #' @param ... (additional arguments for methods)
 #'
 #' @return For a list of \code{\link{SingleCellExperiment}}s, returns a list of the SCEs with the embeddings in the respective \code{reducedDim} slot 'corralm'
@@ -92,6 +92,8 @@ corralm_sce <- function(sce, splitby, method = c('irl','svd')[1], ncomp = 10, wh
 #' @importFrom SingleCellExperiment reducedDim
 #' @importClassesFrom Matrix dgCMatrix
 #' @importClassesFrom SingleCellExperiment SingleCellExperiment
+#' @importClassesFrom SummarizedExperiment SummarizedExperiment
+#' @importClassesFrom MultiAssayExperiment MultiAssayExperiment
 #'
 #' @examples
 #' listofmats <- list(matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20),matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20))
@@ -107,11 +109,24 @@ corralm <- function(inp,...){
   if(is(inp,'SingleCellExperiment')){
     corralm_sce(sce = inp, ...)
   }
+  else if (is(inp,'ExperimentList')){
+    matlist <- as.list(assays(intersectRows(inp)))
+    corralm_matlist(matlist = matlist, ...)
+  }
+  else if (is(inp,'MultiAssayExperiment')){
+    matlist <- as.list(assays(experiments(intersectRows(inp))))
+    corralm_matlist(matlist = matlist, ...)
+  }
   else if(is(inp,'list')){
     if(is(inp[[1]],'SingleCellExperiment')){
       matlist <- lapply(inp, assay, whichmat)
       res <- corralm_matlist(matlist = matlist, ...)
       add_embeddings2scelist(scelist = inp, embeddings = res$v)
+    }
+    else if (is(inp[[1]],'SummarizedExperiment')){
+      if(missing(whichmat)) {whichmat <- 'counts'}
+      matlist <- lapply(inp, assay, whichmat)
+      corralm_matlist(matlist = matlist, ...)
     }
     else{
       corralm_matlist(matlist = inp, ...) 

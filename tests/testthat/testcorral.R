@@ -9,3 +9,9 @@ test_that('same eigens as dudi.coa',{
   b <- dudi.coa(mat, scannf = FALSE, nf = 2)
   expect_equal(all.equal(b$eig[1:2],a$d[1:2]^2),TRUE)
 })
+
+
+# add checks that it takes sce / mat
+
+# add checks for thin and thick matrix
+
