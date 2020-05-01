@@ -1,6 +1,6 @@
 Package: corral
 Title: Correspondence Analysis for Single Cell Data
-Version: 0.99.2
+Version: 0.99.3
 Date: 2020-02-21
 Author: Lauren Hsu & Aedin Culhane
 Maintainer: Lauren Hsu <lrnshoe@gmail.com> & Aedin Culhane <aedin@jimmy.harvard.edu>
