@@ -13,6 +13,6 @@ To install the dev version: `devtools::install_github('laurenhsu1/corral')`
 The package contains two main function calls:
 
 1. `corral` for dimensionality reduction on a single table 
-2. `corralm`for integration across tables.
+2. `corralm` for alignment and batch integration of multiple tables
 
 See the vignettes for details on outputs and how to plot.
