@@ -109,6 +109,8 @@ multiplot(ggplot_umap, ggplot_tsne, cols = 2)
 
 The `corral` embeddings stored in the `reducedDim` slot can be used in downstream analysis, such as for clustering or trajectory analysis.
 
+`corral` can also be run on a `SummarizedExperiment` object.
+
 # `corral` on matrix
 
 `corral` can also be performed on a matrix (or matrix-like) input.

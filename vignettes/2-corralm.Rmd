@@ -85,6 +85,8 @@ identical(rownames(scmix_dat[[2]]),rownames(scmix_dat[[3]]))
 * **a single `r Biocpkg('SingleCellExperiment')`** requires specifying `splitby` (also see documentation of `corralm_matlist` for additional optional arguments that can be passed), which is a character string for the attribute in `colData` that is tracking the batches. In our case, this would be the "Method" attribute we just added. The output from this type of input is the same `SingleCellExperiment`, with the result added to the `reducedDim` slot under `corralm`.
 * **a list of `r Biocpkg('SingleCellExperiment')`** does not require any specific arguments. The output is a list of the input `SingleCellExperiment`s, with the result added to the `reducedDim` slot under `corralm`.
 * **a list of matrices** (or other matrix-like objects: matrix, Matrix, tibble, data.frame, etc.) also does not require specific arguments. The output will be a concatenated list of SVD output matrices (`u`,`d`,`v`) where `v` contains a concatenated vector of the embeddings for the cells
+* **a list of `b Biocpkg('SummarizedExperiment')`s** does not require specific arguments. The output is the same as for a list of matrices.
+* **`r Biocpkg('SingleCellExperiment')` or `ExperimentList`** does not require any specific arguments. `corralm` will identify the intersect of the rows, and use these to match the matrices. The output will be the same as for a list of matrices.
 
 For purposes of illustration, we will walk through using `corralm` with a single SCE, and with a list of matrices.
 
