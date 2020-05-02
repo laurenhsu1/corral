@@ -100,7 +100,7 @@ get_weights <- function(inp_mat){
 #' @examples
 #' library(DuoClustering2018)
 #' sce <- sce_full_Zhengmix4eq()
-#' matlist <- sce2matlist(sce = sce, splitby = 'phenoid', whichmat = logcounts)
+#' matlist <- sce2matlist(sce = sce, splitby = 'phenoid', whichmat = 'logcounts')
 sce2matlist <- function(sce,splitby,to_include = NULL,whichmat = 'counts'){
   if(is.null(to_include)){
     to_include <- unique(as.character(colData(sce)[,splitby]))
