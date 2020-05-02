@@ -94,6 +94,7 @@ corralm_sce <- function(sce, splitby, method = c('irl','svd')[1], ncomp = 10, wh
 #' @importFrom SummarizedExperiment assay
 #' @importClassesFrom Matrix dgCMatrix
 #' @importClassesFrom SingleCellExperiment SingleCellExperiment
+#' @importClassesFrom MultiAssayExperiment MultiAssayExperiment
 #'
 #' @examples
 #' listofmats <- list(matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20),matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20))
