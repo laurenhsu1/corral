@@ -34,17 +34,17 @@ Plot selected PCs from an embedding saved in a SingleCellExperiment object
 }
 \examples{
 library(DuoClustering2018)
-sce <- sce_full_Zhengmix4eq()[1:100,sort(sample(1:3500,100,replace = FALSE))]
-# for illustrative purposes only; would not actually use splitby = "phenoid"
-# would instead use a batch or platform attribute
-sce <- corralm(sce, splitby = 'phenoid')
+library(SingleCellExperiment)
+sce <- sce_full_Zhengmix4eq()[1:100,sample(1:3500,100,replace = FALSE)]
+colData(sce)$Method <- matrix(sample(c('Method1','Method2'),100,replace = TRUE))
+sce <- corralm(sce, splitby = 'Method')
 
 # to plot and show only
 plot_embedding_sce(sce = sce, 
                    which_embedding = 'corralm', 
                    xpc = 1, 
                    plot_title = 'corralm: PC1 by PC2',
-                   color_attr = "phenoid", 
+                   color_attr = "Method", 
                    ellipse_attr = 'phenoid',
                    saveplot = FALSE)
 
@@ -53,7 +53,7 @@ corralm_ggplot <- plot_embedding_sce(sce = sce,
                                      which_embedding = 'corralm', 
                                      xpc = 1, 
                                      plot_title = 'corralm: PC1 by PC2',
-                                     color_attr = 'phenoid', 
+                                     color_attr = 'Method', 
                                      ellipse_attr = 'phenoid', 
                                      returngg = TRUE, 
                                      saveplot = FALSE)
@@ -67,7 +67,7 @@ plot_embedding_sce(sce = result,
                    which_embedding = 'corralm_UMAP', 
                    xpc = 1, 
                    plot_title = 'corralm UMAP: PC1 by PC2',
-                   color_attr = "phenoid", 
+                   color_attr = "Method", 
                    ellipse_attr = 'phenoid',
                    saveplot = FALSE)
 

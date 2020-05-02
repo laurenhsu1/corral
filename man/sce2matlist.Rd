@@ -24,5 +24,5 @@ SingleCellExperiment to list of matrices
 \examples{
 library(DuoClustering2018)
 sce <- sce_full_Zhengmix4eq()
-matlist <- sce2matlist(sce = sce, splitby = 'phenoid', whichmat = logcounts)
+matlist <- sce2matlist(sce = sce, splitby = 'phenoid', whichmat = 'logcounts')
 }

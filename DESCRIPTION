@@ -1,7 +1,7 @@
 Package: corral
 Title: Correspondence Analysis for Single Cell Data
-Version: 0.99.5
-Date: 2020-02-21
+Version: 0.99.6
+Date: 2020-05-02
 Author: Lauren Hsu & Aedin Culhane
 Maintainer: Lauren Hsu <lrnshoe@gmail.com> & Aedin Culhane <aedin@jimmy.harvard.edu>
 Description: 
@@ -25,6 +25,7 @@ Imports:
     SummarizedExperiment,
     transport
 Suggests: 
+    ade4,
     CellBench,
     DuoClustering2018,
     knitr,
@@ -34,5 +35,11 @@ Suggests:
 License: GPL-2
 RoxygenNote: 7.1.0
 VignetteBuilder: knitr
-biocViews: SingleCell, DimensionReduction, Visualization, BatchEffect, PrincipalComponent, Preprocessing
+biocViews: 
+    BatchEffect,
+    DimensionReduction, 
+    Preprocessing,
+    PrincipalComponent, 
+    SingleCell, 
+    Visualization
 Encoding: UTF-8

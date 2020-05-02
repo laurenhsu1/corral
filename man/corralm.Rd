@@ -67,10 +67,10 @@ This multi-table adaptation of correpondence analysis applies the same scaling t
 listofmats <- list(matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 25),matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 25))
 result <- corralm_matlist(listofmats)
 library(DuoClustering2018)
+library(SingleCellExperiment)
 sce <- sce_full_Zhengmix4eq()[1:100,sample(1:3500,100,replace = FALSE)]
-# for illustrative purposes only; would not actually use splitby = "phenoid"
-# would instead use a batch or platform attribute
-result <- corralm_sce(sce, splitby = 'phenoid')
+colData(sce)$Method <- matrix(sample(c('Method1','Method2'),100,replace = TRUE))
+result <- corralm_sce(sce, splitby = 'Method')
 
 #' # example on how to add UMAP/tsne based on corralm above, with 'scater' package
 library(scater)
@@ -81,9 +81,9 @@ listofmats <- list(matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20),mat
 corralm(listofmats)
 
 library(DuoClustering2018)
+library(SingleCellExperiment)
 sce <- sce_full_Zhengmix4eq()[1:100,sample(1:3500,100,replace = FALSE)]
-# for illustrative purposes only; would not actually use splitby = "phenoid"
-# would instead use a batch or platform attribute
-result <- corralm(sce, splitby = 'phenoid')
+colData(sce)$Method <- matrix(sample(c('Method1','Method2'),100,replace = TRUE))
+result <- corralm(sce, splitby = 'Method')
 
 }

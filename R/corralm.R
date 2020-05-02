@@ -50,10 +50,10 @@ corralm_matlist <- function(matlist, method = c('irl','svd')[1], ncomp = 10, ...
 #'
 #' @examples
 #' library(DuoClustering2018)
+#' library(SingleCellExperiment)
 #' sce <- sce_full_Zhengmix4eq()[1:100,sample(1:3500,100,replace = FALSE)]
-#' # for illustrative purposes only; would not actually use splitby = "phenoid"
-#' # would instead use a batch or platform attribute
-#' result <- corralm_sce(sce, splitby = 'phenoid')
+#' colData(sce)$Method <- matrix(sample(c('Method1','Method2'),100,replace = TRUE))
+#' result <- corralm_sce(sce, splitby = 'Method')
 #' 
 #' #' # example on how to add UMAP/tsne based on corralm above, with 'scater' package
 #' library(scater)
@@ -101,10 +101,10 @@ corralm_sce <- function(sce, splitby, method = c('irl','svd')[1], ncomp = 10, wh
 #' corralm(listofmats)
 #' 
 #' library(DuoClustering2018)
+#' library(SingleCellExperiment)
 #' sce <- sce_full_Zhengmix4eq()[1:100,sample(1:3500,100,replace = FALSE)]
-#' # for illustrative purposes only; would not actually use splitby = "phenoid"
-#' # would instead use a batch or platform attribute
-#' result <- corralm(sce, splitby = 'phenoid')
+#' colData(sce)$Method <- matrix(sample(c('Method1','Method2'),100,replace = TRUE))
+#' result <- corralm(sce, splitby = 'Method')
 #' 
 corralm <- function(inp,...){
   if(is(inp,'SingleCellExperiment')){
