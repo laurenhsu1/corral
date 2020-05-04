@@ -90,6 +90,7 @@ corralm_sce <- function(sce, splitby, method = c('irl','svd')[1], ncomp = 10, wh
 #' 
 #' @importFrom irlba irlba
 #' @importFrom Matrix Matrix rowSums colSums
+#' @importFrom methods is
 #' @importFrom SingleCellExperiment reducedDim
 #' @importFrom MultiAssayExperiment experiments intersectRows assays
 #' @importFrom SummarizedExperiment assay
@@ -147,7 +148,8 @@ corralm <- function(inp,...){
 #' @export
 #'
 #' @examples
-print.corralm <- function(inp){
+print.corralm <- function(x,...){
+  inp <- x
   pct_var_exp <- t(data.frame('percent.Var.explained' = inp$d^2 / inp$eigsum))
   ncomps <- length(pct_var_exp)
   colnames(pct_var_exp) <- paste0(rep('PC',ncomps),seq(1,ncomps,1))

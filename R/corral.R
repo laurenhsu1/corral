@@ -51,6 +51,7 @@ compsvd <- function(mat, method = c('irl','svd')[1], ncomp = 10, ...){
 #' @export
 #' 
 #' @importFrom Matrix Matrix rowSums colSums
+#' @importFrom methods is
 #' @importClassesFrom Matrix dgCMatrix
 #'
 #' @examples
@@ -179,6 +180,7 @@ corral_sce <- function(inp, method = c('irl','svd')[1], ncomp = 10, whichmat = '
 #' 
 #' @importFrom irlba irlba
 #' @importFrom Matrix Matrix rowSums colSums
+#' @importFrom methods is
 #' @importFrom SingleCellExperiment reducedDim
 #' @importFrom SummarizedExperiment assay
 #' @importClassesFrom Matrix dgCMatrix
@@ -216,7 +218,8 @@ corral <- function(inp,...){
 #' @export
 #'
 #' @examples
-print.corral <- function(inp){
+print.corral <- function(x,...){
+  inp <- x
   pct_var_exp <- t(data.frame('percent.Var.explained' = inp$d^2 / inp$eigsum))
   ncomps <- length(pct_var_exp)
   colnames(pct_var_exp) <- paste0(rep('PC',ncomps),seq(1,ncomps,1))

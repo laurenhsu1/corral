@@ -67,6 +67,7 @@ get_pct_var_exp_svd <- function(thissvd, preproc_mat = thissvd$d){
 #' @export
 #' 
 #' @importFrom Matrix Matrix rowSums colSums
+#' @importFrom methods is
 #' @importClassesFrom Matrix dgCMatrix
 #'
 #' @examples

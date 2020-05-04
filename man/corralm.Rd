@@ -21,7 +21,7 @@ corralm_sce(
 
 corralm(inp, ...)
 
-\method{print}{corralm}(inp)
+\method{print}{corralm}(x, ...)
 }
 \arguments{
 \item{matlist}{(for \code{corralm_matlist}) list of input matrices; input matrices should be counts (raw or log). Matrices should be aligned row-wise by common features (either by sample or by gene)}

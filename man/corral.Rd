@@ -20,7 +20,7 @@ corral_sce(
 
 corral(inp, ...)
 
-\method{print}{corral}(inp)
+\method{print}{corral}(x, ...)
 }
 \arguments{
 \item{inp}{corral object; the list output from \code{corral_mat}}
