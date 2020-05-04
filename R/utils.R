@@ -7,7 +7,7 @@
 #' @export
 #'
 #' @examples
-#' x <- matrix(sample(0:10, 5000, replace=TRUE), ncol = 25)
+#' x <- matrix(sample(0:10, 5000, replace = TRUE), ncol = 25)
 #' x[sample(1:5000, 10)] <- NA
 #' apply(x, c(1,2), na2zero)
 na2zero <- function(x) {
@@ -25,7 +25,8 @@ na2zero <- function(x) {
 #' @export
 #'
 #' @examples
-#' listofmats <- list(matrix(sample(seq(0,20,1),100,replace = TRUE),nrow = 10),matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 10))
+#' listofmats <- list(matrix(sample(seq(0,20,1),100,replace = TRUE),nrow = 10),
+#'                    matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 10))
 #' newmat <- list2mat(listofmats) # to "cbind" them
 #' listofmats_t <- lapply(listofmats,t)
 #' newmat_t <- list2mat(listofmats_t, 'r') # to "rbind" them

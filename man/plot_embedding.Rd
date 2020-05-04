@@ -48,7 +48,8 @@ default none; options to display plot (\code{showplot}), save plot (\code{savepl
 Plot selected PCs from an embedding
 }
 \examples{
-listofmats <- list(matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20),matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20))
+listofmats <- list(matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20),
+                   matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20))
 embed_mat <- corralm(listofmats, ncomp = 5)$v
 cell_type_vec <- sample(c('type1','type2','type3'),100,replace = TRUE)
 plot_embedding(embedding = embed_mat, 

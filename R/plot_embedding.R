@@ -19,7 +19,8 @@
 #' @importFrom ggthemes scale_color_few
 #'
 #' @examples
-#' listofmats <- list(matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20),matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20))
+#' listofmats <- list(matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20),
+#'                    matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20))
 #' embed_mat <- corralm(listofmats, ncomp = 5)$v
 #' cell_type_vec <- sample(c('type1','type2','type3'),100,replace = TRUE)
 #' plot_embedding(embedding = embed_mat, 
@@ -35,12 +36,6 @@ plot_embedding <- function(embedding, xpc = 1, ypc = xpc + 1, plot_title = paste
   
   xlab = paste0('PC',xpc)
   ylab = paste0('PC',ypc)
-  
-  # alternate axis label, given the actual svd output with d vector. If partial svd, then also need the input matrix to compute
-  # sum of eigenvalues
-  # pct_var_exp <- get_pct_var_exp_svd(thissvd)
-  #xlab = paste('PC ',xpc,' (', round(pct_var_exp[xpc]*100),'% of variance explained)', sep = '' )
-  #ylab = paste('PC ',xpc + 1,' (', round(pct_var_exp[xpc + 1]*100),'% of variance explained)', sep = '' )
 
   colnames(embedding) <- NULL
   df <- cbind(data.frame(embedding),color_vec)

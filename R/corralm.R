@@ -17,7 +17,8 @@
 #' @importClassesFrom Matrix dgCMatrix
 #'
 #' @examples
-#' listofmats <- list(matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 25),matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 25))
+#' listofmats <- list(matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 25),
+#'                    matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 25))
 #' result <- corralm_matlist(listofmats)
 corralm_matlist <- function(matlist, method = c('irl','svd')[1], ncomp = 10, ...){
   .check_dims(matlist)
@@ -97,7 +98,8 @@ corralm_sce <- function(sce, splitby, method = c('irl','svd')[1], ncomp = 10, wh
 #' @importClassesFrom MultiAssayExperiment MultiAssayExperiment
 #'
 #' @examples
-#' listofmats <- list(matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20),matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20))
+#' listofmats <- list(matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20),
+#'                    matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20))
 #' corralm(listofmats)
 #' 
 #' library(DuoClustering2018)

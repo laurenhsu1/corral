@@ -18,7 +18,8 @@ matrix
 List to Matrix
 }
 \examples{
-listofmats <- list(matrix(sample(seq(0,20,1),100,replace = TRUE),nrow = 10),matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 10))
+listofmats <- list(matrix(sample(seq(0,20,1),100,replace = TRUE),nrow = 10),
+                   matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 10))
 newmat <- list2mat(listofmats) # to "cbind" them
 listofmats_t <- lapply(listofmats,t)
 newmat_t <- list2mat(listofmats_t, 'r') # to "rbind" them

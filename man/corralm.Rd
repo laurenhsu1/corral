@@ -64,7 +64,8 @@ This multi-table adaptation of correpondence analysis applies the same scaling t
 \code{corralm} is a wrapper for \code{\link{corralm_matlist}} and \code{\link{corralm_sce}}, and can be called on any of the acceptable input types (see \code{inp} below).
 }
 \examples{
-listofmats <- list(matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 25),matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 25))
+listofmats <- list(matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 25),
+                   matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 25))
 result <- corralm_matlist(listofmats)
 library(DuoClustering2018)
 library(SingleCellExperiment)
@@ -77,7 +78,8 @@ library(scater)
 result <- runUMAP(result, dimred = 'corralm', name = 'corralm_UMAP')
 result <- runTSNE(result, dimred = 'corralm', name = 'corralm_TSNE')
 
-listofmats <- list(matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20),matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20))
+listofmats <- list(matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20),
+                   matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20))
 corralm(listofmats)
 
 library(DuoClustering2018)
