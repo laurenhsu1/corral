@@ -115,7 +115,7 @@ corralm <- function(inp,...){
     corralm_matlist(matlist = matlist, ...)
   }
   else if (is(inp,'MultiAssayExperiment')){
-    matlist <- as.list(MultiAssayExperiment:assays(MultiAssayExperiment:experiments(MultiAssayExperiment:intersectRows(inp))))
+    matlist <- as.list(MultiAssayExperiment::assays(MultiAssayExperiment::experiments(MultiAssayExperiment::intersectRows(inp))))
     corralm_matlist(matlist = matlist, ...)
   }
   else if(is(inp,'list')){
