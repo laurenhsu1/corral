@@ -1,6 +1,6 @@
 Package: corral
 Title: Correspondence Analysis for Single Cell Data
-Version: 0.99.9
+Version: 0.99.10
 Date: 2020-05-02
 Author: Lauren Hsu & Aedin Culhane
 Maintainer: Lauren Hsu <lrnshoe@gmail.com> & Aedin Culhane <aedin@jimmy.harvard.edu>
@@ -21,6 +21,7 @@ Imports:
     gridExtra,
     irlba, 
     Matrix, 
+    methods,
     MultiAssayExperiment,
     SingleCellExperiment, 
     SummarizedExperiment,
