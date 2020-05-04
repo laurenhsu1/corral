@@ -1,6 +1,6 @@
 Package: corral
 Title: Correspondence Analysis for Single Cell Data
-Version: 0.99.10
+Version: 0.99.11
 Date: 2020-05-02
 Author: Lauren Hsu & Aedin Culhane
 Maintainer: Lauren Hsu <lrnshoe@gmail.com> & Aedin Culhane <aedin@jimmy.harvard.edu>
@@ -42,6 +42,8 @@ biocViews:
     DimensionReduction, 
     Preprocessing,
     PrincipalComponent, 
+    Sequencing,
     SingleCell, 
+    Software,
     Visualization
 Encoding: UTF-8

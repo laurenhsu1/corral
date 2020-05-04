@@ -16,6 +16,7 @@
 #' @export
 #' 
 #' @import ggplot2
+#' @import gridExtra
 #' @importFrom ggthemes scale_color_few
 #'
 #' @examples

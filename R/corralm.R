@@ -140,7 +140,7 @@ corralm <- function(inp,...){
 
 #' Print method for S3 object corralm
 #'
-#' @param inp corralm object; the list output from \code{corralm_matlist}
+#' @param x (print method) corralm object; the list output from \code{corralm_matlist}
 #'
 #' @rdname corralm
 #'

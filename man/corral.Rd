@@ -23,7 +23,7 @@ corral(inp, ...)
 \method{print}{corral}(x, ...)
 }
 \arguments{
-\item{inp}{corral object; the list output from \code{corral_mat}}
+\item{inp}{matrix (any type), \code{SingleCellExperiment}, or \code{SummarizedExperiment}. If using \code{SingleCellExperiment} or \code{SummarizedExperiment}, then include the \code{whichmat} argument to specify which slot to use (defaults to \code{counts}).}
 
 \item{method}{character, the algorithm to be used for svd. Default is irl. Currently supports 'irl' for irlba::irlba or 'svd' for stats::svd}
 
@@ -34,6 +34,8 @@ corral(inp, ...)
 \item{whichmat}{character; defaults to \code{counts}, can also use \code{logcounts} or \code{normcounts} if stored in the \code{sce} object}
 
 \item{fullout}{boolean; whether the function will return the full \code{corral} output as a list, or a SingleCellExperiment; defaults to SingleCellExperiment (\code{FALSE}). To get back the \code{\link{corral_mat}}-style output, set this to \code{TRUE}.}
+
+\item{x}{(print method) corral object; the list output from \code{corral_mat}}
 }
 \value{
 When run on a matrix, a list with the correspondence analysis matrix decomposition result:

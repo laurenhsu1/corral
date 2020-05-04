@@ -40,7 +40,9 @@ corralm(inp, ...)
 
 \item{fullout}{boolean; whether the function will return the full \code{corral} output as a list, or a SingleCellExperiment; defaults to SingleCellExperiment (\code{FALSE}). To get back the \code{\link{corral_mat}}-style output, set this to \code{TRUE}.}
 
-\item{inp}{corralm object; the list output from \code{corralm_matlist}}
+\item{inp}{list of matrices (any type), a \code{SingleCellExperiment}, list of \code{SingleCellExperiment}s, list of \code{SummarizedExperiment}s, or \code{MultiAssayExperiment}. If using \code{SingleCellExperiment} or \code{SummarizedExperiment}, then include the \code{whichmat} argument to specify which slot to use (defaults to \code{counts}). Additionally, if it is one \code{SingleCellExperiment}, then it is also necessary to include the \code{splitby} argument to specify the batches. For a \code{MultiAssayExperiment}, it will take the intersect of the features across all the assays, and use those to match the matrices; to use a different subset, select desired subsets then call \code{corral}}
+
+\item{x}{(print method) corralm object; the list output from \code{corralm_matlist}}
 }
 \value{
 When run on a list of matrices, a list with the correspondence analysis matrix decomposition result, with indices corresponding to the concatenated matrices (in order of the list):

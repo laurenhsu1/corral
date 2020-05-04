@@ -210,7 +210,7 @@ corral <- function(inp,...){
 
 #' Print method for S3 object corral
 #'
-#' @param inp corral object; the list output from \code{corral_mat}
+#' @param x (print method) corral object; the list output from \code{corral_mat}
 #'
 #' @rdname corral
 #'
