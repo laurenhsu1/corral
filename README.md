@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="corral_sticker.png" width="150"/>
+  <img src="corral_sticker.png" width="180"/>
 </p>
 
 # corral
