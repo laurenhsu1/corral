@@ -11,7 +11,6 @@
 #' x[sample(1:5000, 10)] <- NA
 #' 
 #' na2zero(x)
-#' apply(x, c(1,2), na2zero)
 na2zero <- function(x) {
   func <- function(x){
     if (is.na(x)) return(0)
@@ -141,7 +140,7 @@ add_embeddings2scelist <- function(scelist,embeddings, slotname = 'corralm'){
   dimvec <- unlist(lapply(lapply(scelist,dim),'[',2))
   for (i in seq(1,length(scelist),1)){
     if(i == 1) {start_ind <- 1}
-    else{start_ind <- (sum(dimvec[1:i-1]) + 1)}
+    else{start_ind <- (sum(dimvec[seq(1,i-1,1)]) + 1)}
     
     end_ind <- start_ind + dimvec[i] - 1
     
