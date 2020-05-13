@@ -1,6 +1,6 @@
 Package: corral
 Title: Correspondence Analysis for Single Cell Data
-Version: 0.99.12
+Version: 0.99.13
 Date: 2020-05-02
 Author: Lauren Hsu & Aedin Culhane
 Authors@R: 
@@ -9,7 +9,7 @@ Authors@R:
              email = "lrnshoe@gmail.com",
              comment = c(ORCID = "0000-0002-6035-7381")),
      person(given = "Aedin", family = "Culhane",
-             role = c("aut", "cre"),
+             role = c("aut"),
              email = "aedin@jimmy.harvard.edu",
              comment = c(ORCID = "0000-0002-1395-9734")))
 Description: 
