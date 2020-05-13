@@ -17,7 +17,7 @@
 #' 
 #' @import ggplot2
 #' @import gridExtra
-#' @importFrom ggthemes scale_color_few few_pal 
+#' @import ggthemes
 #'
 #' @examples
 #' listofmats <- list(matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20),
@@ -52,7 +52,7 @@ plot_embedding <- function(embedding, xpc = 1, ypc = xpc + 1, plot_title = paste
     ggplot2::discrete_scale('colour','colscale',palette)
   }
   if(length(unique(color_vec)) < 9){
-    palette_func <- few_pal('Medium')
+    palette_func <- ggthemes:::few_pal('Medium')
   }
   else{
     palette_func <- .generate_palette_func(ncolors = length(unique(color_vec)))

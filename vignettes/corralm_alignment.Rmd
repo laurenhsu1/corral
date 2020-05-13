@@ -69,7 +69,7 @@ First, we will prepare the data by adding to the colData the sequencing platform
 ```{r}
 platforms <- c('10X','CELseq2','Dropseq')
 for(i in seq_along(scmix_dat)) {
-  colData(scmix_dat[[i]])$Methods<- rep(platforms[i], ncol(scmix_dat[[i]]))
+  colData(scmix_dat[[i]])$Method<- rep(platforms[i], ncol(scmix_dat[[i]]))
 }
 
 scmix_genes.use <- Reduce(intersect,lapply(scmix_dat,rownames))

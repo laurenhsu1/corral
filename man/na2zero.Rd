@@ -18,5 +18,7 @@ Set na to 0
 \examples{
 x <- matrix(sample(0:10, 5000, replace = TRUE), ncol = 25)
 x[sample(1:5000, 10)] <- NA
+
+na2zero(x)
 apply(x, c(1,2), na2zero)
 }

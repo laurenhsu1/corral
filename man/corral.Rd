@@ -7,11 +7,11 @@
 \alias{print.corral}
 \title{corral: Correspondence analysis on a single matrix}
 \usage{
-corral_mat(inp, method = c("irl", "svd")[1], ncomp = 10, ...)
+corral_mat(inp, method = c("irl", "svd"), ncomp = 10, ...)
 
 corral_sce(
   inp,
-  method = c("irl", "svd")[1],
+  method = c("irl", "svd"),
   ncomp = 10,
   whichmat = "counts",
   fullout = FALSE,

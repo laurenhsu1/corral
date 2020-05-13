@@ -1,4 +1,6 @@
-<img src="corral_sticker.png" width="200" class = "center"/>
+<p align="center">
+  <img src="corral_sticker.png" width="150"/>
+</p>
 
 # corral
 *Dimensionality reduction and batch integration methods for single cell data*

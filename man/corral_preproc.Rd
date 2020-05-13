@@ -2,9 +2,9 @@
 % Please edit documentation in R/corral.R
 \name{corral_preproc}
 \alias{corral_preproc}
-\title{Correspondence analysis preprocessing (not intended to be called directly)}
+\title{Correspondence analysis preprocessing}
 \usage{
-corral_preproc(inp, rtype = c("standardized", "indexed")[1])
+corral_preproc(inp, rtype = c("standardized", "indexed"))
 }
 \arguments{
 \item{inp}{matrix, numeric, counts or logcounts; can be sparse Matrix or matrix}

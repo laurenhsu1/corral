@@ -158,8 +158,7 @@ add_embeddings2scelist <- function(scelist,embeddings, slotname = 'corralm'){
   return(df)
 }
 
-#' @keywords internal
-#' @importFrom ggthemes check_pal_n ggthemes_data
+#' @import ggthemes
 #' @importFrom grDevices colorRampPalette
 .generate_palette_func <- function(ncolors, color_values){
   # adapted from ggthemes::scale_color_* functions

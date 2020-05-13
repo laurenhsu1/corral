@@ -4,7 +4,7 @@
 \alias{compsvd}
 \title{compsvd: Compute Singular Value Decomposition (SVD)}
 \usage{
-compsvd(mat, method = c("irl", "svd")[1], ncomp = 10, ...)
+compsvd(mat, method = c("irl", "svd"), ncomp = 10, ...)
 }
 \arguments{
 \item{mat}{matrix, pre-processed input; can be sparse or full (pre-processing can be performed using \code{\link{corral_preproc}}from this package)}

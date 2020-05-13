@@ -7,19 +7,19 @@
 \alias{print.corralm}
 \title{Multi-table correspondence analysis (list of matrices)}
 \usage{
-corralm_matlist(matlist, method = c("irl", "svd")[1], ncomp = 10, ...)
+corralm_matlist(matlist, method = c("irl", "svd"), ncomp = 10, ...)
 
 corralm_sce(
   sce,
   splitby,
-  method = c("irl", "svd")[1],
+  method = c("irl", "svd"),
   ncomp = 10,
   whichmat = "counts",
-  fullout = "false",
+  fullout = FALSE,
   ...
 )
 
-corralm(inp, ...)
+corralm(inp, whichmat = "counts", ...)
 
 \method{print}{corralm}(x, ...)
 }
@@ -36,7 +36,7 @@ corralm(inp, ...)
 
 \item{splitby}{character; name of the attribute from \code{colData} that should be used to separate the SCE}
 
-\item{whichmat}{character; defaults to \code{counts}, can also use \code{logcounts} or \code{normcounts} if stored in the \code{sce} object}
+\item{whichmat}{char, when using SingleCellExperiment or other SummarizedExperiment, can be specified. default is 'counts'.}
 
 \item{fullout}{boolean; whether the function will return the full \code{corral} output as a list, or a SingleCellExperiment; defaults to SingleCellExperiment (\code{FALSE}). To get back the \code{\link{corral_mat}}-style output, set this to \code{TRUE}.}
 
@@ -86,7 +86,7 @@ corralm(listofmats)
 
 library(DuoClustering2018)
 library(SingleCellExperiment)
-sce <- sce_full_Zhengmix4eq()[1:100,sample(1:3500,100,replace = FALSE)]
+sce <- sce_full_Zhengmix4eq()[seq(1,100,1),sample(seq(1,3500,1),100,replace = FALSE)]
 colData(sce)$Method <- matrix(sample(c('Method1','Method2'),100,replace = TRUE))
 result <- corralm(sce, splitby = 'Method')
 
