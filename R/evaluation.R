@@ -1,5 +1,6 @@
 # Functions for evaluating performance with respect to software / computing, as well as results for dimensionality reduction and batch integration.
 
+#' @keywords internal
 .cumtotal <- function(vals, ref){
   return(sum(vals < ref))
 }
@@ -22,7 +23,7 @@ obs2probs <- function(obs, numbins = 100, startbin = min(obs), endbin = max(obs)
   result <- data.frame(bins)
   result[1,'cumfreq'] <- 0
   result[1, 'freq'] <- 0
-  for (ind in 2:(numbins)){
+  for (ind in seq(2,numbins,1)){
     cumsum <- .cumtotal(obs, bins[ind])
     result[ind, 'cumfreq'] <- cumsum
     result[ind, 'freq'] <- cumsum - result[ind - 1, 'cumfreq']
@@ -31,6 +32,7 @@ obs2probs <- function(obs, numbins = 100, startbin = min(obs), endbin = max(obs)
   return(result)
 }
 
+#' @keywords internal
 .make_costmat <- function(matdim, mincost = 1, maxcost = 10){
   abval_dif <- function(x,y) {return(abs(x-y))}
   costmat <- matrix(seq(mincost, maxcost,length.out = matdim), matdim, matdim)

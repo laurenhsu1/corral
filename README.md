@@ -1,3 +1,5 @@
+<img src="corral_sticker.png" width="300" />
+
 # corral
 *Dimensionality reduction and batch integration methods for single cell data*
 

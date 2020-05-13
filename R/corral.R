@@ -23,8 +23,9 @@
 #' compsvd(mat)
 #' compsvd(mat, method = 'svd')
 #' compsvd(mat, method = 'irl', ncomp = 5)
-compsvd <- function(mat, method = c('irl','svd')[1], ncomp = 10, ...){
-  # add ncomp checker against dim of mat
+compsvd <- function(mat, method = c('irl','svd'), ncomp = 10, ...){
+  method <- match.arg(method, c('irl','svd'))
+  ncomp <- min(ncomp, dim(mat))
   if(method == 'irl'){
     result <- irlba::irlba(mat, nv = ncomp, ...)
   }
@@ -40,7 +41,7 @@ compsvd <- function(mat, method = c('irl','svd')[1], ncomp = 10, ...){
 }
 
 
-#' Correspondence analysis preprocessing (not intended to be called directly)
+#' Correspondence analysis preprocessing
 #'
 #' This function performs the row and column scaling pre-processing operations, prior to SVD, for the corral methods. See \code{\link{corral}} for single matrix correspondence analysis and \code{\link{corralm}} for multi-matrix correspondence analysis.
 #'
@@ -58,8 +59,9 @@ compsvd <- function(mat, method = c('irl','svd')[1], ncomp = 10, ...){
 #' mat <- matrix(sample(0:10, 500, replace=TRUE), ncol=25)
 #' mat_corral <- corral_preproc(mat)
 #' corral_output <- compsvd(mat_corral, ncomp = 5)
-corral_preproc <- function(inp, rtype = c('standardized','indexed')[1]){
-  if(!is(inp, "dgCMatrix")) {sp_mat <- Matrix::Matrix(inp, sparse = TRUE)}  # convert to a sparse matrix
+corral_preproc <- function(inp, rtype = c('standardized','indexed')){
+  rtype <- match.arg(rtype, c('standardized','indexed'))
+  if(!is(inp, "dgCMatrix")) {sp_mat <- Matrix::Matrix(inp, sparse = TRUE)}
   else {sp_mat <- inp}
   N <- sum(sp_mat)
   sp_mat <- sp_mat/N
@@ -68,7 +70,7 @@ corral_preproc <- function(inp, rtype = c('standardized','indexed')[1]){
   sp_mat <- sp_mat/row.w
   sp_mat <- sweep(sp_mat, 2, col.w, "/") - 1
   if (any(is.na(sp_mat))) {
-    sp_mat <- apply(sp_mat, c(1, 2), na2zero)
+    sp_mat <- na2zero(sp_mat)
   }
   if (rtype == 'indexed'){
     return(sp_mat)
@@ -110,7 +112,8 @@ corral_preproc <- function(inp, rtype = c('standardized','indexed')[1]){
 #' result <- corral_mat(mat, method = 'svd')
 #' result <- corral_mat(mat, method = 'irl', ncomp = 5)
 #' 
-corral_mat <- function(inp, method = c('irl','svd')[1], ncomp = 10, ...){
+corral_mat <- function(inp, method = c('irl','svd'), ncomp = 10, ...){
+  method <- match.arg(method, c('irl','svd'))
   preproc_mat <- corral_preproc(inp,...)
   result <- compsvd(preproc_mat, method, ncomp,...)
   w <- get_weights(inp)
@@ -152,7 +155,8 @@ corral_mat <- function(inp, method = c('irl','svd')[1], ncomp = 10, ...){
 #' result_1 <- runUMAP(result_1, dimred = 'corral', name = 'corral_UMAP')
 #' result_1 <- runTSNE(result_1, dimred = 'corral', name = 'corral_TSNE')
 #' 
-corral_sce <- function(inp, method = c('irl','svd')[1], ncomp = 10, whichmat = 'counts', fullout = FALSE, ...){
+corral_sce <- function(inp, method = c('irl','svd'), ncomp = 10, whichmat = 'counts', fullout = FALSE, ...){
+  method <- match.arg(method, c('irl','svd'))
   inp_mat <- SummarizedExperiment::assay(inp, whichmat)
   svd_output <- corral_mat(inp_mat, ...)
   if(fullout){

@@ -20,7 +20,8 @@
 #' listofmats <- list(matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 25),
 #'                    matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 25))
 #' result <- corralm_matlist(listofmats)
-corralm_matlist <- function(matlist, method = c('irl','svd')[1], ncomp = 10, ...){
+corralm_matlist <- function(matlist, method = c('irl','svd'), ncomp = 10, ...){
+  method <- match.arg(method, c('irl','svd'))
   .check_dims(matlist)
   preproc_mats <- lapply(matlist, corral_preproc, rtype = 'indexed')
   concatted <- list2mat(matlist = preproc_mats, direction = 'c')
@@ -61,7 +62,8 @@ corralm_matlist <- function(matlist, method = c('irl','svd')[1], ncomp = 10, ...
 #' result <- runUMAP(result, dimred = 'corralm', name = 'corralm_UMAP')
 #' result <- runTSNE(result, dimred = 'corralm', name = 'corralm_TSNE')
 #' 
-corralm_sce <- function(sce, splitby, method = c('irl','svd')[1], ncomp = 10, whichmat = 'counts', fullout = 'false',...){
+corralm_sce <- function(sce, splitby, method = c('irl','svd'), ncomp = 10, whichmat = 'counts', fullout = FALSE,...){
+  method <- match.arg(method, c('irl','svd'))
   if(missing(splitby)) {stop('If performing multi-table analysis with a single SCE, the splitby variable must be specified. \nUse corral to analyze as a single table.')}
   mat_list <- sce2matlist(sce, splitby = splitby, whichmat = whichmat)
   svd_output <- corralm_matlist(mat_list, method = method, ncomp = ncomp)
@@ -82,6 +84,7 @@ corralm_sce <- function(sce, splitby, method = c('irl','svd')[1], ncomp = 10, wh
 #' \code{corralm} is a wrapper for \code{\link{corralm_matlist}} and \code{\link{corralm_sce}}, and can be called on any of the acceptable input types (see \code{inp} below).
 #'
 #' @param inp list of matrices (any type), a \code{SingleCellExperiment}, list of \code{SingleCellExperiment}s, list of \code{SummarizedExperiment}s, or \code{MultiAssayExperiment}. If using \code{SingleCellExperiment} or \code{SummarizedExperiment}, then include the \code{whichmat} argument to specify which slot to use (defaults to \code{counts}). Additionally, if it is one \code{SingleCellExperiment}, then it is also necessary to include the \code{splitby} argument to specify the batches. For a \code{MultiAssayExperiment}, it will take the intersect of the features across all the assays, and use those to match the matrices; to use a different subset, select desired subsets then call \code{corral}
+#' @param whichmat char, when using SingleCellExperiment or other SummarizedExperiment, can be specified. default is 'counts'.
 #' @param ... (additional arguments for methods)
 #'
 #' @return For a list of \code{\link{SingleCellExperiment}}s, returns a list of the SCEs with the embeddings in the respective \code{reducedDim} slot 'corralm'
@@ -105,11 +108,11 @@ corralm_sce <- function(sce, splitby, method = c('irl','svd')[1], ncomp = 10, wh
 #' 
 #' library(DuoClustering2018)
 #' library(SingleCellExperiment)
-#' sce <- sce_full_Zhengmix4eq()[1:100,sample(1:3500,100,replace = FALSE)]
+#' sce <- sce_full_Zhengmix4eq()[seq(1,100,1),sample(seq(1,3500,1),100,replace = FALSE)]
 #' colData(sce)$Method <- matrix(sample(c('Method1','Method2'),100,replace = TRUE))
 #' result <- corralm(sce, splitby = 'Method')
 #' 
-corralm <- function(inp,...){
+corralm <- function(inp, whichmat = 'counts',...){
   if(is(inp,'SingleCellExperiment')){
     corralm_sce(sce = inp, ...)
   }
@@ -128,7 +131,6 @@ corralm <- function(inp,...){
       add_embeddings2scelist(scelist = inp, embeddings = res$v)
     }
     else if (is(inp[[1]],'SummarizedExperiment')){
-      if(missing(whichmat)) {whichmat <- 'counts'}
       matlist <- lapply(inp, SummarizedExperiment::assay, whichmat)
       corralm_matlist(matlist = matlist, ...)
     }

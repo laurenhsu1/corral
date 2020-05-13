@@ -46,7 +46,7 @@ scmix_dat <- load_all_data()[1:3]
 
 ```
 
-These datasets include a mixture of three cell lines:
+These datasets include a mixture of three lung cancer cell lines:
 
 * H2228
 * H1975
@@ -64,21 +64,21 @@ scmix_dat
 
 Each sequencing platform captures a different set of genes. In order to apply this method, the matrices need to be matched by features (i.e., genes). We'll find the intersect of the three datasets, then subset for that as we proceed.
 
-First, we will also add to the colData the sequencing platform.
+First, we will prepare the data by adding to the colData the sequencing platform, and subsetting by the intersect of the genes.
 
 ```{r}
-colData(scmix_dat[[1]])$Method <- rep('10X',dim(colData(scmix_dat[[1]]))[1])
-colData(scmix_dat[[2]])$Method <- rep('CELseq2',dim(colData(scmix_dat[[2]]))[1])
-colData(scmix_dat[[3]])$Method <- rep('Dropseq',dim(colData(scmix_dat[[3]]))[1])
+platforms <- c('10X','CELseq2','Dropseq')
+for(i in seq_along(scmix_dat)) {
+  colData(scmix_dat[[i]])$Methods<- rep(platforms[i], ncol(scmix_dat[[i]]))
+}
 
-scmix_genes.use <- intersect(rownames(scmix_dat[[1]]),rownames(scmix_dat[[2]]))
-scmix_genes.use <- intersect(rownames(scmix_dat[[3]]),scmix_genes.use)
+scmix_genes.use <- Reduce(intersect,lapply(scmix_dat,rownames))
 
 scmix_dat <- lapply(scmix_dat,'[',scmix_genes.use)
 
 # verifying that the genes are all in the same order across the objects
-identical(rownames(scmix_dat[[1]]),rownames(scmix_dat[[2]]))
-identical(rownames(scmix_dat[[2]]),rownames(scmix_dat[[3]]))
+sapply(lapply(scmix_dat,rownames), FUN = identical, rownames(scmix_dat[[1]]))
+
 ```
 
 `corralm` can be applied to the following types of objects:
@@ -95,8 +95,12 @@ For purposes of illustration, we will walk through using `corralm` with a single
 
 First, setting up the data to demonstrate this:
 ```{r}
-colData(scmix_dat[[2]])$non_ERCC_percent <- NULL # need to remove this column so the objects can be concatenated
-scmix_sce <- SingleCellExperiment::cbind(scmix_dat[[1]],scmix_dat[[2]],scmix_dat[[3]])
+colData(scmix_dat[[2]])$non_ERCC_percent <- NULL
+# need to remove this column so the objects can be concatenated
+
+scmix_sce <- SingleCellExperiment::cbind(scmix_dat[[1]],
+                                         scmix_dat[[2]],
+                                         scmix_dat[[3]])
 ```
 
 Running `corralm`, and specifying the `splitby` argument:
@@ -107,14 +111,22 @@ scmix_sce <- corralm(scmix_sce, splitby = 'Method')
 
 Visualizing the results:
 ```{r}
-plot_embedding_sce(sce = scmix_sce, which_embedding = 'corralm', color_attr = 'Method', color_title = 'platform', ellipse_attr = 'cell_line', plot_title = 'corralm on scmix', saveplot = FALSE)
+plot_embedding_sce(sce = scmix_sce, 
+                   which_embedding = 'corralm', 
+                   color_attr = 'Method', 
+                   color_title = 'platform', 
+                   ellipse_attr = 'cell_line', 
+                   plot_title = 'corralm on scmix', 
+                   saveplot = FALSE)
 ```
 
 # `corralm` on a list of matrices
 
 Again, preparing the data to be in this input format:
 ```{r}
-scmix_matlist <- sce2matlist(sce = scmix_sce, splitby = 'Method', whichmat = 'counts')
+scmix_matlist <- sce2matlist(sce = scmix_sce, 
+                             splitby = 'Method', 
+                             whichmat = 'counts')
 
 # for plotting purposes later, while we're here
 platforms <- colData(scmix_sce)$Method
@@ -126,7 +138,12 @@ Running corralm and visualizing output...
 ```{r}
 scmix_corralm <- corralm(scmix_matlist)
 scmix_corralm
-plot_embedding(embedding = scmix_corralm$v, plot_title = 'corralm on scmix', color_vec = platforms, color_title = 'platform', ellipse_vec = cell_lines, saveplot = FALSE)
+plot_embedding(embedding = scmix_corralm$v, 
+               plot_title = 'corralm on scmix', 
+               color_vec = platforms, 
+               color_title = 'platform', 
+               ellipse_vec = cell_lines, 
+               saveplot = FALSE)
 ```
 
 As expected, we get the same results as above. (Note that in performing SVD, the direction of the axes doesn't matter so they may be flipped between runs, as `corral` and `corralm` use `irlba` to perform fast approximation.)

@@ -1,9 +1,17 @@
 Package: corral
 Title: Correspondence Analysis for Single Cell Data
-Version: 0.99.11
+Version: 0.99.12
 Date: 2020-05-02
 Author: Lauren Hsu & Aedin Culhane
-Maintainer: Lauren Hsu <lrnshoe@gmail.com> & Aedin Culhane <aedin@jimmy.harvard.edu>
+Authors@R: 
+    c(person(given = "Lauren", family = "Hsu",
+             role = c("aut", "cre"),
+             email = "lrnshoe@gmail.com",
+             comment = c(ORCID = "0000-0002-6035-7381")),
+     person(given = "Aedin", family = "Culhane",
+             role = c("aut", "cre"),
+             email = "aedin@jimmy.harvard.edu",
+             comment = c(ORCID = "0000-0002-1395-9734")))
 Description: 
     Correspondence analysis (CA) is a matrix factorization method, and is 
     similar to principal components analysis (PCA). Whereas PCA is designed for 
@@ -18,6 +26,7 @@ Description:
 Imports: 
     ggplot2, 
     ggthemes, 
+    grDevices,
     gridExtra,
     irlba, 
     Matrix, 
@@ -28,6 +37,7 @@ Imports:
     transport
 Suggests: 
     ade4,
+    BiocStyle,
     CellBench,
     DuoClustering2018,
     knitr,

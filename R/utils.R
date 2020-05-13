@@ -9,11 +9,15 @@
 #' @examples
 #' x <- matrix(sample(0:10, 5000, replace = TRUE), ncol = 25)
 #' x[sample(1:5000, 10)] <- NA
+#' 
+#' na2zero(x)
 #' apply(x, c(1,2), na2zero)
 na2zero <- function(x) {
-  if (is.na(x)) 
-    return(0)
-  else return(x)
+  func <- function(x){
+    if (is.na(x)) return(0)
+    else return(x)}
+  
+  return(apply(x, c(1,2), func))
 }
 
 #' List to Matrix
@@ -146,9 +150,34 @@ add_embeddings2scelist <- function(scelist,embeddings, slotname = 'corralm'){
   return(scelist)
 }
 
+#' @keywords internal
 .batch_sizes <- function(matlist){
   df <- as.data.frame(do.call(rbind, lapply(matlist,dim)))
   colnames(df) <- NULL
   rownames(df) <- names(matlist)
   return(df)
+}
+
+#' @keywords internal
+#' @importFrom ggthemes check_pal_n ggthemes_data
+#' @importFrom grDevices colorRampPalette
+.generate_palette_func <- function(ncolors, color_values){
+  # adapted from ggthemes::scale_color_* functions
+  if(missing(color_values)){
+    values <- ggthemes::ggthemes_data$few$colors[['Medium']][['value']]
+  }
+  else{values <- color_values}
+  values <- c(values[1],colorRampPalette(values[seq(2,length(values),1)])(1 + ncolors)) # expanding palette to fit
+  max_n <- length(values) - 1L
+  f <- function(n) {
+    ggthemes:::check_pal_n(n, max_n)
+    if (n == 1L) {
+      values[[1L]]
+    }
+    else {
+      unname(values[2L:(n + 1L)])
+    }
+  }
+  attr(f, "max_n") <- length(values) - 1L
+  f
 }

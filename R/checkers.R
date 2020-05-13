@@ -1,3 +1,4 @@
+#' @keywords internal
 .check_mat <- function(mat){
   if(!is.numeric(mat)){
     stop('Matrix input should contain only numbers.')
@@ -10,6 +11,7 @@
   }
 }
 
+#' @keywords internal
 .check_dims <- function(matlist){
   dims <- unlist(lapply(lapply(matlist,dim),'[',1))
   if(length(unique(dims)) > 1) {
