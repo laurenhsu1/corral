@@ -137,14 +137,17 @@ sce2matlist <- function(sce,splitby,to_include = NULL,whichmat = 'counts'){
 #' embeddings <- matrix(sample(seq(0,20,1),dim(sce)[2]*6,replace = TRUE),nrow = dim(sce)[2]*2)
 #' scelist <- add_embeddings2scelist(scelist, embeddings)
 add_embeddings2scelist <- function(scelist,embeddings, slotname = 'corralm'){
-  dimvec <- unlist(lapply(lapply(scelist,dim),'[',2))
+  if(!all_are(scelist,'SingleCellExperiment')) {
+    cat('Warning! You may have non-SCE elements in the list.')
+  }
+  dimvec <- unlist(lapply(scelist,ncol))
   for (i in seq(1,length(scelist),1)){
     if(i == 1) {start_ind <- 1}
     else{start_ind <- (sum(dimvec[seq(1,i-1,1)]) + 1)}
     
     end_ind <- start_ind + dimvec[i] - 1
     
-    SingleCellExperiment::reducedDim(scelist[[i]],slotname) <- embeddings[start_ind:end_ind,]
+    SingleCellExperiment::reducedDim(scelist[[i]],slotname) <- embeddings[seq(start_ind,end_ind,1),]
   }
   return(scelist)
 }
@@ -157,6 +160,7 @@ add_embeddings2scelist <- function(scelist,embeddings, slotname = 'corralm'){
   return(df)
 }
 
+#' @keywords internal
 #' @import ggthemes
 #' @importFrom grDevices colorRampPalette
 .generate_palette_func <- function(ncolors, color_values){
@@ -178,4 +182,27 @@ add_embeddings2scelist <- function(scelist,embeddings, slotname = 'corralm'){
   }
   attr(f, "max_n") <- length(values) - 1L
   f
+}
+
+
+#' all_are
+#'
+#' Checks if all elements of a list or List are all of a particular type
+#'
+#' @param inplist list of List to be checked
+#' @param typechar char to check for
+#'
+#' @return boolean, for whether the elements of \code{inplist} are all \code{typechar}
+#' @export
+#'
+#' @examples
+#' x <- list(1,2)
+#' all_are(x,'numeric')
+#' all_are(x,'char')
+#' 
+#' y <- list(1,2,'c')
+#' all_are(y,'numeric')
+#' all_are(y,'char')
+all_are <- function(inplist,typechar){
+  return(all(unlist(lapply(inplist,is,typechar))))
 }

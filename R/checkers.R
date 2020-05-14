@@ -13,7 +13,8 @@
 
 #' @keywords internal
 .check_dims <- function(matlist){
-  dims <- unlist(lapply(lapply(matlist,dim),'[',1))
+  dims <- unlist(lapply(matlist,nrow))
   if(length(unique(dims)) > 1) {
     stop('If performing multi-table analysis, the matrices must be matched by rows; currently the dimensions do not match. \nIf they are matched by columns, then transpose the matrices.')}
 }
+

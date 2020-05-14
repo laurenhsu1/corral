@@ -119,8 +119,8 @@ corral_mat <- function(inp, method = c('irl','svd'), ncomp = 10, ...){
   w <- get_weights(inp)
   result[['SCu']] <- sweep(result$u,1,sqrt(w$row.w),'/') # Standard coordinates
   result[['SCv']] <- sweep(result$v,1,sqrt(w$col.w),'/')
-  result[['PCu']] <- sweep(result[['SCu']],2,result$d[seq(1,dim(result$u)[2],1)],'*') # Principal coordinates
-  result[['PCv']] <- sweep(result[['SCv']],2,result$d[seq(1,dim(result$v)[2],1)],'*')
+  result[['PCu']] <- sweep(result[['SCu']],2,result$d[seq(1,ncol(result$u),1)],'*') # Principal coordinates
+  result[['PCv']] <- sweep(result[['SCv']],2,result$d[seq(1,ncol(result$v),1)],'*')
   class(result) <- c(class(result),"corral")
   return(result)
 }

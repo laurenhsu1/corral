@@ -124,13 +124,13 @@ corralm <- function(inp, whichmat = 'counts',...){
     matlist <- as.list(MultiAssayExperiment::assays(MultiAssayExperiment::experiments(MultiAssayExperiment::intersectRows(inp))))
     corralm_matlist(matlist = matlist, ...)
   }
-  else if(is(inp,'list')){
-    if(is(inp[[1]],'SingleCellExperiment')){
+  else if(is(inp,'list') | is(inp,'List')){
+    if(all_are(inp,'SingleCellExperiment')){
       matlist <- lapply(inp, SummarizedExperiment::assay, whichmat)
       res <- corralm_matlist(matlist = matlist, ...)
       add_embeddings2scelist(scelist = inp, embeddings = res$v)
     }
-    else if (is(inp[[1]],'SummarizedExperiment')){
+    else if (all_are(inp,'SummarizedExperiment')){
       matlist <- lapply(inp, SummarizedExperiment::assay, whichmat)
       corralm_matlist(matlist = matlist, ...)
     }

@@ -25,9 +25,20 @@ library(gridExtra)
 
 # Introduction
 
-Single-cell 'omics analysis enables high-resolution characterization of heterogeneous populations of cells by quantifying measurements in individual cells and thus provides a fuller, more nuanced picture into the complexity and heterogeneity between cells. However, the data also present new and significant challenges as compared to previous approaches, especially as single-cell data are much larger and sparser than data generated from bulk sequencing methods. Dimensionality reduction is a key step in the single-cell analysis to address the high dimensionality and sparsity of these data, and to enable the application of more complex, computationally expensive downstream pipelines.
+Single-cell 'omics analysis enables high-resolution characterization of heterogeneous 
+populations of cells by quantifying measurements in individual cells and thus 
+provides a fuller, more nuanced picture into the complexity and heterogeneity between 
+cells. However, the data also present new and significant challenges as compared to 
+previous approaches, especially as single-cell data are much larger and sparser than 
+data generated from bulk sequencing methods. Dimensionality reduction is a key step 
+in the single-cell analysis to address the high dimensionality and sparsity of these 
+data, and to enable the application of more complex, computationally expensive downstream pipelines.
 
-Correspondence analysis (CA) is a matrix factorization method, and is similar to principal components analysis (PCA). Whereas PCA is designed for application to continuous, approximately normally distributed data, CA is appropriate for non-negative, count-based data that are in the same additive scale. `corral` implements CA for dimensionality reduction of a single matrix of single-cell data. 
+Correspondence analysis (CA) is a matrix factorization method, and is similar to 
+principal components analysis (PCA). Whereas PCA is designed for application to 
+continuous, approximately normally distributed data, CA is appropriate for 
+non-negative, count-based data that are in the same additive scale. `corral` 
+implements CA for dimensionality reduction of a single matrix of single-cell data. 
 
 See the vignette for `corralm` for the multi-table adaptation of CA for single-cell batch alignment/integration.
 
@@ -43,7 +54,10 @@ library(DuoClustering2018)
 zm4eq.sce <- sce_full_Zhengmix4eq()
 ```
 
-This dataset includes approximately 4,000 pre-sorted and annotated cells of 4 types mixed by Duo et al. in approximately equal proportions [@zmdata]. The cells were sampled from a "Massively parallel digital transcriptional profiling of single cells" [@zheng].
+This dataset includes approximately 4,000 pre-sorted and annotated cells of 
+4 types mixed by Duo et al. in approximately equal proportions [@zmdata]. 
+The cells were sampled from a "Massively parallel digital transcriptional 
+profiling of single cells" [@zheng].
 
 ```{r}
 zm4eq.sce
@@ -108,7 +122,8 @@ multiplot(ggplot_umap, ggplot_tsne, cols = 2)
 
 ```
 
-The `corral` embeddings stored in the `reducedDim` slot can be used in downstream analysis, such as for clustering or trajectory analysis.
+The `corral` embeddings stored in the `reducedDim` slot can be used in 
+downstream analysis, such as for clustering or trajectory analysis.
 
 `corral` can also be run on a `SummarizedExperiment` object.
 
@@ -121,14 +136,18 @@ zm4eq.countmat <- assay(zm4eq.sce,'counts')
 zm4eq.countcorral <- corral(zm4eq.countmat)
 ```
 
-The output is in a `list` format, including the SVD output (`u`,`d`,`v`), the standard coordinates (`SCu`,`SCv`), and the principal coordinates (`PCu`,`PCv`).
+The output is in a `list` format, including the SVD output (`u`,`d`,`v`), 
+the standard coordinates (`SCu`,`SCv`), and the principal coordinates (`PCu`,`PCv`).
 
 ```{r}
 zm4eq.countcorral
 ```
 
 We can use `plot_embedding` to visualize the output:
-(the embeddings are in the `v` matrix because these data are by genes in the rows and have cells in the columns; if this were reversed, with cells in the rows and genes/features in the column, then the cell embeddings would instead be in the `u` matrix.)
+(the embeddings are in the `v` matrix because these data are by genes in the 
+rows and have cells in the columns; if this were reversed, with cells in the 
+rows and genes/features in the column, then the cell embeddings would instead 
+be in the `u` matrix.)
 ```{r}
 celltype_vec <- colData(zm4eq.sce)$phenoid
 plot_embedding(embedding = zm4eq.countcorral$v,
@@ -138,7 +157,11 @@ plot_embedding(embedding = zm4eq.countcorral$v,
                saveplot = FALSE)
 ```
 
-The output is the same as above with the `SingleCellExperiment`, and can be passed as the low-dimension embedding for downstream analysis. Similarly, UMAP and tSNE can be computed for visualization. (Note that in performing SVD, the direction of the axes doesn't matter so they may be flipped between runs, as `corral` and `corralm` use `irlba` to perform fast approximation.)
+The output is the same as above with the `SingleCellExperiment`, and can be 
+passed as the low-dimension embedding for downstream analysis. Similarly, 
+UMAP and tSNE can be computed for visualization. (Note that in performing SVD, 
+the direction of the axes doesn't matter so they may be flipped between runs, 
+as `corral` and `corralm` use `irlba` to perform fast approximation.)
 
 # Session information
 

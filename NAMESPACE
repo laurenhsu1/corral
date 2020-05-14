@@ -3,6 +3,7 @@
 S3method(print,corral)
 S3method(print,corralm)
 export(add_embeddings2scelist)
+export(all_are)
 export(compsvd)
 export(corral)
 export(corral_mat)
