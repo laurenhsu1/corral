@@ -42,6 +42,9 @@ implements CA for dimensionality reduction of a single matrix of single-cell dat
 
 See the vignette for `corralm` for the multi-table adaptation of CA for single-cell batch alignment/integration.
 
+corral can be used with various types of input. When called on a matrix (or other matrix-like object), it returns a list with the SVD output, principal coordinates, and standard coordinates. When called on a `r Biocpkg('SingleCellExperiment')`, it returns the `r Biocpkg('SingleCellExperiment')` with the corral embeddings in the `reducedDim` slot named `corral`. To retrieve the full list output from a `SingleCellExperiment` input, the `fullout` argument can be set to `TRUE`.
+![](corral_IO.png)
+
 # Loading packages and data
 
 We will use the `Zhengmix4eq` dataset from the `r Biocpkg('DuoClustering2018')` package.
