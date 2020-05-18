@@ -89,6 +89,9 @@ scmix_dat <- lapply(scmix_dat,'[',scmix_genes.use)
 # verifying that the genes are all in the same order across the objects
 sapply(lapply(scmix_dat,rownames), FUN = identical, rownames(scmix_dat[[1]]))
 
+# or, alternatively,
+# if using the devel branch of MultiAssayExperiment, can use the commented code
+# below to perform equivalent operation
 #scmix_mae <- as(scmix_dat,'MultiAssayExperiment')
 #scmix_dat <- as.list(MultiAssayExperiment::experiments(MultiAssayExperiment::intersectRows(scmix_mae)))
 
