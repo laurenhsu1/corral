@@ -47,6 +47,7 @@ library(corral)
 library(SingleCellExperiment)
 library(ggplot2)
 library(CellBench)
+library(MultiAssayExperiment)
 
 scmix_dat <- load_all_data()[1:3]
 
