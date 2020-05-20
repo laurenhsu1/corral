@@ -78,20 +78,9 @@ First, we will prepare the data by:
 2. subsetting by the intersect of the genes.
 
 ```{r}
-platforms <- c('10X','CELseq2','Dropseq')
-for(i in seq_along(scmix_dat)) {
-  colData(scmix_dat[[i]])$Method<- rep(platforms[i], ncol(scmix_dat[[i]]))
-}
-scmix_genes.use <- Reduce(intersect,lapply(scmix_dat,rownames))
-scmix_dat <- lapply(scmix_dat,'[',scmix_genes.use)
-# verifying that the genes are all in the same order across the objects
-sapply(lapply(scmix_dat,rownames), FUN = identical, rownames(scmix_dat[[1]]))
 
-# or, alternatively,
-# if using the devel branch of MultiAssayExperiment, can use the commented code
-# below to perform equivalent operation
-#scmix_mae <- as(scmix_dat,‘MultiAssayExperiment’)
-#scmix_dat <- as.list(MultiAssayExperiment::experiments(MultiAssayExperiment::intersectRows(scmix_mae)))
+scmix_mae <- as(scmix_dat,‘MultiAssayExperiment’)
+scmix_dat <- as.list(MultiAssayExperiment::experiments(MultiAssayExperiment::intersectRows(scmix_mae)))
 
 ```
 
