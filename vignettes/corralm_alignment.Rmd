@@ -79,7 +79,7 @@ First, we will prepare the data by:
 
 ```{r}
 
-scmix_mae <- as(scmix_dat,‘MultiAssayExperiment’)
+scmix_mae <- as(scmix_dat,'MultiAssayExperiment')
 scmix_dat <- as.list(MultiAssayExperiment::experiments(MultiAssayExperiment::intersectRows(scmix_mae)))
 
 ```
