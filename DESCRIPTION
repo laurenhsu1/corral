@@ -1,6 +1,6 @@
 Package: corral
 Title: Correspondence Analysis for Single Cell Data
-Version: 0.99.23
+Version: 0.99.24
 Date: 2020-05-02
 Authors@R: 
     c(person(given = "Lauren", family = "Hsu",
