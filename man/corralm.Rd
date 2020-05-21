@@ -19,7 +19,7 @@ corralm_sce(
   ...
 )
 
-corralm(inp, whichmat = "counts", ...)
+corralm(inp, whichmat = "counts", fullout = FALSE, ...)
 
 \method{print}{corralm}(x, ...)
 }
@@ -38,7 +38,7 @@ corralm(inp, whichmat = "counts", ...)
 
 \item{whichmat}{char, when using SingleCellExperiment or other SummarizedExperiment, can be specified. default is 'counts'.}
 
-\item{fullout}{boolean; whether the function will return the full \code{corral} output as a list, or a SingleCellExperiment; defaults to SingleCellExperiment (\code{FALSE}). To get back the \code{\link{corral_mat}}-style output, set this to \code{TRUE}.}
+\item{fullout}{boolean; whether the function will return the full \code{corralm} output as a list, or a SingleCellExperiment; defaults to SingleCellExperiment (\code{FALSE}). To get back the \code{\link{corralm_matlist}}-style output, set this to \code{TRUE}.}
 
 \item{inp}{list of matrices (any type), a \code{SingleCellExperiment}, list of \code{SingleCellExperiment}s, list of \code{SummarizedExperiment}s, or \code{MultiAssayExperiment}. If using \code{SingleCellExperiment} or \code{SummarizedExperiment}, then include the \code{whichmat} argument to specify which slot to use (defaults to \code{counts}). Additionally, if it is one \code{SingleCellExperiment}, then it is also necessary to include the \code{splitby} argument to specify the batches. For a \code{MultiAssayExperiment}, it will take the intersect of the features across all the assays, and use those to match the matrices; to use a different subset, select desired subsets then call \code{corral}}
 

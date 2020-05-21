@@ -74,7 +74,7 @@ In order to apply this method, the matrices need to be matched by features (i.e.
 We'll find the intersect of the three datasets, then subset for that as we proceed.
 
 First, we will prepare the data by:
-1. adding to the colData the sequencing platform, and 
+1. adding to the colData the sequencing platform (`experiment_name` in `colData` for each SCE), and 
 2. subsetting by the intersect of the genes.
 
 ```{r}
@@ -112,14 +112,14 @@ Running `corralm`, and specifying the `splitby` argument:
 (Note that the default is for the `counts` matrix to be used. 
 To change this default, use the `whichmat` argument.)
 ```{r}
-scmix_sce <- corralm(scmix_sce, splitby = 'Method')
+scmix_sce <- corralm(scmix_sce, splitby = 'experiment_name')
 ```
 
 Visualizing the results:
 ```{r}
 plot_embedding_sce(sce = scmix_sce, 
                    which_embedding = 'corralm', 
-                   color_attr = 'Method', 
+                   color_attr = 'experiment_name', 
                    color_title = 'platform', 
                    ellipse_attr = 'cell_line', 
                    plot_title = 'corralm on scmix', 
@@ -131,11 +131,11 @@ plot_embedding_sce(sce = scmix_sce,
 Again, preparing the data to be in this input format:
 ```{r}
 scmix_matlist <- sce2matlist(sce = scmix_sce, 
-                             splitby = 'Method', 
+                             splitby = 'experiment_name', 
                              whichmat = 'counts')
 
 # for plotting purposes later, while we're here
-platforms <- colData(scmix_sce)$Method
+platforms <- colData(scmix_sce)$experiment_name
 cell_lines <- colData(scmix_sce)$cell_line
 ```
 

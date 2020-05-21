@@ -36,7 +36,7 @@ corralm_matlist <- function(matlist, method = c('irl','svd'), ncomp = 10, ...){
 #' @param sce (for \code{corralm_sce}) SingleCellExperiment; containing the data to be integrated. Default is to use the counts, and to include all of the data in the integration. These can be changed by passing additional arguments. See \code{\link{sce2matlist}} function documentation for list of available parameters.
 #' @param splitby character; name of the attribute from \code{colData} that should be used to separate the SCE
 #' @param whichmat character; defaults to \code{counts}, can also use \code{logcounts} or \code{normcounts} if stored in the \code{sce} object
-#' @param fullout boolean; whether the function will return the full \code{corral} output as a list, or a SingleCellExperiment; defaults to SingleCellExperiment (\code{FALSE}). To get back the \code{\link{corral_mat}}-style output, set this to \code{TRUE}.
+#' @param fullout boolean; whether the function will return the full \code{corralm} output as a list, or a SingleCellExperiment; defaults to SingleCellExperiment (\code{FALSE}). To get back the \code{\link{corralm_matlist}}-style output, set this to \code{TRUE}.
 #' @inheritParams compsvd
 #' @param ... (additional arguments for methods)
 #'
@@ -86,6 +86,8 @@ corralm_sce <- function(sce, splitby, method = c('irl','svd'), ncomp = 10, which
 #' @param inp list of matrices (any type), a \code{SingleCellExperiment}, list of \code{SingleCellExperiment}s, list of \code{SummarizedExperiment}s, or \code{MultiAssayExperiment}. If using \code{SingleCellExperiment} or \code{SummarizedExperiment}, then include the \code{whichmat} argument to specify which slot to use (defaults to \code{counts}). Additionally, if it is one \code{SingleCellExperiment}, then it is also necessary to include the \code{splitby} argument to specify the batches. For a \code{MultiAssayExperiment}, it will take the intersect of the features across all the assays, and use those to match the matrices; to use a different subset, select desired subsets then call \code{corral}
 #' @param whichmat char, when using SingleCellExperiment or other SummarizedExperiment, can be specified. default is 'counts'.
 #' @param ... (additional arguments for methods)
+#' @inheritParams corralm_matlist
+#' @inheritParams corralm_sce
 #'
 #' @return For a list of \code{\link{SingleCellExperiment}}s, returns a list of the SCEs with the embeddings in the respective \code{reducedDim} slot 'corralm'
 #' @rdname corralm
@@ -112,7 +114,7 @@ corralm_sce <- function(sce, splitby, method = c('irl','svd'), ncomp = 10, which
 #' colData(sce)$Method <- matrix(sample(c('Method1','Method2'),100,replace = TRUE))
 #' result <- corralm(sce, splitby = 'Method')
 #' 
-corralm <- function(inp, whichmat = 'counts',...){
+corralm <- function(inp, whichmat = 'counts', fullout = FALSE,...){
   if(is(inp,'SingleCellExperiment')){
     corralm_sce(sce = inp, ...)
   }
@@ -128,7 +130,13 @@ corralm <- function(inp, whichmat = 'counts',...){
     if(all_are(inp,'SingleCellExperiment')){
       matlist <- lapply(inp, SummarizedExperiment::assay, whichmat)
       res <- corralm_matlist(matlist = matlist, ...)
-      add_embeddings2scelist(scelist = inp, embeddings = res$v)
+      if(fullout) {
+        class(res) <- c(class(res),"corralm")
+        return(res)
+      }
+      else{
+        add_embeddings2scelist(scelist = inp, embeddings = res$v) 
+      }
     }
     else if (all_are(inp,'SummarizedExperiment')){
       matlist <- lapply(inp, SummarizedExperiment::assay, whichmat)
