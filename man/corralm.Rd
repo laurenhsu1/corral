@@ -34,7 +34,7 @@ corralm(inp, whichmat = "counts", fullout = FALSE, ...)
 
 \item{sce}{(for \code{corralm_sce}) SingleCellExperiment; containing the data to be integrated. Default is to use the counts, and to include all of the data in the integration. These can be changed by passing additional arguments. See \code{\link{sce2matlist}} function documentation for list of available parameters.}
 
-\item{splitby}{character; name of the attribute from \code{colData} that should be used to separate the SCE}
+\item{splitby}{character; name of the attribute from \code{colData} that should be used to separate the SCE.}
 
 \item{whichmat}{char, when using SingleCellExperiment or other SummarizedExperiment, can be specified. default is 'counts'.}
 

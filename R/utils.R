@@ -118,7 +118,20 @@ sce2matlist <- function(sce,splitby,to_include = NULL,whichmat = 'counts'){
   return(matlist)
 }
 
-#' Add embeddings to SCE
+
+
+#' @keywords internal
+#' @import SingleCellExperiment
+.indsbysplitby <- function(sce, splitby){
+  to_include <- unique(as.character(colData(sce)[,splitby]))
+  inds <- c()
+  for(gn in to_include){
+    inds <- c(inds, which(colData(sce)[,splitby] == gn))
+  }
+  return(inds)
+}
+
+#' Add embeddings to list of SCEs
 #'
 #' @param scelist list of SingleCellExperiments; to which the corresponding embeddings should be added
 #' @param embeddings matrix; the embeddings outputted from a dimension reduction, e.g. \code{\link{corralm}}. Rows in this table correspond to columns in the SCEs in \code{scelist} (if all the SCEs were column-bound), and row indices should correspond to cells.

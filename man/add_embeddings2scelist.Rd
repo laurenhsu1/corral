@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{add_embeddings2scelist}
 \alias{add_embeddings2scelist}
-\title{Add embeddings to SCE}
+\title{Add embeddings to list of SCEs}
 \usage{
 add_embeddings2scelist(scelist, embeddings, slotname = "corralm")
 }
@@ -17,7 +17,7 @@ add_embeddings2scelist(scelist, embeddings, slotname = "corralm")
 list of SingleCellExperiments with respective embeddings stored in them
 }
 \description{
-Add embeddings to SCE
+Add embeddings to list of SCEs
 }
 \examples{
 library(DuoClustering2018)

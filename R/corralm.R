@@ -34,7 +34,7 @@ corralm_matlist <- function(matlist, method = c('irl','svd'), ncomp = 10, ...){
 #' Multi-table correspondence analysis (SingleCellExperiment)
 #'
 #' @param sce (for \code{corralm_sce}) SingleCellExperiment; containing the data to be integrated. Default is to use the counts, and to include all of the data in the integration. These can be changed by passing additional arguments. See \code{\link{sce2matlist}} function documentation for list of available parameters.
-#' @param splitby character; name of the attribute from \code{colData} that should be used to separate the SCE
+#' @param splitby character; name of the attribute from \code{colData} that should be used to separate the SCE.
 #' @param whichmat character; defaults to \code{counts}, can also use \code{logcounts} or \code{normcounts} if stored in the \code{sce} object
 #' @param fullout boolean; whether the function will return the full \code{corralm} output as a list, or a SingleCellExperiment; defaults to SingleCellExperiment (\code{FALSE}). To get back the \code{\link{corralm_matlist}}-style output, set this to \code{TRUE}.
 #' @inheritParams compsvd
@@ -72,7 +72,8 @@ corralm_sce <- function(sce, splitby, method = c('irl','svd'), ncomp = 10, which
     return(svd_output)
   }
   else{
-    SingleCellExperiment::reducedDim(sce, 'corralm') <- svd_output$v
+    ind_order <- .indsbysplitby(sce, splitby)
+    SingleCellExperiment::reducedDim(sce, 'corralm') <- svd_output$v[ind_order]
     return(sce)
   }
 }
