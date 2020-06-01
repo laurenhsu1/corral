@@ -48,11 +48,10 @@ plot_embedding <- function(embedding, xpc = 1, ypc = xpc + 1, plot_title = paste
   }
   
   # Setting up the colors
-  .colscale <- function(palette){
-    ggplot2::discrete_scale('colour','colscale',palette)
-  }
+  .colscale <- function(palette){ggplot2::discrete_scale('colour','colscale',palette)}
+  
   if(length(unique(color_vec)) < 9){
-    palette_func <- ggthemes:::few_pal('Medium')
+    palette_func <- ggthemes::few_pal('Medium')
   }
   else{
     palette_func <- .generate_palette_func(ncolors = length(unique(color_vec)))
@@ -61,8 +60,7 @@ plot_embedding <- function(embedding, xpc = 1, ypc = xpc + 1, plot_title = paste
   gg_obj <- ggplot(df, aes(x = eval(xvar), y = eval(yvar), colour = eval(colvar))) + theme_classic() + 
     geom_hline(yintercept=0, color = 'gray') + geom_vline(xintercept=0, color = 'gray') + 
     geom_point() + .colscale(palette_func) + 
-    labs(x = xlab, 
-         y = ylab, 
+    labs(x = xlab, y = ylab, 
          title = plot_title, 
          color = color_title) + 
     theme(axis.text.x = element_text(size = rel(1.4), colour = 'black'), axis.text.y = element_text(size = rel(1.4), colour = 'black'), axis.title = element_text(size = rel(1.4), colour = 'black'))
