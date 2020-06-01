@@ -73,7 +73,7 @@ corralm_sce <- function(sce, splitby, method = c('irl','svd'), ncomp = 10, which
   }
   else{
     ind_order <- .indsbysplitby(sce, splitby)
-    SingleCellExperiment::reducedDim(sce, 'corralm') <- svd_output$v[ind_order]
+    SingleCellExperiment::reducedDim(sce, 'corralm') <- svd_output$v[ind_order,]
     return(sce)
   }
 }
