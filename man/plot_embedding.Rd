@@ -15,7 +15,8 @@ plot_embedding(
   saveplot = TRUE,
   plotfn = paste(plot_title, xpc, sep = "_"),
   showplot = TRUE,
-  returngg = FALSE
+  returngg = FALSE,
+  color_pal_vec = NULL
 )
 }
 \arguments{
@@ -40,6 +41,8 @@ plot_embedding(
 \item{showplot}{boolean; whether or not to show the plot, defaults \code{TRUE}}
 
 \item{returngg}{boolean; whether or not to return a \code{\link{ggplot2}} object, defaults \code{FALSE}}
+
+\item{color_pal_vec}{char; hex codes for the color palette to be used. Default is to use the ggthemes few for plots with less than 9 colors, and to use/"stretch" pals polychrome if more colors are needed.}
 }
 \value{
 default none; options to display plot (\code{showplot}), save plot (\code{saveplot}), and/or return \code{\link{ggplot2}} object (\code{returngg})
