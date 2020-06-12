@@ -34,6 +34,7 @@ Imports:
     Matrix, 
     methods,
     MultiAssayExperiment,
+    pals,
     SingleCellExperiment, 
     SummarizedExperiment,
     transport

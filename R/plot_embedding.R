@@ -11,6 +11,7 @@
 #' @param plotfn char; what the filename is to be called. (defaults to making a name based on \code{plot_title} and \code{xpc})
 #' @param showplot boolean; whether or not to show the plot, defaults \code{TRUE}
 #' @param returngg boolean; whether or not to return a \code{\link{ggplot2}} object, defaults \code{FALSE}
+#' @param color_pal_vec char; hex codes for the color palette to be used. Default is to use the ggthemes few for plots with less than 9 colors, and to use/"stretch" pals polychrome if more colors are needed.
 #'
 #' @return default none; options to display plot (\code{showplot}), save plot (\code{saveplot}), and/or return \code{\link{ggplot2}} object (\code{returngg})
 #' @export
@@ -18,6 +19,7 @@
 #' @import ggplot2
 #' @import gridExtra
 #' @import ggthemes
+#' @import pals
 #'
 #' @examples
 #' listofmats <- list(matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20),
@@ -31,7 +33,7 @@
 #'                color_title = 'cell type',
 #'                saveplot = FALSE)
 #' 
-plot_embedding <- function(embedding, xpc = 1, ypc = xpc + 1, plot_title = paste0('PC',xpc,' by PC',ypc), color_vec, color_title, ellipse_vec = NULL, saveplot = TRUE, plotfn = paste(plot_title,xpc, sep = '_'), showplot = TRUE, returngg = FALSE){
+plot_embedding <- function(embedding, xpc = 1, ypc = xpc + 1, plot_title = paste0('PC',xpc,' by PC',ypc), color_vec, color_title, ellipse_vec = NULL, saveplot = TRUE, plotfn = paste(plot_title,xpc, sep = '_'), showplot = TRUE, returngg = FALSE, color_pal_vec = NULL){
   xvar <- as.name(paste('X',xpc,sep = ''))
   yvar <- as.name(paste('X',ypc,sep = ''))
   
@@ -50,11 +52,14 @@ plot_embedding <- function(embedding, xpc = 1, ypc = xpc + 1, plot_title = paste
   # Setting up the colors
   .colscale <- function(palette){ggplot2::discrete_scale('colour','colscale',palette)}
   
-  if(length(unique(color_vec)) < 9){
+  if(!is.null(color_pal_vec)){
+    palette_func <- .generate_palette_func(ncolors = length(unique(color_vec)), color_pal_vec)
+  }
+  else if(length(unique(color_vec)) < 9){
     palette_func <- ggthemes::few_pal('Medium')
   }
   else{
-    palette_func <- .generate_palette_func(ncolors = length(unique(color_vec)))
+    palette_func <- .generate_palette_func(ncolors = length(unique(color_vec)), pals::polychrome())
   }
   
   gg_obj <- ggplot(df, aes(x = eval(xvar), y = eval(yvar), colour = eval(colvar))) + theme_classic() + 
