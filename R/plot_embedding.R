@@ -1,6 +1,6 @@
 #' Plot selected PCs from an embedding
 #'
-#' @param embedding matrix or other tabular format where columns correspond to PCs and rows correspond to cells (entries)
+#' @param embedding matrix or other tabular format where columns correspond to PCs and rows correspond to cells (entries). \code{corral} and \code{corralm}  objects are also accepted.
 #' @param xpc int; which PC to put on the x-axis (defaults to 1)
 #' @param ypc int; which PC to put on the y-axis (defaults to the one after \code{xpc})
 #' @param plot_title char; title of plot (defaults to titling based on \code{xpc} and \code{ypc})
@@ -12,6 +12,7 @@
 #' @param showplot boolean; whether or not to show the plot, defaults \code{TRUE}
 #' @param returngg boolean; whether or not to return a \code{\link{ggplot2}} object, defaults \code{FALSE}
 #' @param color_pal_vec char; hex codes for the color palette to be used. Default is to use the ggthemes few for plots with less than 9 colors, and to use/"stretch" pals polychrome if more colors are needed.
+#' @param dimname char; the name of the dimensions. defaults to "Dim"
 #'
 #' @return default none; options to display plot (\code{showplot}), save plot (\code{saveplot}), and/or return \code{\link{ggplot2}} object (\code{returngg})
 #' @export
@@ -24,7 +25,8 @@
 #' @examples
 #' listofmats <- list(matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20),
 #'                    matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20))
-#' embed_mat <- corralm(listofmats, ncomp = 5)$v
+#' corralm_obj <- corralm(listofmats, ncomp = 5)
+#' embed_mat <- corralm_obj$v
 #' cell_type_vec <- sample(c('type1','type2','type3'),100,replace = TRUE)
 #' plot_embedding(embedding = embed_mat, 
 #'                xpc = 1, 
@@ -33,20 +35,39 @@
 #'                color_title = 'cell type',
 #'                saveplot = FALSE)
 #' 
-plot_embedding <- function(embedding, xpc = 1, ypc = xpc + 1, plot_title = paste0('PC',xpc,' by PC',ypc), color_vec, color_title, ellipse_vec = NULL, saveplot = TRUE, plotfn = paste(plot_title,xpc, sep = '_'), showplot = TRUE, returngg = FALSE, color_pal_vec = NULL){
+#' # or, call directly on the corralm object              
+#' plot_embedding(corralm_obj)
+#' 
+plot_embedding <- function(embedding, xpc = 1, ypc = xpc + 1, plot_title = paste0('Dim',xpc,' by Dim',ypc), color_vec = NULL, color_title = NULL, ellipse_vec = NULL, saveplot = FALSE, plotfn = paste(plot_title,xpc, sep = '_'), showplot = TRUE, returngg = FALSE, color_pal_vec = NULL, dimname = 'Dim'){
+  if('corral' %in% class(embedding)){
+    embedding <- embedding$v
+  }
+  if('corralm' %in% class(embedding)){
+    corralm_obj <- embedding
+    embedding <- corralm_obj$v
+    if(is.null(color_vec)){
+      color_vec <- rep(rownames(corralm_obj$batch_sizes), corralm_obj$batch_sizes[,2])
+    }
+    if(is.null(color_title)){
+      color_title <- 'Batch'
+    }
+  }
+  if(is.null(color_vec)){
+    color_vec <- rep('emb', nrow(embedding))
+  }
   xvar <- as.name(paste('X',xpc,sep = ''))
   yvar <- as.name(paste('X',ypc,sep = ''))
   
-  xlab = paste0('PC',xpc)
-  ylab = paste0('PC',ypc)
+  xlab = paste0(dimname,xpc)
+  ylab = paste0(dimname,ypc)
 
   colnames(embedding) <- NULL
   df <- cbind(data.frame(embedding),color_vec)
-  colvar <- as.name(unlist(colnames(df)[dim(df)[2]]))
+  colvar <- as.name(unlist(colnames(df)[ncol(df)]))
   
   if(!is.null(ellipse_vec)){
     df <- cbind(df,ellipse_vec)
-    ellvar <- as.name(unlist(colnames(df)[dim(df)[2]]))
+    ellvar <- as.name(unlist(colnames(df)[ncol(df)]))
   }
   
   # Setting up the colors
@@ -59,16 +80,20 @@ plot_embedding <- function(embedding, xpc = 1, ypc = xpc + 1, plot_title = paste
     palette_func <- ggthemes::few_pal('Medium')
   }
   else{
-    palette_func <- .generate_palette_func(ncolors = length(unique(color_vec)), pals::polychrome())
+    palette_func <- .generate_palette_func(ncolors = length(unique(color_vec)), pals::alphabet2())
   }
   
-  gg_obj <- ggplot(df, aes(x = eval(xvar), y = eval(yvar), colour = eval(colvar))) + theme_classic() + 
-    geom_hline(yintercept=0, color = 'gray') + geom_vline(xintercept=0, color = 'gray') + 
+  gg_obj <- ggplot(df, aes(x = eval(xvar), y = eval(yvar), colour = eval(colvar))) + 
+    theme_classic() + 
+    geom_hline(yintercept=0, color = 'gray') + 
+    geom_vline(xintercept=0, color = 'gray') + 
     geom_point() + .colscale(palette_func) + 
     labs(x = xlab, y = ylab, 
          title = plot_title, 
          color = color_title) + 
-    theme(axis.text.x = element_text(size = rel(1.4), colour = 'black'), axis.text.y = element_text(size = rel(1.4), colour = 'black'), axis.title = element_text(size = rel(1.4), colour = 'black'))
+    theme(axis.text.x = element_text(size = rel(1.4), colour = 'black'), 
+          axis.text.y = element_text(size = rel(1.4), colour = 'black'), 
+          axis.title = element_text(size = rel(1.4), colour = 'black'))
   
   if(!is.null(ellipse_vec)){
     gg_obj <- gg_obj + stat_ellipse(aes(x = eval(xvar), y = eval(yvar), group = eval(ellvar)), type = 'norm', linetype = 2)
@@ -95,7 +120,7 @@ plot_embedding <- function(embedding, xpc = 1, ypc = xpc + 1, plot_title = paste
 #' @param color_attr character; name of the attribute within \code{colData} to use for assigning colors (in lieu of \code{color_vec} in the \code{\link{plot_embedding}} function)
 #' @param color_title character; title to use for colors legend, defaults to the same as \code{color_attr}
 #' @param ellipse_attr OPTIONAL character; name of the attribute within \code{colData} to use for drawing ellipse(s) (in lieu of \code{ellipse_vec} in the \code{\link{plot_embedding}} function)
-#' @param ... additional optional arguments - see \code{\link{plot_embedding}} function for details on other potential arguments: \code{xpc}, \code{ypc}, \code{plot_title}, \code{color_title} (if title is different from \code{color_attr}), \code{saveplot}, \code{plotfn}, \code{showplot}, \code{returngg}
+#' @param ... additional optional arguments - see \code{\link{plot_embedding}} function for details on other potential arguments: \code{xpc}, \code{ypc}, \code{plot_title}, \code{color_title} (if title is different from \code{color_attr}), \code{saveplot}, \code{plotfn}, \code{showplot}, \code{returngg}, \code{color_pal_vec}, \code{dimname}
 #' 
 #' @return default none; options to display plot (\code{showplot}), save plot (\code{saveplot}), and/or return \code{\link{ggplot2}} object (\code{returngg})
 #' @export
@@ -144,10 +169,15 @@ plot_embedding <- function(embedding, xpc = 1, ypc = xpc + 1, plot_title = paste
 #'                    ellipse_attr = 'phenoid',
 #'                    saveplot = FALSE)
 #' 
-plot_embedding_sce <- function(sce, which_embedding, color_attr, color_title = color_attr, ellipse_attr = NULL, ...){
+plot_embedding_sce <- function(sce, which_embedding, color_attr = NULL, color_title = color_attr, ellipse_attr = NULL, ...){
   embed_mat <- SingleCellExperiment::reducedDim(sce, which_embedding)
   
-  color_vec <- SingleCellExperiment::colData(sce)[, color_attr]
+  if(is.null(color_attr)){
+    color_vec <- NULL
+  }
+  else{
+    color_vec <- SingleCellExperiment::colData(sce)[, color_attr]
+  }
   
   if(!is.null(ellipse_attr)){
     ellipse_vec <- SingleCellExperiment::colData(sce)[, ellipse_attr]
