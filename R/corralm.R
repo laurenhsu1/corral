@@ -86,7 +86,7 @@ corralm_sce <- function(sce, splitby, method = c('irl','svd'), ncomp = 30, which
   mat_list <- sce2matlist(sce, splitby = splitby, whichmat = whichmat)
   svd_output <- corralm_matlist(mat_list, method = method, ncomp = ncomp, rw_contrib = rw_contrib, ...)
   if(fullout){
-    class(svd_output) <- c(class(svd_output),"corralm")
+    class(svd_output) <- c(class(svd_output),'corralm')
     return(svd_output)
   }
   else{

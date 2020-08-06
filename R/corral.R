@@ -19,13 +19,13 @@
 #' @importFrom irlba irlba
 #'
 #' @examples
-#' mat <- matrix(sample(0:10, 500, replace=TRUE), ncol=25)
+#' mat <- matrix(sample(0:10, 2500, replace=TRUE), ncol=50)
 #' compsvd(mat)
 #' compsvd(mat, method = 'svd')
 #' compsvd(mat, method = 'irl', ncomp = 5)
 compsvd <- function(mat, method = c('irl','svd'), ncomp = 30, ...){
   method <- match.arg(method, c('irl','svd'))
-  ncomp <- min(ncomp, dim(mat))
+  ncomp <- .check_ncomp(mat, ncomp)
   if(method == 'irl'){
     result <- irlba::irlba(mat, nv = ncomp, ...)
   }
@@ -241,7 +241,7 @@ corral <- function(inp,...){
 #' @export
 #'
 #' @examples
-#' mat <- matrix(sample(1:100, 10000, replace = F), ncol = 100)
+#' mat <- matrix(sample(1:100, 10000, replace = FALSE), ncol = 100)
 #' corral(mat)
 print.corral <- function(x,...){
   inp <- x

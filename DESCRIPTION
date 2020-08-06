@@ -44,7 +44,6 @@ Suggests:
     CellBench,
     DuoClustering2018,
     knitr,
-    LaplacesDemon,
     scater,
     testthat
 License: GPL-2

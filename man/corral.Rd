@@ -99,6 +99,6 @@ corral_sce <- corral(sce,whichmat = 'counts')
 mat <- matrix(sample(0:10, 500, replace=TRUE), ncol=25)
 corral_mat <- corral(mat, ncomp=5)
 
-mat <- matrix(sample(1:100, 10000, replace = F), ncol = 100)
+mat <- matrix(sample(1:100, 10000, replace = FALSE), ncol = 100)
 corral(mat)
 }

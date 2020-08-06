@@ -35,5 +35,13 @@
   }
 }
 
-
+#' @keywords internal
+.check_ncomp <- function(mat, ncomp){
+  max_comps <- min(dim(mat)) - 1
+  if(ncomp > max_comps){
+    ncomp <- max_comps
+    cat('Too many components requested; setting ncomp =', max_comps, '\n')
+  }
+  return(ncomp)
+}
 

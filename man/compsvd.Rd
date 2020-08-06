@@ -28,7 +28,7 @@ SVD result - a list with the following elements:
 Computes SVD.
 }
 \examples{
-mat <- matrix(sample(0:10, 500, replace=TRUE), ncol=25)
+mat <- matrix(sample(0:10, 2500, replace=TRUE), ncol=50)
 compsvd(mat)
 compsvd(mat, method = 'svd')
 compsvd(mat, method = 'irl', ncomp = 5)

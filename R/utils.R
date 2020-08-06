@@ -253,9 +253,9 @@ rv <- function(mat1, mat2) {
 #' @export
 #'
 #' @examples
-#' a <- matrix(sample(1:10,100, T), nrow = 10)
-#' b <- matrix(sample(1:10,50, T), nrow = 5)
-#' c <- matrix(sample(1:10,20, T), nrow = 2)
+#' a <- matrix(sample(1:10,100, TRUE), nrow = 10)
+#' b <- matrix(sample(1:10,50, TRUE), nrow = 5)
+#' c <- matrix(sample(1:10,20, TRUE), nrow = 2)
 #' 
 #' matlist <- list(a,b,c)
 #' pairwise_rv(matlist)
