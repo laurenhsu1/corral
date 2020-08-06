@@ -62,7 +62,7 @@ When run on a matrix, a list with the correspondence analysis matrix decompositi
     \item{\code{PCu and PCv}}{principal coordinates, left and right, respectively}
 }
 
-When run on a \code{\link{SingleCellExperiment}}, returns a SCE with the embeddings in the \code{reducedDim} slot \code{corral} (default). Also can return the same output as \code{\link{corral_mat}} when \code{fullout} is set to \code{TRUE}.
+When run on a \code{\link{SingleCellExperiment}}, returns a SCE with the embeddings (PCv from the full corral output) in the \code{reducedDim} slot \code{corral} (default). Also can return the same output as \code{\link{corral_mat}} when \code{fullout} is set to \code{TRUE}.
 
 For matrix and \code{SummarizedExperiment} input, returns list with the correspondence analysis matrix decomposition result (u,v,d are the raw svd output; SCu and SCv are the standard coordinates; PCu and PCv are the principal coordinates)
 

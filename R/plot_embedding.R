@@ -42,7 +42,7 @@
 #' 
 plot_embedding <- function(embedding, xpc = 1, ypc = xpc + 1, plot_title = paste0('Dim',xpc,' by Dim',ypc), color_vec = NULL, color_title = NULL, ellipse_vec = NULL, facet_vec = NULL, ptsize = 0.8, saveplot = FALSE, plotfn = paste(plot_title,xpc, sep = '_'), showplot = TRUE, returngg = FALSE, color_pal_vec = NULL, dimname = 'Dim'){
   if('corral' %in% class(embedding)){
-    embedding <- embedding$v
+    embedding <- embedding$PCv
   }
   if('corralm' %in% class(embedding)){
     corralm_obj <- embedding

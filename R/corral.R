@@ -150,7 +150,7 @@ corral_mat <- function(inp, method = c('irl','svd'), ncomp = 30, row.w = NULL, c
 #' @param fullout boolean; whether the function will return the full \code{corral} output as a list, or a SingleCellExperiment; defaults to SingleCellExperiment (\code{FALSE}). To get back the \code{\link{corral_mat}}-style output, set this to \code{TRUE}.
 #' @param subset_row numeric or character; vector of the rows to include in corral, either the indices (numeric) or the rownames (character). If this parameter is \code{NULL}, then all rows will be used.
 #'
-#' @return When run on a \code{\link{SingleCellExperiment}}, returns a SCE with the embeddings in the \code{reducedDim} slot \code{corral} (default). Also can return the same output as \code{\link{corral_mat}} when \code{fullout} is set to \code{TRUE}.
+#' @return When run on a \code{\link{SingleCellExperiment}}, returns a SCE with the embeddings (PCv from the full corral output) in the \code{reducedDim} slot \code{corral} (default). Also can return the same output as \code{\link{corral_mat}} when \code{fullout} is set to \code{TRUE}.
 #' 
 #' @rdname corral
 #' @export
@@ -184,7 +184,7 @@ corral_sce <- function(inp, method = c('irl','svd'), ncomp = 30, whichmat = 'cou
     return(svd_output)
   }
   else{
-    SingleCellExperiment::reducedDim(inp,'corral') <- svd_output$v
+    SingleCellExperiment::reducedDim(inp,'corral') <- svd_output$PCv
     return(inp)
   }
 }
