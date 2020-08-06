@@ -4,14 +4,14 @@
 \alias{compsvd}
 \title{compsvd: Compute Singular Value Decomposition (SVD)}
 \usage{
-compsvd(mat, method = c("irl", "svd"), ncomp = 10, ...)
+compsvd(mat, method = c("irl", "svd"), ncomp = 30, ...)
 }
 \arguments{
 \item{mat}{matrix, pre-processed input; can be sparse or full (pre-processing can be performed using \code{\link{corral_preproc}}from this package)}
 
 \item{method}{character, the algorithm to be used for svd. Default is irl. Currently supports 'irl' for irlba::irlba or 'svd' for stats::svd}
 
-\item{ncomp}{numeric, number of components; Default is 10}
+\item{ncomp}{numeric, number of components; Default is 30}
 
 \item{...}{(additional arguments for methods)}
 }

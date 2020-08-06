@@ -7,14 +7,22 @@
 \alias{print.corral}
 \title{corral: Correspondence analysis on a single matrix}
 \usage{
-corral_mat(inp, method = c("irl", "svd"), ncomp = 10, ...)
+corral_mat(
+  inp,
+  method = c("irl", "svd"),
+  ncomp = 30,
+  row.w = NULL,
+  col.w = NULL,
+  ...
+)
 
 corral_sce(
   inp,
   method = c("irl", "svd"),
-  ncomp = 10,
+  ncomp = 30,
   whichmat = "counts",
   fullout = FALSE,
+  subset_row = NULL,
   ...
 )
 
@@ -27,13 +35,19 @@ corral(inp, ...)
 
 \item{method}{character, the algorithm to be used for svd. Default is irl. Currently supports 'irl' for irlba::irlba or 'svd' for stats::svd}
 
-\item{ncomp}{numeric, number of components; Default is 10}
+\item{ncomp}{numeric, number of components; Default is 30}
+
+\item{row.w}{numeric vector; the row weights to use in chi-squared scaling. Defaults to `NULL`, in which case row weights are computed from the input matrix.}
+
+\item{col.w}{numeric vector; the column weights to use in chi-squared scaling. For instance, size factors could be given here. Defaults to `NULL`, in which case column weights are computed from the input matrix.}
 
 \item{...}{(additional arguments for methods)}
 
 \item{whichmat}{character; defaults to \code{counts}, can also use \code{logcounts} or \code{normcounts} if stored in the \code{sce} object}
 
 \item{fullout}{boolean; whether the function will return the full \code{corral} output as a list, or a SingleCellExperiment; defaults to SingleCellExperiment (\code{FALSE}). To get back the \code{\link{corral_mat}}-style output, set this to \code{TRUE}.}
+
+\item{subset_row}{numeric or character; vector of the rows to include in corral, either the indices (numeric) or the rownames (character). If this parameter is \code{NULL}, then all rows will be used.}
 
 \item{x}{(print method) corral object; the list output from \code{corral_mat}}
 }
@@ -48,7 +62,7 @@ When run on a matrix, a list with the correspondence analysis matrix decompositi
     \item{\code{PCu and PCv}}{principal coordinates, left and right, respectively}
 }
 
-When run on a \code{\link{SingleCellExperiment}}, returns a SCE with the embeddings in the \code{reducedDim} slot \code{corral} (default). Also can return the same output as \code{\link{corral_mat}}.
+When run on a \code{\link{SingleCellExperiment}}, returns a SCE with the embeddings in the \code{reducedDim} slot \code{corral} (default). Also can return the same output as \code{\link{corral_mat}} when \code{fullout} is set to \code{TRUE}.
 
 For matrix and \code{SummarizedExperiment} input, returns list with the correspondence analysis matrix decomposition result (u,v,d are the raw svd output; SCu and SCv are the standard coordinates; PCu and PCv are the principal coordinates)
 
@@ -85,4 +99,6 @@ corral_sce <- corral(sce,whichmat = 'counts')
 mat <- matrix(sample(0:10, 500, replace=TRUE), ncol=25)
 corral_mat <- corral(mat, ncomp=5)
 
+mat <- matrix(sample(1:100, 10000, replace = F), ncol = 100)
+corral(mat)
 }

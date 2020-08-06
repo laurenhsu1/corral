@@ -7,15 +7,23 @@
 \alias{print.corralm}
 \title{Multi-table correspondence analysis (list of matrices)}
 \usage{
-corralm_matlist(matlist, method = c("irl", "svd"), ncomp = 10, ...)
+corralm_matlist(
+  matlist,
+  method = c("irl", "svd"),
+  ncomp = 30,
+  rtype = "indexed",
+  rw_contrib = NULL,
+  ...
+)
 
 corralm_sce(
   sce,
   splitby,
   method = c("irl", "svd"),
-  ncomp = 10,
+  ncomp = 30,
   whichmat = "counts",
   fullout = FALSE,
+  rw_contrib = NULL,
   ...
 )
 
@@ -28,7 +36,11 @@ corralm(inp, whichmat = "counts", fullout = FALSE, ...)
 
 \item{method}{character, the algorithm to be used for svd. Default is irl. Currently supports 'irl' for irlba::irlba or 'svd' for stats::svd}
 
-\item{ncomp}{numeric, number of components; Default is 10}
+\item{ncomp}{numeric, number of components; Default is 30}
+
+\item{rtype}{character indicating what type of residual should be computed. For corralm, defaults to \code{indexed}. Options are "indexed", "standardized", and "hellinger." \code{indexed} and \code{standardized} compute the respective chi-squared residuals and are appropriate for count data. The \code{hellinger} option is appropriate for continuous data.}
+
+\item{rw_contrib}{numeric vector, same length as the matlist. Indicates the weight that each dataset should contribute to the row weights. When set to NULL the row weights are *not* combined and each matrix is scaled independently (i.e., using their observed row weights, respectively). When set to a vector of all the same values, this is equivalent to taking the mean. Another option is to the number of observations per matrix to create a weighted mean. Regardless of input scale, row weights for each table must sum to 1 and thus are scaled.}
 
 \item{...}{(additional arguments for methods)}
 
@@ -90,4 +102,5 @@ sce <- sce_full_Zhengmix4eq()[seq(1,100,1),sample(seq(1,3500,1),100,replace = FA
 colData(sce)$Method <- matrix(sample(c('Method1','Method2'),100,replace = TRUE))
 result <- corralm(sce, splitby = 'Method')
 
+# default print method for corralm objects
 }

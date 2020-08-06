@@ -15,7 +15,7 @@ all_are(inplist, typechar)
 boolean, for whether the elements of \code{inplist} are all \code{typechar}
 }
 \description{
-Checks if all elements of a list or List are all of a particular type
+Checks if all elements of a list or List are of a (single) particular type \code{typechar}
 }
 \examples{
 x <- list(1,2)

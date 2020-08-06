@@ -18,3 +18,22 @@
     stop('If performing multi-table analysis, the matrices must be matched by rows; currently the dimensions do not match. \nIf they are matched by columns, then transpose the matrices.')}
 }
 
+#' @keywords internal
+.check_rw_contrib <- function(matlist, rw_contrib){
+  # Verifying valid input for rw_contrib, otherwise setting to equal weight.
+  matlist_len <- length(matlist)
+  if(matlist_len != length(rw_contrib)){
+    cat('\nThe provided weights did not match number of batches (i.e., number of matrices).\nThey will be set to equal weight.\n')
+    return(rep(1, matlist_len))
+  }
+  else if(sum(is.na(as.numeric(rw_contrib)))){
+    cat('\nNon-numeric values provided in rw_contrib.\nThey will be set to equal weight.\n')
+    return(rep(1, matlist_len))
+  }
+  else{
+    return(rw_contrib)
+  }
+}
+
+
+

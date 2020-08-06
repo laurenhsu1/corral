@@ -4,7 +4,7 @@
 #'
 #' @param mat matrix, pre-processed input; can be sparse or full (pre-processing can be performed using \code{\link{corral_preproc}}from this package)
 #' @param method character, the algorithm to be used for svd. Default is irl. Currently supports 'irl' for irlba::irlba or 'svd' for stats::svd
-#' @param ncomp numeric, number of components; Default is 10
+#' @param ncomp numeric, number of components; Default is 30
 #' @param ... (additional arguments for methods)
 #'
 #' @return SVD result - a list with the following elements:
@@ -23,7 +23,7 @@
 #' compsvd(mat)
 #' compsvd(mat, method = 'svd')
 #' compsvd(mat, method = 'irl', ncomp = 5)
-compsvd <- function(mat, method = c('irl','svd'), ncomp = 10, ...){
+compsvd <- function(mat, method = c('irl','svd'), ncomp = 30, ...){
   method <- match.arg(method, c('irl','svd'))
   ncomp <- min(ncomp, dim(mat))
   if(method == 'irl'){
@@ -33,10 +33,12 @@ compsvd <- function(mat, method = c('irl','svd'), ncomp = 10, ...){
     result <- svd(mat, nv = ncomp, nu = ncomp, ...)
   }
   else {
-    print('Your provided method was not understood. Used irlba.')
+    print('Provided method was not understood; used irlba.')
     result <- irlba::irlba(mat, nv = ncomp, ...)
   }
   result[['eigsum']] <- sum(mat^2)
+  if(!is.null(rownames(mat))){rownames(result$u) <- rownames(mat)}
+  if(!is.null(colnames(mat))){rownames(result$v) <- colnames(mat)}
   return(result)
 }
 
@@ -46,7 +48,9 @@ compsvd <- function(mat, method = c('irl','svd'), ncomp = 10, ...){
 #' This function performs the row and column scaling pre-processing operations, prior to SVD, for the corral methods. See \code{\link{corral}} for single matrix correspondence analysis and \code{\link{corralm}} for multi-matrix correspondence analysis.
 #'
 #' @param inp matrix, numeric, counts or logcounts; can be sparse Matrix or matrix
-#' @param rtype character indicating what type of residual should be computed; options are "indexed" and "standardized"; defaults to 'standardized'
+#' @param rtype character indicating what type of residual should be computed; options are "indexed", "standardized", and "hellinger"; defaults to "standardized." \code{indexed} and \code{standardized} compute the respective chi-squared residuals and are appropriate for count data. The \code{hellinger} option is appropriate for continuous data.
+#' @param row.w numeric vector; the row weights to use in chi-squared scaling
+#' @param col.w numeric vector; the column weights to use in chi-squared scaling
 #'
 #' @return sparse matrix, processed for input to \code{compsvd} to finish CA routine
 #' @export
@@ -59,14 +63,23 @@ compsvd <- function(mat, method = c('irl','svd'), ncomp = 10, ...){
 #' mat <- matrix(sample(0:10, 500, replace=TRUE), ncol=25)
 #' mat_corral <- corral_preproc(mat)
 #' corral_output <- compsvd(mat_corral, ncomp = 5)
-corral_preproc <- function(inp, rtype = c('standardized','indexed')){
-  rtype <- match.arg(rtype, c('standardized','indexed'))
-  if(!is(inp, "dgCMatrix")) {sp_mat <- Matrix::Matrix(inp, sparse = TRUE)}
-  else {sp_mat <- inp}
+corral_preproc <- function(inp, rtype = c('standardized','indexed','hellinger'), row.w = NULL, col.w = NULL){
+  rtype <- match.arg(rtype, c('standardized','indexed','hellinger'))
+  if(!is(inp, "dgCMatrix")){
+    sp_mat <- Matrix::Matrix(inp, sparse = TRUE)
+  } else {sp_mat <- inp}
   N <- sum(sp_mat)
   sp_mat <- sp_mat/N
-  row.w <- Matrix::rowSums(sp_mat)
-  col.w <- Matrix::colSums(sp_mat)
+  if (is.null(row.w)){
+    row.w <- Matrix::rowSums(sp_mat)
+  } else {row.w <- row.w / sum(row.w)}
+  if (is.null(col.w)){
+    col.w <- Matrix::colSums(sp_mat)
+  } else {col.w <- col.w / sum(col.w)}
+  if(rtype == 'hellinger'){
+   sp_mat <- sp_mat / row.w
+   return(sqrt(sp_mat))
+  }
   sp_mat <- sp_mat/row.w
   sp_mat <- sweep(sp_mat, 2, col.w, "/") - 1
   if (any(is.na(sp_mat))) {
@@ -87,6 +100,8 @@ corral_preproc <- function(inp, rtype = c('standardized','indexed')){
 #' corral can be used for dimensionality reduction to find a set of low-dimensional embeddings for a count matrix.
 #'
 #' @param inp matrix (or any matrix-like object that can be coerced using Matrix), numeric raw or lognormed counts (no negative values)
+#' @param row.w numeric vector; the row weights to use in chi-squared scaling. Defaults to `NULL`, in which case row weights are computed from the input matrix.
+#' @param col.w numeric vector; the column weights to use in chi-squared scaling. For instance, size factors could be given here. Defaults to `NULL`, in which case column weights are computed from the input matrix.
 #' @inheritParams compsvd
 #'
 #' @return When run on a matrix, a list with the correspondence analysis matrix decomposition result:
@@ -112,16 +127,18 @@ corral_preproc <- function(inp, rtype = c('standardized','indexed')){
 #' result <- corral_mat(mat, method = 'svd')
 #' result <- corral_mat(mat, method = 'irl', ncomp = 5)
 #' 
-corral_mat <- function(inp, method = c('irl','svd'), ncomp = 10, ...){
+corral_mat <- function(inp, method = c('irl','svd'), ncomp = 30, row.w = NULL, col.w = NULL, ...){
   method <- match.arg(method, c('irl','svd'))
-  preproc_mat <- corral_preproc(inp,...)
-  result <- compsvd(preproc_mat, method, ncomp,...)
+  preproc_mat <- corral_preproc(inp, row.w, col.w, ...)
+  result <- compsvd(preproc_mat, method, ncomp, ...)
   w <- get_weights(inp)
-  result[['SCu']] <- sweep(result$u,1,sqrt(w$row.w),'/') # Standard coordinates
-  result[['SCv']] <- sweep(result$v,1,sqrt(w$col.w),'/')
+  if(is.null(row.w)) {row.w <- w$row.w}
+  if(is.null(col.w)) {col.w<- w$col.w}
+  result[['SCu']] <- sweep(result$u,1,sqrt(row.w),'/') # Standard coordinates
+  result[['SCv']] <- sweep(result$v,1,sqrt(col.w),'/')
   result[['PCu']] <- sweep(result[['SCu']],2,result$d[seq(1,ncol(result$u),1)],'*') # Principal coordinates
   result[['PCv']] <- sweep(result[['SCv']],2,result$d[seq(1,ncol(result$v),1)],'*')
-  class(result) <- c(class(result),"corral")
+  class(result) <- c(class(result),'corral')
   return(result)
 }
 
@@ -131,8 +148,9 @@ corral_mat <- function(inp, method = c('irl','svd'), ncomp = 10, ...){
 #' @inheritParams compsvd
 #' @param whichmat character; defaults to \code{counts}, can also use \code{logcounts} or \code{normcounts} if stored in the \code{sce} object
 #' @param fullout boolean; whether the function will return the full \code{corral} output as a list, or a SingleCellExperiment; defaults to SingleCellExperiment (\code{FALSE}). To get back the \code{\link{corral_mat}}-style output, set this to \code{TRUE}.
+#' @param subset_row numeric or character; vector of the rows to include in corral, either the indices (numeric) or the rownames (character). If this parameter is \code{NULL}, then all rows will be used.
 #'
-#' @return When run on a \code{\link{SingleCellExperiment}}, returns a SCE with the embeddings in the \code{reducedDim} slot \code{corral} (default). Also can return the same output as \code{\link{corral_mat}}.
+#' @return When run on a \code{\link{SingleCellExperiment}}, returns a SCE with the embeddings in the \code{reducedDim} slot \code{corral} (default). Also can return the same output as \code{\link{corral_mat}} when \code{fullout} is set to \code{TRUE}.
 #' 
 #' @rdname corral
 #' @export
@@ -155,9 +173,12 @@ corral_mat <- function(inp, method = c('irl','svd'), ncomp = 10, ...){
 #' result_1 <- runUMAP(result_1, dimred = 'corral', name = 'corral_UMAP')
 #' result_1 <- runTSNE(result_1, dimred = 'corral', name = 'corral_TSNE')
 #' 
-corral_sce <- function(inp, method = c('irl','svd'), ncomp = 10, whichmat = 'counts', fullout = FALSE, ...){
+corral_sce <- function(inp, method = c('irl','svd'), ncomp = 30, whichmat = 'counts', fullout = FALSE, subset_row = NULL, ...){
   method <- match.arg(method, c('irl','svd'))
   inp_mat <- SummarizedExperiment::assay(inp, whichmat)
+  if(!is.null(subset_row)){
+    inp_mat <- inp_mat[subset_row,]
+  }
   svd_output <- corral_mat(inp_mat, ...)
   if(fullout){
     return(svd_output)
@@ -201,12 +222,10 @@ corral_sce <- function(inp, method = c('irl','svd'), ncomp = 10, whichmat = 'cou
 corral <- function(inp,...){
   if(is(inp,"SingleCellExperiment")){
     corral_sce(inp = inp, ...)
-  }
-  else if(is(inp,"SummarizedExperiment")){
+  } else if(is(inp,"SummarizedExperiment")){
     if(missing(whichmat)) {whichmat <- 'counts'}
     corral_mat(inp = SummarizedExperiment::assay(inp,whichmat),...)
-  }
-  else{
+  } else{
     corral_mat(inp = inp, ...)
   }
 }
@@ -222,6 +241,8 @@ corral <- function(inp,...){
 #' @export
 #'
 #' @examples
+#' mat <- matrix(sample(1:100, 10000, replace = F), ncol = 100)
+#' corral(mat)
 print.corral <- function(x,...){
   inp <- x
   pct_var_exp <- t(data.frame('percent.Var.explained' = inp$d^2 / inp$eigsum))
@@ -242,5 +263,6 @@ print.corral <- function(x,...){
   cat('\n  Right singular vectors & coordinates (v, SCv, PCv) :: ')
   cat(dim(inp$v))
   cat('\n  See corral help for details on each output element.')
+  cat('\n  Use plot_embedding to visualize; see docs for details.')
   cat('\n================================================================\n')
 }

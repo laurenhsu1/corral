@@ -25,3 +25,4 @@ Observations --> discrete probabilities
 embedding <- matrix(sample(x = seq(0,10,.1),200, replace = TRUE))
 disc_probs <- obs2probs(embedding)
 }
+\keyword{internal}

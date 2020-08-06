@@ -6,8 +6,10 @@
 #' @param plot_title char; title of plot (defaults to titling based on \code{xpc} and \code{ypc})
 #' @param color_vec vector; length should correspond to the number of rows in embedding, and each element of the vector classifies that cell (entry) in the embedding to that particular class, which will be colored the same. (e.g., this could be indicating which batch each cell is from)
 #' @param color_title char; what attribute the colors represent
-#' @param ellipse_vec OPTIONAL vector; length should correspond to the number of rows in embedding, and each element of the vector classifies that cell (entry) in the embedding to that particular class, and elements of the same class will be circled in an ellipse. (e.g., this could be indicating the cell type or cell line; works best for attributes intended to be compact)
-#' @param saveplot boolean; whether or not to save the plot, defaults \code{TRUE}
+#' @param ellipse_vec vector; length should correspond to the number of rows in embedding, and each element of the vector classifies that cell (entry) in the embedding to that particular class, and elements of the same class will be circled in an ellipse. (e.g., this could be indicating the cell type or cell line; works best for attributes intended to be compact)
+#' @param facet_vec vector; length should correspond to the number of rows in embedding, and each element of the vector classifies that cell (entry) in the embedding to that particular class. Plot will be faceted by this attribute.
+#' @param ptsize numeric; the size of the points as passed to \code{geom_point()}. Defaults to 0.8.
+#' @param saveplot boolean; whether or not to save the plot, defaults \code{FALSE}
 #' @param plotfn char; what the filename is to be called. (defaults to making a name based on \code{plot_title} and \code{xpc})
 #' @param showplot boolean; whether or not to show the plot, defaults \code{TRUE}
 #' @param returngg boolean; whether or not to return a \code{\link{ggplot2}} object, defaults \code{FALSE}
@@ -38,7 +40,7 @@
 #' # or, call directly on the corralm object              
 #' plot_embedding(corralm_obj)
 #' 
-plot_embedding <- function(embedding, xpc = 1, ypc = xpc + 1, plot_title = paste0('Dim',xpc,' by Dim',ypc), color_vec = NULL, color_title = NULL, ellipse_vec = NULL, saveplot = FALSE, plotfn = paste(plot_title,xpc, sep = '_'), showplot = TRUE, returngg = FALSE, color_pal_vec = NULL, dimname = 'Dim'){
+plot_embedding <- function(embedding, xpc = 1, ypc = xpc + 1, plot_title = paste0('Dim',xpc,' by Dim',ypc), color_vec = NULL, color_title = NULL, ellipse_vec = NULL, facet_vec = NULL, ptsize = 0.8, saveplot = FALSE, plotfn = paste(plot_title,xpc, sep = '_'), showplot = TRUE, returngg = FALSE, color_pal_vec = NULL, dimname = 'Dim'){
   if('corral' %in% class(embedding)){
     embedding <- embedding$v
   }
@@ -47,27 +49,26 @@ plot_embedding <- function(embedding, xpc = 1, ypc = xpc + 1, plot_title = paste
     embedding <- corralm_obj$v
     if(is.null(color_vec)){
       color_vec <- rep(rownames(corralm_obj$batch_sizes), corralm_obj$batch_sizes[,2])
-    }
-    if(is.null(color_title)){
       color_title <- 'Batch'
     }
   }
   if(is.null(color_vec)){
     color_vec <- rep('emb', nrow(embedding))
   }
-  xvar <- as.name(paste('X',xpc,sep = ''))
-  yvar <- as.name(paste('X',ypc,sep = ''))
   
-  xlab = paste0(dimname,xpc)
-  ylab = paste0(dimname,ypc)
+  xlab <- paste0(dimname, xpc)
+  ylab <- paste0(dimname, ypc)
 
-  colnames(embedding) <- NULL
-  df <- cbind(data.frame(embedding),color_vec)
-  colvar <- as.name(unlist(colnames(df)[ncol(df)]))
+  df <- cbind(data.frame(embedding[,c(xpc, ypc)]), color_vec)
+  
+  colnames(df) <- c('Xdim','Ydim', 'color_vec')
   
   if(!is.null(ellipse_vec)){
-    df <- cbind(df,ellipse_vec)
-    ellvar <- as.name(unlist(colnames(df)[ncol(df)]))
+    df <- cbind(df, ellipse_vec)
+  }
+  
+  if(!is.null(facet_vec)){
+    df <- cbind(df, facet_vec)
   }
   
   # Setting up the colors
@@ -75,28 +76,31 @@ plot_embedding <- function(embedding, xpc = 1, ypc = xpc + 1, plot_title = paste
   
   if(!is.null(color_pal_vec)){
     palette_func <- .generate_palette_func(ncolors = length(unique(color_vec)), color_pal_vec)
-  }
-  else if(length(unique(color_vec)) < 9){
+  } else if(length(unique(color_vec)) < 9){
     palette_func <- ggthemes::few_pal('Medium')
-  }
-  else{
+  } else{
     palette_func <- .generate_palette_func(ncolors = length(unique(color_vec)), pals::alphabet2())
   }
   
-  gg_obj <- ggplot(df, aes(x = eval(xvar), y = eval(yvar), colour = eval(colvar))) + 
-    theme_classic() + 
-    geom_hline(yintercept=0, color = 'gray') + 
-    geom_vline(xintercept=0, color = 'gray') + 
-    geom_point() + .colscale(palette_func) + 
+  gg_obj <- ggplot(df, aes(x = Xdim, y = Ydim, colour = color_vec)) + 
+    geom_point(size = ptsize) +
+    theme_classic() + .colscale(palette_func) + 
+    geom_hline(yintercept = 0, color = 'gray') + 
+    geom_vline(xintercept = 0, color = 'gray') + 
     labs(x = xlab, y = ylab, 
          title = plot_title, 
          color = color_title) + 
     theme(axis.text.x = element_text(size = rel(1.4), colour = 'black'), 
           axis.text.y = element_text(size = rel(1.4), colour = 'black'), 
-          axis.title = element_text(size = rel(1.4), colour = 'black'))
+          axis.title = element_text(size = rel(1.4), colour = 'black')) + 
+    guides(color = guide_legend(override.aes = list(size = 5)))
   
   if(!is.null(ellipse_vec)){
-    gg_obj <- gg_obj + stat_ellipse(aes(x = eval(xvar), y = eval(yvar), group = eval(ellvar)), type = 'norm', linetype = 2)
+    gg_obj <- gg_obj + stat_ellipse(aes(x = Xdim, y = Ydim, group = ellipse_vec), type = 'norm', linetype = 2)
+  }
+  
+  if(!is.null(facet_vec)){
+    gg_obj <- gg_obj + facet_wrap(facets = vars(facet_vec))
   }
   
   if(saveplot){
@@ -119,8 +123,9 @@ plot_embedding <- function(embedding, xpc = 1, ypc = xpc + 1, plot_title = paste
 #' @param which_embedding character; for the embedding to plot
 #' @param color_attr character; name of the attribute within \code{colData} to use for assigning colors (in lieu of \code{color_vec} in the \code{\link{plot_embedding}} function)
 #' @param color_title character; title to use for colors legend, defaults to the same as \code{color_attr}
-#' @param ellipse_attr OPTIONAL character; name of the attribute within \code{colData} to use for drawing ellipse(s) (in lieu of \code{ellipse_vec} in the \code{\link{plot_embedding}} function)
-#' @param ... additional optional arguments - see \code{\link{plot_embedding}} function for details on other potential arguments: \code{xpc}, \code{ypc}, \code{plot_title}, \code{color_title} (if title is different from \code{color_attr}), \code{saveplot}, \code{plotfn}, \code{showplot}, \code{returngg}, \code{color_pal_vec}, \code{dimname}
+#' @param ellipse_attr character; name of the attribute within \code{colData} to use for drawing ellipse(s) (in lieu of \code{ellipse_vec} in the \code{\link{plot_embedding}} function)
+#' @param facet_attr character; name of the attribute within \code{colData} to use for faceting (in lieu of \code{facet_vec} in the \code{\link{plot_embedding}} function)
+#' @param ... additional optional arguments - see \code{\link{plot_embedding}} function for details on other potential arguments: \code{xpc}, \code{ypc}, \code{plot_title}, \code{color_title} (if title is different from \code{color_attr}), \code{ptsize}, \code{saveplot}, \code{plotfn}, \code{showplot}, \code{returngg}, \code{color_pal_vec}, \code{dimname}
 #' 
 #' @return default none; options to display plot (\code{showplot}), save plot (\code{saveplot}), and/or return \code{\link{ggplot2}} object (\code{returngg})
 #' @export
@@ -169,7 +174,7 @@ plot_embedding <- function(embedding, xpc = 1, ypc = xpc + 1, plot_title = paste
 #'                    ellipse_attr = 'phenoid',
 #'                    saveplot = FALSE)
 #' 
-plot_embedding_sce <- function(sce, which_embedding, color_attr = NULL, color_title = color_attr, ellipse_attr = NULL, ...){
+plot_embedding_sce <- function(sce, which_embedding, color_attr = NULL, color_title = color_attr, ellipse_attr = NULL, facet_attr = NULL, ...){
   embed_mat <- SingleCellExperiment::reducedDim(sce, which_embedding)
   
   if(is.null(color_attr)){
@@ -185,6 +190,13 @@ plot_embedding_sce <- function(sce, which_embedding, color_attr = NULL, color_ti
   else{
     ellipse_vec <- NULL
   }
+  
+  if(!is.null(facet_attr)){
+    facet_vec <- SingleCellExperiment::colData(sce)[, facet_attr]
+  }
+  else{
+    facet_vec <- NULL
+  }
     
-  plot_embedding(embed_mat, color_vec = color_vec, color_title = color_title, ellipse_vec = ellipse_vec, ...)
+  plot_embedding(embed_mat, color_vec = color_vec, color_title = color_title, ellipse_vec = ellipse_vec, facet_vec = facet_vec, ...)
 }

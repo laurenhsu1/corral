@@ -7,9 +7,10 @@
 plot_embedding_sce(
   sce,
   which_embedding,
-  color_attr,
+  color_attr = NULL,
   color_title = color_attr,
   ellipse_attr = NULL,
+  facet_attr = NULL,
   ...
 )
 }
@@ -22,9 +23,11 @@ plot_embedding_sce(
 
 \item{color_title}{character; title to use for colors legend, defaults to the same as \code{color_attr}}
 
-\item{ellipse_attr}{OPTIONAL character; name of the attribute within \code{colData} to use for drawing ellipse(s) (in lieu of \code{ellipse_vec} in the \code{\link{plot_embedding}} function)}
+\item{ellipse_attr}{character; name of the attribute within \code{colData} to use for drawing ellipse(s) (in lieu of \code{ellipse_vec} in the \code{\link{plot_embedding}} function)}
 
-\item{...}{additional optional arguments - see \code{\link{plot_embedding}} function for details on other potential arguments: \code{xpc}, \code{ypc}, \code{plot_title}, \code{color_title} (if title is different from \code{color_attr}), \code{saveplot}, \code{plotfn}, \code{showplot}, \code{returngg}}
+\item{facet_attr}{character; name of the attribute within \code{colData} to use for faceting (in lieu of \code{facet_vec} in the \code{\link{plot_embedding}} function)}
+
+\item{...}{additional optional arguments - see \code{\link{plot_embedding}} function for details on other potential arguments: \code{xpc}, \code{ypc}, \code{plot_title}, \code{color_title} (if title is different from \code{color_attr}), \code{ptsize}, \code{saveplot}, \code{plotfn}, \code{showplot}, \code{returngg}, \code{color_pal_vec}, \code{dimname}}
 }
 \value{
 default none; options to display plot (\code{showplot}), save plot (\code{saveplot}), and/or return \code{\link{ggplot2}} object (\code{returngg})
