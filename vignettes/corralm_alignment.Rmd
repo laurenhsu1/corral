@@ -13,7 +13,7 @@ output:
 package: BiocStyle
 bibliography: ref.bib
 vignette: |
-  %\VignetteIndexEntry{alignment with corral}
+  %\VignetteIndexEntry{alignment with corralm}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
