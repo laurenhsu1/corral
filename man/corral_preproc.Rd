@@ -4,12 +4,21 @@
 \alias{corral_preproc}
 \title{Correspondence analysis preprocessing}
 \usage{
-corral_preproc(inp, rtype = c("standardized", "indexed"))
+corral_preproc(
+  inp,
+  rtype = c("standardized", "indexed", "hellinger"),
+  row.w = NULL,
+  col.w = NULL
+)
 }
 \arguments{
 \item{inp}{matrix, numeric, counts or logcounts; can be sparse Matrix or matrix}
 
-\item{rtype}{character indicating what type of residual should be computed; options are "indexed" and "standardized"; defaults to 'standardized'}
+\item{rtype}{character indicating what type of residual should be computed; options are "indexed", "standardized", and "hellinger"; defaults to "standardized." \code{indexed} and \code{standardized} compute the respective chi-squared residuals and are appropriate for count data. The \code{hellinger} option is appropriate for continuous data.}
+
+\item{row.w}{numeric vector; the row weights to use in chi-squared scaling}
+
+\item{col.w}{numeric vector; the column weights to use in chi-squared scaling}
 }
 \value{
 sparse matrix, processed for input to \code{compsvd} to finish CA routine

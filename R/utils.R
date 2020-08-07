@@ -1,4 +1,3 @@
-
 #' Set na to 0
 #'
 #' @param x matrix of values for which na values should be changed to 0
@@ -34,12 +33,9 @@ na2zero <- function(x) {
 #' listofmats_t <- lapply(listofmats,t)
 #' newmat_t <- list2mat(listofmats_t, 'r') # to "rbind" them
 list2mat <- function(matlist, direction = c('c','r')[1]){
-  concatted <- matlist[[1]]
-  for(i in 2:length(matlist)){
-    if (direction == 'r') concatted <- rbind(concatted,matlist[[i]])
-    if (direction == 'c') concatted <- cbind(concatted,matlist[[i]])
-  }
-  return(unlist(concatted))
+  if (direction == 'r') concatted <- Reduce(rbind, matlist)
+  if (direction == 'c') concatted <- Reduce(cbind, matlist)
+  return(concatted)
 }
 
 #' Compute percent of variance explained
@@ -200,7 +196,7 @@ add_embeddings2scelist <- function(scelist,embeddings, slotname = 'corralm'){
 
 #' all_are
 #'
-#' Checks if all elements of a list or List are all of a particular type
+#' Checks if all elements of a list or List are of a (single) particular type \code{typechar}
 #'
 #' @param inplist list of List to be checked
 #' @param typechar char to check for
@@ -219,3 +215,61 @@ add_embeddings2scelist <- function(scelist,embeddings, slotname = 'corralm'){
 all_are <- function(inplist,typechar){
   return(all(unlist(lapply(inplist,is,typechar))))
 }
+
+#' rv coefficient
+#'
+#' @param mat1 matrix (or matrix-like, e.g., df); either columns or rows should be matched with \code{mat2}
+#' @param mat2 matrix (or matrix-like, e.g., df); either columns or rows should be matched with \code{mat1}
+#'
+#' @return numeric; RV coefficient between the matched matrices
+#' @export
+#'
+#' @examples
+#' a <- matrix(sample(1:10,100, T), nrow = 10)
+#' b <- matrix(sample(1:10,50, T), nrow = 5)
+#' 
+#' rv(a, b) # matched by columns
+#' rv(t(a), t(b)) # matched by rows
+rv <- function(mat1, mat2) {
+  if(ncol(mat1) != ncol(mat2)){
+    if(nrow(mat1) == nrow(mat2)){
+      mat1 <- t(mat1)
+      mat2 <- t(mat2)
+    }
+    else{stop('Matrices must be aligned by rows or columns.')}
+  }
+  nscm1 <- crossprod(as.matrix(mat1))
+  nscm2 <- crossprod(as.matrix(mat2))
+  rv <- sum(nscm1 * nscm2)/(sum(nscm1 * nscm1) * sum(nscm2 * nscm2))^0.5
+  return(rv)
+}
+
+
+#' Pairwise rv coefficient
+#'
+#' @param matlist list of matrices (or matrix-like; see \code{rv} function) for which to compute pairwise RV coefficients
+#'
+#' @return matrix of the pairwise coefficients
+#' @export
+#'
+#' @examples
+#' a <- matrix(sample(1:10,100, TRUE), nrow = 10)
+#' b <- matrix(sample(1:10,50, TRUE), nrow = 5)
+#' c <- matrix(sample(1:10,20, TRUE), nrow = 2)
+#' 
+#' matlist <- list(a,b,c)
+#' pairwise_rv(matlist)
+#' pairwise_rv(lapply(matlist, t))
+pairwise_rv <- function(matlist){
+  n <- length(matlist)
+  a <- combn(seq_len(n), 2, 
+             FUN = function(x) rv(matlist[[x[1]]], matlist[[x[2]]]), simplify = TRUE)
+  m <- matrix(1, n, n)
+  m[lower.tri(m)] <- a
+  m[upper.tri(m)] <- t(m)[upper.tri(m)]
+  colnames(m) <- rownames(m) <- names(matlist)
+  return(m)
+}
+
+
+

@@ -8,19 +8,22 @@ plot_embedding(
   embedding,
   xpc = 1,
   ypc = xpc + 1,
-  plot_title = paste0("PC", xpc, " by PC", ypc),
-  color_vec,
-  color_title,
+  plot_title = paste0("Dim", xpc, " by Dim", ypc),
+  color_vec = NULL,
+  color_title = NULL,
   ellipse_vec = NULL,
-  saveplot = TRUE,
+  facet_vec = NULL,
+  ptsize = 0.8,
+  saveplot = FALSE,
   plotfn = paste(plot_title, xpc, sep = "_"),
   showplot = TRUE,
   returngg = FALSE,
-  color_pal_vec = NULL
+  color_pal_vec = NULL,
+  dimname = "Dim"
 )
 }
 \arguments{
-\item{embedding}{matrix or other tabular format where columns correspond to PCs and rows correspond to cells (entries)}
+\item{embedding}{matrix or other tabular format where columns correspond to PCs and rows correspond to cells (entries). \code{corral} and \code{corralm}  objects are also accepted.}
 
 \item{xpc}{int; which PC to put on the x-axis (defaults to 1)}
 
@@ -32,9 +35,13 @@ plot_embedding(
 
 \item{color_title}{char; what attribute the colors represent}
 
-\item{ellipse_vec}{OPTIONAL vector; length should correspond to the number of rows in embedding, and each element of the vector classifies that cell (entry) in the embedding to that particular class, and elements of the same class will be circled in an ellipse. (e.g., this could be indicating the cell type or cell line; works best for attributes intended to be compact)}
+\item{ellipse_vec}{vector; length should correspond to the number of rows in embedding, and each element of the vector classifies that cell (entry) in the embedding to that particular class, and elements of the same class will be circled in an ellipse. (e.g., this could be indicating the cell type or cell line; works best for attributes intended to be compact)}
 
-\item{saveplot}{boolean; whether or not to save the plot, defaults \code{TRUE}}
+\item{facet_vec}{vector; length should correspond to the number of rows in embedding, and each element of the vector classifies that cell (entry) in the embedding to that particular class. Plot will be faceted by this attribute.}
+
+\item{ptsize}{numeric; the size of the points as passed to \code{geom_point()}. Defaults to 0.8.}
+
+\item{saveplot}{boolean; whether or not to save the plot, defaults \code{FALSE}}
 
 \item{plotfn}{char; what the filename is to be called. (defaults to making a name based on \code{plot_title} and \code{xpc})}
 
@@ -43,6 +50,8 @@ plot_embedding(
 \item{returngg}{boolean; whether or not to return a \code{\link{ggplot2}} object, defaults \code{FALSE}}
 
 \item{color_pal_vec}{char; hex codes for the color palette to be used. Default is to use the ggthemes few for plots with less than 9 colors, and to use/"stretch" pals polychrome if more colors are needed.}
+
+\item{dimname}{char; the name of the dimensions. defaults to "Dim"}
 }
 \value{
 default none; options to display plot (\code{showplot}), save plot (\code{saveplot}), and/or return \code{\link{ggplot2}} object (\code{returngg})
@@ -53,7 +62,8 @@ Plot selected PCs from an embedding
 \examples{
 listofmats <- list(matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20),
                    matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20))
-embed_mat <- corralm(listofmats, ncomp = 5)$v
+corralm_obj <- corralm(listofmats, ncomp = 5)
+embed_mat <- corralm_obj$v
 cell_type_vec <- sample(c('type1','type2','type3'),100,replace = TRUE)
 plot_embedding(embedding = embed_mat, 
                xpc = 1, 
@@ -61,5 +71,8 @@ plot_embedding(embedding = embed_mat,
                color_vec = cell_type_vec, 
                color_title = 'cell type',
                saveplot = FALSE)
+
+# or, call directly on the corralm object              
+plot_embedding(corralm_obj)
 
 }

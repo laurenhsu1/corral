@@ -2,6 +2,7 @@
 #'
 #' @param matlist (for \code{corralm_matlist}) list of input matrices; input matrices should be counts (raw or log). Matrices should be aligned row-wise by common features (either by sample or by gene)
 #' @inheritParams compsvd
+#' @param rtype character indicating what type of residual should be computed. For corralm, defaults to \code{indexed}. Options are "indexed", "standardized", and "hellinger." \code{indexed} and \code{standardized} compute the respective chi-squared residuals and are appropriate for count data. The \code{hellinger} option is appropriate for continuous data.
 #' @return When run on a list of matrices, a list with the correspondence analysis matrix decomposition result, with indices corresponding to the concatenated matrices (in order of the list):
 #' \describe{
 #'     \item{\code{d}}{a vector of the diagonal singular values of the input \code{mat} (from SVD output)}
@@ -9,6 +10,7 @@
 #'     \item{\code{v}}{a matrix of with the right singular vectors of \code{mat} in the columns. When cells are in the columns, these are the cell embeddings. (from SVD output)}
 #'     \item{\code{eigsum}}{sum of the eigenvalues for calculating percent variance explained}
 #' }
+#' @param rw_contrib numeric vector, same length as the matlist. Indicates the weight that each dataset should contribute to the row weights. When set to NULL the row weights are *not* combined and each matrix is scaled independently (i.e., using their observed row weights, respectively). When set to a vector of all the same values, this is equivalent to taking the mean. Another option is to the number of observations per matrix to create a weighted mean. Regardless of input scale, row weights for each table must sum to 1 and thus are scaled.
 #' @rdname corralm
 #' @export
 #' 
@@ -20,10 +22,26 @@
 #' listofmats <- list(matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 25),
 #'                    matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 25))
 #' result <- corralm_matlist(listofmats)
-corralm_matlist <- function(matlist, method = c('irl','svd'), ncomp = 10, ...){
+corralm_matlist <- function(matlist, method = c('irl','svd'), ncomp = 30, rtype = 'indexed', rw_contrib = NULL, ...){
   method <- match.arg(method, c('irl','svd'))
   .check_dims(matlist)
-  preproc_mats <- lapply(matlist, corral_preproc, rtype = 'indexed')
+  if(is.null(rw_contrib)){
+    preproc_mats <- lapply(matlist, corral_preproc, rtype = rtype, ...) 
+  }
+  else{
+    rw_contrib <- .check_rw_contrib(matlist, rw_contrib)
+    
+    ws <- lapply(matlist, get_weights)
+    rwlist <- lapply(ws, '[[', 'row.w')
+    row.ws <- Reduce(cbind, rwlist)
+    row.ws <- row.ws %*% rw_contrib
+    comp_rw <- rowSums(row.ws) / sum(row.ws)
+    
+    preproc_mats <- lapply(matlist, corral_preproc, rtype = 'standardized', row.w = comp_rw, ...)
+    if(rtype != 'standardized'){
+      cat('\nSwitched residual type to standardized; using shared row weights.\n')
+    }
+  }
   concatted <- list2mat(matlist = preproc_mats, direction = 'c')
   result <- compsvd(concatted, method = method, ncomp = ncomp)
   result[['batch_sizes']] <- .batch_sizes(matlist)
@@ -62,13 +80,13 @@ corralm_matlist <- function(matlist, method = c('irl','svd'), ncomp = 10, ...){
 #' result <- runUMAP(result, dimred = 'corralm', name = 'corralm_UMAP')
 #' result <- runTSNE(result, dimred = 'corralm', name = 'corralm_TSNE')
 #' 
-corralm_sce <- function(sce, splitby, method = c('irl','svd'), ncomp = 10, whichmat = 'counts', fullout = FALSE,...){
+corralm_sce <- function(sce, splitby, method = c('irl','svd'), ncomp = 30, whichmat = 'counts', fullout = FALSE, rw_contrib = NULL, ...){
   method <- match.arg(method, c('irl','svd'))
   if(missing(splitby)) {stop('If performing multi-table analysis with a single SCE, the splitby variable must be specified. \nUse corral to analyze as a single table.')}
   mat_list <- sce2matlist(sce, splitby = splitby, whichmat = whichmat)
-  svd_output <- corralm_matlist(mat_list, method = method, ncomp = ncomp)
+  svd_output <- corralm_matlist(mat_list, method = method, ncomp = ncomp, rw_contrib = rw_contrib, ...)
   if(fullout){
-    class(svd_output) <- c(class(svd_output),"corralm")
+    class(svd_output) <- c(class(svd_output),'corralm')
     return(svd_output)
   }
   else{
@@ -159,6 +177,7 @@ corralm <- function(inp, whichmat = 'counts', fullout = FALSE,...){
 #' @export
 #'
 #' @examples
+#' # default print method for corralm objects
 print.corralm <- function(x,...){
   inp <- x
   pct_var_exp <- t(data.frame('percent.Var.explained' = inp$d^2 / inp$eigsum))
@@ -183,5 +202,6 @@ print.corralm <- function(x,...){
   cat('Original batches & sizes (in order)-----------------------------')
   cat('\n ')
   cat(paste0(' ',rownames(inp$batch_sizes),' :: ',inp$batch_sizes[,2],'\n'))
+  cat('\n  Use plot_embedding to visualize; see docs for details.\n')
   cat('================================================================\n')
 }

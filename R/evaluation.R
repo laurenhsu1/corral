@@ -13,7 +13,7 @@
 #' @param endbin numeric, the ending value for the largest bin. Defaults to taking the maximum of obs (plus a tiny decimal to ensure full range of obs is captured)
 #'
 #' @return dataframe, results has rows corresponding to each bin with columns for probability ('prob'), cumulative frequency ('cumfreq'), and frequency ('freq') of observations falling into that bin. The 'bins' column indicates the end of the bin (start is the preceding column)
-#' @export
+#' @keywords internal
 #'
 #' @examples
 #' embedding <- matrix(sample(x = seq(0,10,.1),200, replace = TRUE))
