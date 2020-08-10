@@ -87,10 +87,6 @@ result_1 <- corral_sce(sce)
 result_2 <- corral_sce(sce, method = 'svd')
 result_3 <- corral_sce(sce, method = 'irl', ncomp = 30, whichmat = 'logcounts')
 
-# example on how to add UMAP based on corral above, with 'scater' package
-library(scater)
-result_1 <- runUMAP(result_1, dimred = 'corral', name = 'corral_UMAP')
-result_1 <- runTSNE(result_1, dimred = 'corral', name = 'corral_TSNE')
 
 library(DuoClustering2018)
 sce <- sce_full_Zhengmix4eq()[1:100,1:100]
@@ -99,6 +95,6 @@ corral_sce <- corral(sce,whichmat = 'counts')
 mat <- matrix(sample(0:10, 500, replace=TRUE), ncol=25)
 corral_mat <- corral(mat, ncomp=5)
 
-mat <- matrix(sample(1:100, 10000, replace = FALSE), ncol = 100)
+mat <- matrix(sample(1:100, 10000, replace = TRUE), ncol = 100)
 corral(mat)
 }

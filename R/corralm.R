@@ -75,10 +75,6 @@ corralm_matlist <- function(matlist, method = c('irl','svd'), ncomp = 30, rtype 
 #' colData(sce)$Method <- matrix(sample(c('Method1','Method2'),100,replace = TRUE))
 #' result <- corralm_sce(sce, splitby = 'Method')
 #' 
-#' #' # example on how to add UMAP/tsne based on corralm above, with 'scater' package
-#' library(scater)
-#' result <- runUMAP(result, dimred = 'corralm', name = 'corralm_UMAP')
-#' result <- runTSNE(result, dimred = 'corralm', name = 'corralm_TSNE')
 #' 
 corralm_sce <- function(sce, splitby, method = c('irl','svd'), ncomp = 30, whichmat = 'counts', fullout = FALSE, rw_contrib = NULL, ...){
   method <- match.arg(method, c('irl','svd'))

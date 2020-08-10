@@ -61,17 +61,5 @@ corralm_ggplot <- plot_embedding_sce(sce = sce,
                                      returngg = TRUE, 
                                      saveplot = FALSE)
 
-# or, to plot UMAP, using 'scater' package:
-library(scater)
-result <- runUMAP(sce, 
-                  dimred = 'corralm', 
-                  name = 'corralm_UMAP')
-plot_embedding_sce(sce = result, 
-                   which_embedding = 'corralm_UMAP', 
-                   xpc = 1, 
-                   plot_title = 'corralm UMAP: PC1 by PC2',
-                   color_attr = "Method", 
-                   ellipse_attr = 'phenoid',
-                   saveplot = FALSE)
 
 }

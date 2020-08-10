@@ -6,6 +6,10 @@
 }
 
 #' Observations --> discrete probabilities
+#' 
+#' usage:
+#' embedding <- matrix(sample(x = seq(0,10,.1),200, replace = TRUE))
+#' disc_probs <- obs2probs(embedding)
 #'
 #' @param obs vector of numeric, with the observations
 #' @param numbins int, the number of evenly sized bins to discretize the observations to
@@ -15,9 +19,6 @@
 #' @return dataframe, results has rows corresponding to each bin with columns for probability ('prob'), cumulative frequency ('cumfreq'), and frequency ('freq') of observations falling into that bin. The 'bins' column indicates the end of the bin (start is the preceding column)
 #' @keywords internal
 #'
-#' @examples
-#' embedding <- matrix(sample(x = seq(0,10,.1),200, replace = TRUE))
-#' disc_probs <- obs2probs(embedding)
 obs2probs <- function(obs, numbins = 100, startbin = min(obs), endbin = max(obs) + .00001){
   bins <- seq(from = startbin, to = endbin, length.out = numbins)
   result <- data.frame(bins)

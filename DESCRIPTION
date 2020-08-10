@@ -1,7 +1,7 @@
 Package: corral
 Title: Correspondence Analysis for Single Cell Data
-Version: 0.99.33
-Date: 2020-08-06
+Version: 0.99.34
+Date: 2020-08-10
 Authors@R: 
     c(person(given = "Lauren", family = "Hsu",
              role = c("aut", "cre"),
@@ -44,10 +44,9 @@ Suggests:
     CellBench,
     DuoClustering2018,
     knitr,
-    scater,
     testthat
 License: GPL-2
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 biocViews: 
     BatchEffect,

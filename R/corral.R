@@ -168,10 +168,6 @@ corral_mat <- function(inp, method = c('irl','svd'), ncomp = 30, row.w = NULL, c
 #' result_2 <- corral_sce(sce, method = 'svd')
 #' result_3 <- corral_sce(sce, method = 'irl', ncomp = 30, whichmat = 'logcounts')
 #' 
-#' # example on how to add UMAP based on corral above, with 'scater' package
-#' library(scater)
-#' result_1 <- runUMAP(result_1, dimred = 'corral', name = 'corral_UMAP')
-#' result_1 <- runTSNE(result_1, dimred = 'corral', name = 'corral_TSNE')
 #' 
 corral_sce <- function(inp, method = c('irl','svd'), ncomp = 30, whichmat = 'counts', fullout = FALSE, subset_row = NULL, ...){
   method <- match.arg(method, c('irl','svd'))
@@ -241,7 +237,7 @@ corral <- function(inp,...){
 #' @export
 #'
 #' @examples
-#' mat <- matrix(sample(1:100, 10000, replace = FALSE), ncol = 100)
+#' mat <- matrix(sample(1:100, 10000, replace = TRUE), ncol = 100)
 #' corral(mat)
 print.corral <- function(x,...){
   inp <- x
