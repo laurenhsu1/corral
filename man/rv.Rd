@@ -18,8 +18,8 @@ numeric; RV coefficient between the matched matrices
 rv coefficient
 }
 \examples{
-a <- matrix(sample(1:10,100, T), nrow = 10)
-b <- matrix(sample(1:10,50, T), nrow = 5)
+a <- matrix(sample(1:10,100, TRUE), nrow = 10)
+b <- matrix(sample(1:10,50, TRUE), nrow = 5)
 
 rv(a, b) # matched by columns
 rv(t(a), t(b)) # matched by rows

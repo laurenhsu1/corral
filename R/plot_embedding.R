@@ -23,6 +23,7 @@
 #' @import gridExtra
 #' @import ggthemes
 #' @import pals
+#' @importFrom graphics plot
 #'
 #' @examples
 #' listofmats <- list(matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20),
@@ -161,18 +162,6 @@ plot_embedding <- function(embedding, xpc = 1, ypc = xpc + 1, plot_title = paste
 #'                                      returngg = TRUE, 
 #'                                      saveplot = FALSE)
 #' 
-#' # or, to plot UMAP, using 'scater' package:
-#' library(scater)
-#' result <- runUMAP(sce, 
-#'                   dimred = 'corralm', 
-#'                   name = 'corralm_UMAP')
-#' plot_embedding_sce(sce = result, 
-#'                    which_embedding = 'corralm_UMAP', 
-#'                    xpc = 1, 
-#'                    plot_title = 'corralm UMAP: PC1 by PC2',
-#'                    color_attr = "Method", 
-#'                    ellipse_attr = 'phenoid',
-#'                    saveplot = FALSE)
 #' 
 plot_embedding_sce <- function(sce, which_embedding, color_attr = NULL, color_title = color_attr, ellipse_attr = NULL, facet_attr = NULL, ...){
   embed_mat <- SingleCellExperiment::reducedDim(sce, which_embedding)

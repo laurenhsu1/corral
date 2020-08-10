@@ -19,9 +19,7 @@ obs2probs(obs, numbins = 100, startbin = min(obs), endbin = max(obs) + 1e-05)
 dataframe, results has rows corresponding to each bin with columns for probability ('prob'), cumulative frequency ('cumfreq'), and frequency ('freq') of observations falling into that bin. The 'bins' column indicates the end of the bin (start is the preceding column)
 }
 \description{
-Observations --> discrete probabilities
-}
-\examples{
+usage:
 embedding <- matrix(sample(x = seq(0,10,.1),200, replace = TRUE))
 disc_probs <- obs2probs(embedding)
 }

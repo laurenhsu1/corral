@@ -118,8 +118,10 @@ sce2matlist <- function(sce,splitby,to_include = NULL,whichmat = 'counts'){
 
 #' @keywords internal
 #' @import SingleCellExperiment
-.indsbysplitby <- function(sce, splitby){
-  to_include <- unique(as.character(colData(sce)[,splitby]))
+.indsbysplitby <- function(sce, splitby, to_include = NULL){
+  if(is.null(to_include)){
+    to_include <- unique(as.character(colData(sce)[,splitby]))
+  }
   inds <- c()
   for(gn in to_include){
     inds <- c(inds, which(colData(sce)[,splitby] == gn))
@@ -225,8 +227,8 @@ all_are <- function(inplist,typechar){
 #' @export
 #'
 #' @examples
-#' a <- matrix(sample(1:10,100, T), nrow = 10)
-#' b <- matrix(sample(1:10,50, T), nrow = 5)
+#' a <- matrix(sample(1:10,100, TRUE), nrow = 10)
+#' b <- matrix(sample(1:10,50, TRUE), nrow = 5)
 #' 
 #' rv(a, b) # matched by columns
 #' rv(t(a), t(b)) # matched by rows
@@ -251,18 +253,20 @@ rv <- function(mat1, mat2) {
 #'
 #' @return matrix of the pairwise coefficients
 #' @export
+#' 
+#' @importFrom utils combn
 #'
 #' @examples
-#' a <- matrix(sample(1:10,100, TRUE), nrow = 10)
-#' b <- matrix(sample(1:10,50, TRUE), nrow = 5)
-#' c <- matrix(sample(1:10,20, TRUE), nrow = 2)
+#' a <- matrix(sample(1:10,100,TRUE), nrow = 10)
+#' b <- matrix(sample(1:10,50,TRUE), nrow = 5)
+#' c <- matrix(sample(1:10,20,TRUE), nrow = 2)
 #' 
 #' matlist <- list(a,b,c)
 #' pairwise_rv(matlist)
 #' pairwise_rv(lapply(matlist, t))
 pairwise_rv <- function(matlist){
   n <- length(matlist)
-  a <- combn(seq_len(n), 2, 
+  a <- utils::combn(seq_len(n), 2, 
              FUN = function(x) rv(matlist[[x[1]]], matlist[[x[2]]]), simplify = TRUE)
   m <- matrix(1, n, n)
   m[lower.tri(m)] <- a

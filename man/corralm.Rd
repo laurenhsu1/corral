@@ -87,10 +87,6 @@ sce <- sce_full_Zhengmix4eq()[1:100,sample(1:3500,100,replace = FALSE)]
 colData(sce)$Method <- matrix(sample(c('Method1','Method2'),100,replace = TRUE))
 result <- corralm_sce(sce, splitby = 'Method')
 
-#' # example on how to add UMAP/tsne based on corralm above, with 'scater' package
-library(scater)
-result <- runUMAP(result, dimred = 'corralm', name = 'corralm_UMAP')
-result <- runTSNE(result, dimred = 'corralm', name = 'corralm_TSNE')
 
 listofmats <- list(matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20),
                    matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 20))
