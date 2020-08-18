@@ -16,9 +16,9 @@ matrix of the pairwise coefficients
 Pairwise rv coefficient
 }
 \examples{
-a <- matrix(sample(1:10,100, TRUE), nrow = 10)
-b <- matrix(sample(1:10,50, TRUE), nrow = 5)
-c <- matrix(sample(1:10,20, TRUE), nrow = 2)
+a <- matrix(sample(1:10,100,TRUE), nrow = 10)
+b <- matrix(sample(1:10,50,TRUE), nrow = 5)
+c <- matrix(sample(1:10,20,TRUE), nrow = 2)
 
 matlist <- list(a,b,c)
 pairwise_rv(matlist)

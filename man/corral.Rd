@@ -47,7 +47,7 @@ corral(inp, ...)
 
 \item{fullout}{boolean; whether the function will return the full \code{corral} output as a list, or a SingleCellExperiment; defaults to SingleCellExperiment (\code{FALSE}). To get back the \code{\link{corral_mat}}-style output, set this to \code{TRUE}.}
 
-\item{subset_row}{numeric or character; vector of the rows to include in corral, either the indices (numeric) or the rownames (character). If this parameter is \code{NULL}, then all rows will be used.}
+\item{subset_row}{numeric, character, or boolean vector; the rows to include in corral, as indices (numeric), rownames (character), or with booleans (same length as the number of rows in the matrix). If this parameter is \code{NULL}, then all rows will be used.}
 
 \item{x}{(print method) corral object; the list output from \code{corral_mat}}
 }

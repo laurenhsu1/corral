@@ -129,7 +129,7 @@ corral_preproc <- function(inp, rtype = c('standardized','indexed','hellinger'),
 #' 
 corral_mat <- function(inp, method = c('irl','svd'), ncomp = 30, row.w = NULL, col.w = NULL, ...){
   method <- match.arg(method, c('irl','svd'))
-  preproc_mat <- corral_preproc(inp, row.w, col.w, ...)
+  preproc_mat <- corral_preproc(inp, row.w = row.w, col.w = col.w, ...)
   result <- compsvd(preproc_mat, method, ncomp, ...)
   w <- get_weights(inp)
   if(is.null(row.w)) {row.w <- w$row.w}
@@ -148,7 +148,7 @@ corral_mat <- function(inp, method = c('irl','svd'), ncomp = 30, row.w = NULL, c
 #' @inheritParams compsvd
 #' @param whichmat character; defaults to \code{counts}, can also use \code{logcounts} or \code{normcounts} if stored in the \code{sce} object
 #' @param fullout boolean; whether the function will return the full \code{corral} output as a list, or a SingleCellExperiment; defaults to SingleCellExperiment (\code{FALSE}). To get back the \code{\link{corral_mat}}-style output, set this to \code{TRUE}.
-#' @param subset_row numeric or character; vector of the rows to include in corral, either the indices (numeric) or the rownames (character). If this parameter is \code{NULL}, then all rows will be used.
+#' @param subset_row numeric, character, or boolean vector; the rows to include in corral, as indices (numeric), rownames (character), or with booleans (same length as the number of rows in the matrix). If this parameter is \code{NULL}, then all rows will be used.
 #'
 #' @return When run on a \code{\link{SingleCellExperiment}}, returns a SCE with the embeddings (PCv from the full corral output) in the \code{reducedDim} slot \code{corral} (default). Also can return the same output as \code{\link{corral_mat}} when \code{fullout} is set to \code{TRUE}.
 #' 
