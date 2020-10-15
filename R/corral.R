@@ -43,14 +43,15 @@ compsvd <- function(mat, method = c('irl','svd'), ncomp = 30, ...){
 }
 
 
-#' Correspondence analysis preprocessing
+#' Preprocess a matrix for Correspondence analysis 
 #'
 #' This function performs the row and column scaling pre-processing operations, prior to SVD, for the corral methods. See \code{\link{corral}} for single matrix correspondence analysis and \code{\link{corralm}} for multi-matrix correspondence analysis.
 #'
 #' @param inp matrix, numeric, counts or logcounts; can be sparse Matrix or matrix
 #' @param rtype character indicating what type of residual should be computed; options are "indexed", "standardized", and "hellinger"; defaults to "standardized." \code{indexed} and \code{standardized} compute the respective chi-squared residuals and are appropriate for count data. The \code{hellinger} option is appropriate for continuous data.
-#' @param row.w numeric vector; the row weights to use in chi-squared scaling
-#' @param col.w numeric vector; the column weights to use in chi-squared scaling
+#               The standardizard option is a chi-sq transformation, as computed by \code{ade4::dudi.coa}. 
+#' @param row.w numeric vector; Default is \code{NULL}, to compute row.w based on \code{inp}. Use this parameter to replace computed row weights with custom row weights
+#' @param col.w numeric vector; Default is \code{NULL}, to compute col.w based on \code{inp}. Use this parameter to replace computed column weights with custom column weights
 #'
 #' @return sparse matrix, processed for input to \code{compsvd} to finish CA routine
 #' @export
