@@ -45,7 +45,8 @@ obs2probs <- function(obs, numbins = 100, startbin = min(obs), endbin = max(obs)
 }
 
 
-#' Earthmover distance
+#' Earthmover distance (and general Wasserstein distance)
+#' 
 #' i.e., wasserstein distance with L1 (p_param = 1); can also use other penalties > 1
 #' (Not technically earthmover distance if using other p_param values)
 #'
@@ -53,7 +54,7 @@ obs2probs <- function(obs, numbins = 100, startbin = min(obs), endbin = max(obs)
 #' @param batch2 matrix; subset of observations from an embedding correponding to some attribute (e.g., batch or phenotype)
 #' @param whichdim int; which dimension (i.e., column) from the embeddings is used. defaults on first
 #' @param numbins int; number of bins for the probability discretization (defaults to 100)
-#' @param p_param int; penalty parameter for wasserstein distance. Defaults to 1, which corresonds to earthmover.
+#' @param p_param int; penalty parameter for general Wasserstein distance. Defaults to 1, which corresonds to earthmover.
 #'
 #' @return num; the distance
 #' @export

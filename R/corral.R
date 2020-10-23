@@ -2,7 +2,7 @@
 #'
 #' Computes SVD.
 #'
-#' @param mat matrix, pre-processed input; can be sparse or full (pre-processing can be performed using \code{\link{corral_preproc}}from this package)
+#' @param mat matrix, pre-processed input; can be sparse or full (pre-processing can be performed using \code{\link{corral_preproc}} from this package)
 #' @param method character, the algorithm to be used for svd. Default is irl. Currently supports 'irl' for irlba::irlba or 'svd' for stats::svd
 #' @param ncomp numeric, number of components; Default is 30
 #' @param ... (additional arguments for methods)

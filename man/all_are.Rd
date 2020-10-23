@@ -7,9 +7,9 @@
 all_are(inplist, typechar)
 }
 \arguments{
-\item{inplist}{list of List to be checked}
+\item{inplist}{list or List to be checked}
 
-\item{typechar}{char to check for}
+\item{typechar}{char of the type to check for}
 }
 \value{
 boolean, for whether the elements of \code{inplist} are all \code{typechar}

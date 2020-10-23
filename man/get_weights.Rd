@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{get_weights}
 \alias{get_weights}
-\title{Get weights: computes row weights and column weights}
+\title{Get weights}
 \usage{
 get_weights(inp_mat)
 }
@@ -13,7 +13,7 @@ get_weights(inp_mat)
 list of 2 elements: 'row.w' and 'col.w' contain the row and column weights respectively
 }
 \description{
-Get weights: computes row weights and column weights
+Computes row weights and column weights
 }
 \examples{
 mat <- matrix(sample(seq(0,20,1),100,replace = TRUE),nrow = 10)

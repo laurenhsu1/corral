@@ -58,7 +58,9 @@ get_pct_var_exp_svd <- function(thissvd, preproc_mat = thissvd$d){
 }
 
 
-#' Get weights: computes row weights and column weights
+#' Get weights
+#' 
+#' Computes row weights and column weights
 #'
 #' @param inp_mat matrix for which weights should be calculated (sparse or full)
 #'
@@ -200,8 +202,8 @@ add_embeddings2scelist <- function(scelist,embeddings, slotname = 'corralm'){
 #'
 #' Checks if all elements of a list or List are of a (single) particular type \code{typechar}
 #'
-#' @param inplist list of List to be checked
-#' @param typechar char to check for
+#' @param inplist list or List to be checked
+#' @param typechar char of the type to check for
 #'
 #' @return boolean, for whether the elements of \code{inplist} are all \code{typechar}
 #' @export

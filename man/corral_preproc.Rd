@@ -2,7 +2,7 @@
 % Please edit documentation in R/corral.R
 \name{corral_preproc}
 \alias{corral_preproc}
-\title{Correspondence analysis preprocessing}
+\title{Preprocess a matrix for Correspondence analysis}
 \usage{
 corral_preproc(
   inp,
@@ -16,9 +16,9 @@ corral_preproc(
 
 \item{rtype}{character indicating what type of residual should be computed; options are "indexed", "standardized", and "hellinger"; defaults to "standardized." \code{indexed} and \code{standardized} compute the respective chi-squared residuals and are appropriate for count data. The \code{hellinger} option is appropriate for continuous data.}
 
-\item{row.w}{numeric vector; the row weights to use in chi-squared scaling}
+\item{row.w}{numeric vector; Default is \code{NULL}, to compute row.w based on \code{inp}. Use this parameter to replace computed row weights with custom row weights}
 
-\item{col.w}{numeric vector; the column weights to use in chi-squared scaling}
+\item{col.w}{numeric vector; Default is \code{NULL}, to compute col.w based on \code{inp}. Use this parameter to replace computed column weights with custom column weights}
 }
 \value{
 sparse matrix, processed for input to \code{compsvd} to finish CA routine

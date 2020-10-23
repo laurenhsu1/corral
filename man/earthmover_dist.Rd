@@ -2,9 +2,7 @@
 % Please edit documentation in R/evaluation.R
 \name{earthmover_dist}
 \alias{earthmover_dist}
-\title{Earthmover distance
-i.e., wasserstein distance with L1 (p_param = 1); can also use other penalties > 1
-(Not technically earthmover distance if using other p_param values)}
+\title{Earthmover distance (and general Wasserstein distance)}
 \usage{
 earthmover_dist(batch1, batch2, whichdim = 1, numbins = 100, p_param = 1)
 }
@@ -17,13 +15,12 @@ earthmover_dist(batch1, batch2, whichdim = 1, numbins = 100, p_param = 1)
 
 \item{numbins}{int; number of bins for the probability discretization (defaults to 100)}
 
-\item{p_param}{int; penalty parameter for wasserstein distance. Defaults to 1, which corresonds to earthmover.}
+\item{p_param}{int; penalty parameter for general Wasserstein distance. Defaults to 1, which corresonds to earthmover.}
 }
 \value{
 num; the distance
 }
 \description{
-Earthmover distance
 i.e., wasserstein distance with L1 (p_param = 1); can also use other penalties > 1
 (Not technically earthmover distance if using other p_param values)
 }
