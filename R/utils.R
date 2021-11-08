@@ -278,4 +278,26 @@ pairwise_rv <- function(matlist){
 }
 
 
-
+#' Trim extreme values in a pre-processed matrix
+#'
+#' Smooths the extreme values in a chi-square-transformed matrix to lessen the influence of "rare objects."
+#' 
+#' (Usually not called directly; can be included by using the `smooth` argument in the `corral`, `corralm`, and `corral_preproc` functions)
+#'
+#' @param mat matrix; should be pre-processed/normalized to some sort of approximately normally distributed statistic (e.g., $\chi^2$ transformation with `corral_preproc` or Z-score normalization)
+#' @param pct_trim numeric; the percent of observations to smooth.  Defaults to `pct_trim` = .01, which corresponds to smoothing all observations to be between the .5% and 99.5% range of the input matrix
+#'
+#' @return smoothed matrix
+#' @export
+#'
+#' @examples
+#' count_mat <- matrix(rpois(10000, ), ncol = 100)
+#' smoothed_preproc_mat <- corral_preproc(count_mat, smooth = TRUE)
+trim_matdist <- function(mat, pct_trim = .01, ...){
+  up_qt <- 1-(pct_trim/2)
+  upthresh <- quantile(mat, up_qt)
+  downthresh <- quantile(mat, 1-up_qt)
+  mat[which(mat > upthresh)] <- upthresh
+  mat[which(mat < downthresh)] <- downthresh
+  return(mat)
+}

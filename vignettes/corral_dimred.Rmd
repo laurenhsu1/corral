@@ -1,11 +1,11 @@
 ---
-title: "Dimensionality reduction of single cell data with corral"
+title: "Dimension reduction of single cell data with corral"
 author: 
 - name: Lauren Hsu
   affiliation: Harvard TH Chan School of Public Health; Dana-Farber Cancer Institute
 - name: Aedin Culhane
-  affiliation: Department of Data Sciences, Dana-Farber Cancer Institute, Department of Biostatistics, Harvard TH Chan School of Public Health
-date: "4/28/2020"
+  affiliation: Department of Data Science, Dana-Farber Cancer Institute, Department of Biostatistics, Harvard TH Chan School of Public Health
+date: "5/17/2021"
 output:
   BiocStyle::html_document:
     toc_float: true
@@ -30,8 +30,8 @@ populations of cells by quantifying measurements in individual cells and thus
 provides a fuller, more nuanced picture into the complexity and heterogeneity between 
 cells. However, the data also present new and significant challenges as compared to 
 previous approaches, especially as single-cell data are much larger and sparser than 
-data generated from bulk sequencing methods. Dimensionality reduction is a key step 
-in the single-cell analysis to address the high dimensionality and sparsity of these 
+data generated from bulk sequencing methods. Dimension reduction is a key step 
+in the single-cell analysis to address the high dimension and sparsity of these 
 data, and to enable the application of more complex, computationally expensive downstream pipelines.
 
 Correspondence analysis (CA) is a matrix factorization method, and is similar to 
@@ -152,7 +152,7 @@ rows and have cells in the columns; if this were reversed, with cells in the
 rows and genes/features in the column, then the cell embeddings would instead 
 be in the `u` matrix.)
 ```{r}
-celltype_vec <- colData(zm4eq.sce)$phenoid
+celltype_vec <- zm4eq.sce$phenoid
 plot_embedding(embedding = zm4eq.countcorral$v,
                plot_title = 'corral on Zhengmix4eq',
                color_vec = celltype_vec,
@@ -166,6 +166,99 @@ UMAP and tSNE can be computed for visualization. (Note that in performing SVD,
 the direction of the axes doesn't matter so they may be flipped between runs, 
 as `corral` and `corralm` use `irlba` to perform fast approximation.)
 
+# Updates to CA to address overdispersion
+
+Correspondence analysis is known to be sensitive to "rare objects" (Greenacre, 2013). Sometimes this can be beneficial because the method can detect small perturbations of rare populations. However, in other cases, a couple outlier cells can be allowed to exert undue influence on a particular dimension.
+
+In the `corral` manuscript, we describe three general approaches, included below; see our manuscript for more details and results. In this vignette we also present a fourth approach (Trimming extreme values with `smooth` mode)
+
+## Changing the residual type (`rtype`)
+
+Standard correspondence analysis decomposes Pearson $\chi^2$ residuals, computed with the formula:
+$$r_{p; ij} = \frac{\mathrm{observed} - \mathrm{expected}}{\sqrt{\mathrm{expected}}} = \frac{p_{ij} - p_{i.} \ p_{.j}}{\sqrt{p_{i.} \ p_{.j}}}$$
+
+where $p_{ij} = \frac{x_{ij}}{N}$, $N = \sum_{i=1}^m \sum_{j=1}^n x_{ij}$, $p_{i.} = \mathrm{row \ weights} = \sum_{i=1}^m p_{ij}$, and $p_{.j} = \mathrm{col \ weights} = \sum_{j=1}^n p_{ij}$.
+
+In `corral`, this is the default setting. It can also be explicitly selected by setting `rtype = 'standardized'` or `rtype = 'pearson'`.
+
+Another $\chi^2$ residual is the Freeman-Tukey:
+$$r_{f; ij} = \sqrt{p_{ij}} + \sqrt{p_{ij} + \frac{1}{N}} - \sqrt{4 p_{i.} \ p_{.j} + \frac{1}{N}}$$
+
+It is more robust to overdispersion than the Pearson residuals, and therefore outperforms standard CA in many scRNAseq datasets.
+
+In `corral`, this option can be selected by setting `rtype = 'freemantukey'`.
+
+## Variance stabilization before CA (`vst_mth`)
+
+Another approach for addressing overdispersed counts is to apply a variance stabilizing transformation. The options included in the package:
+
+- Square root transform ($\sqrt{x}$): `vst_mth = 'sqrt'`
+- Anscombe transform ($2 \sqrt{x + \frac{3}{8}}$): `vst_mth = 'anscombe'`
+- Freeman-Tukey transform ($\sqrt{x} + \sqrt{x + 1}$): `vst_mth = 'freemantukey'` **Note that this option is different from setting the `rtype` parameter to `'freemantukey'`
+
+## Power deflation (`powdef_alpha`)
+
+To apply a smoothing effect to the $\chi^2$ residuals, another approach is to transform the residual matrix by a power of $\alpha \in (0,1)$. To achieve a "soft" smoothing effect, we suggest $\alpha \in [0.9,0.99]$. This option is controlled with the `powdef_alpha` parameter, which takes the default value of `NULL` (not used). To set it, use this parameter and set it equal to the desired value for $\alpha$ as a numeric. e.g., `powdef_alpha = 0.95` would be including this option and setting $\alpha = 0.95$.
+
+## Trimming extreme values (`smooth` mode)
+
+One adaptation (not described in the manuscript) that addresses unduly influential outliers is to apply an alternative smoothing procedure that narrows the range of the $\chi^2$-transformed values by symmetrically trimming the top $n$ fraction of extreme values ($n$ defaults to $.01$ and can be set with the `pct_trim` argument). Since the `corral` matrix pre-processing procedure transforms the values into standardized $\chi^2$ space, they can be considered proportional to the significance of difference between observed and expected abundance for a given gene in a given cell.
+
+This additional pre-processing step can be applied in `corral` by setting the `smooth` argument to `TRUE` (it defaults to `FALSE`), and this mode only works with standardized and indexed residuals options.
+
+```{r}
+zm8eq.corral <- corral(zm8eq, fullout = TRUE)
+zm8eq.corralsmooth <- corral(zm8eq, fullout = TRUE, smooth = TRUE)
+```
+
+```{r, include = F, eval = F}
+# additional; remove
+
+zm4eq.corralsmooth <- corral(zm4eq.countmat, smooth = TRUE)
+
+cppmat <- corral::corral_preproc(counts(zm8eq))
+ppmat <- corral_preproc(counts(zm8eq))
+ppmattrim <- corral_preproc(counts(zm8eq), smooth = TRUE)
+
+# examining which values exactly are being changed by this procedure...
+mat <- ppmat
+pct_trim = .01
+up_qt <- 1-(pct_trim/2)
+upthresh <- quantile(mat, up_qt)
+downthresh <- quantile(mat, 1-up_qt)
+mat[which(mat > upthresh)] <- NA
+mat[which(mat < downthresh)] <- NA
+
+boxplot(nas ~ ct,data.frame(cbind(nas = colSums(is.na(mat)), ct = as.factor(zm8eq$phenoid))))
+hist(colSums(is.na(mat)))
+hist(rowSums(is.na(mat)))
+
+# Genes with values that are being trimmed for over half of the cells
+rowData(zm4eq.sce)$symbol[which(rowSums(is.na(mat)) > 2000)]
+
+# biplots comparison
+zm8eq.corral <- compsvd(ppmat)
+zm8eq.corralsmooth <- compsvd(ppmattrim)
+
+biplot_corral(zm8eq.corral, text_vec = text_vec, color_vec = ctvec, xpc = 1)
+biplot_corral(zm8eq.corralsmooth, text_vec = text_vec, color_vec = ctvec, xpc = 1)
+```
+
+
+# Visualizing links between features and sub-populations with biplots
+
+Reduced dimension embeddings are often used to find relationships between observations. `corral` can be used to additionally explore relationships between the features and the observations. By plotting both embeddings into the same space, the biplot reveals potential associations between the "rows" and "columns" -- in this case, cells and genes. 
+
+Influential features in a given dimension will be further from the origin, and features strongly associated to a particular cluster of observations will be close in terms of vector direction (e.g., cosine similarity).
+
+```{r}
+gene_names <- rowData(zm4eq.sce)$symbol
+
+biplot_corral(corral_obj = zm4eq.countcorral, color_vec = celltype_vec, text_vec = gene_names)
+```
+
+For example, in this case, in the general direction of the B cells, there is the MALAT1 gene, which is a B cell marker. Considering the side of the plot with the CD14 monocytes, by showing which genes are closer to which subpopulation, the biplot can help characterize the different groups of cells.
+
 # Session information
 
 ```{r}
@@ -173,3 +266,4 @@ sessionInfo()
 ```
 
 # References
+

@@ -39,21 +39,64 @@ compsvd <- function(mat, method = c('irl','svd'), ncomp = 30, ...){
   result[['eigsum']] <- sum(mat^2)
   if(!is.null(rownames(mat))){rownames(result$u) <- rownames(mat)}
   if(!is.null(colnames(mat))){rownames(result$v) <- colnames(mat)}
+  
+  # add percent variance explained
+  pct_var_exp <- t(data.frame('percent.Var.explained' = result$d^2 / result$eigsum))
+  colnames(pct_var_exp) <- paste0(rep('PC',ncomp),seq(1,ncomp,1))
+  result$pct_var_exp <- rbind(pct_var_exp,t(data.frame('cumulative.Var.explained' = cumsum(pct_var_exp[1,]))))
+  
   return(result)
 }
 
-
-#' Preprocess a matrix for Correspondence analysis 
-#'
-#' This function performs the row and column scaling pre-processing operations, prior to SVD, for the corral methods. See \code{\link{corral}} for single matrix correspondence analysis and \code{\link{corralm}} for multi-matrix correspondence analysis.
+#' Apply a variance stabilizing transformation
+#' 
+#' Prior to running CA, there is an option to apply a variance stabilizing transformation. This function can be called explicitly or used with the `vst_mth` argument in \code{corral} and \code{corral_preproc}.
 #'
 #' @param inp matrix, numeric, counts or logcounts; can be sparse Matrix or matrix
-#' @param rtype character indicating what type of residual should be computed; options are "indexed", "standardized", and "hellinger"; defaults to "standardized." \code{indexed} and \code{standardized} compute the respective chi-squared residuals and are appropriate for count data. The \code{hellinger} option is appropriate for continuous data.
-#               The standardizard option is a chi-sq transformation, as computed by \code{ade4::dudi.coa}. 
+#' @param transform character indicating which method should be applied. Defaults to the square root transform (`"sqrt"`). Other options include `"freemantukey"` and `"anscombe"`.
+#'
+#' @return variance-stabilized matrix; sparse if possible
+#' @export
+#'
+#' @examples
+#' x <- as.matrix(rpois(100, lambda = 50), ncol = 10)
+#' vst_x <- var_stabilize(x)
+var_stabilize <- function(inp, transform = c('sqrt','freemantukey','anscombe')){
+  transform <- match.arg(transform, c('sqrt','freemantukey','anscombe'))
+  .check_vals(inp)
+  if(transform == 'sqrt'){
+    return(inp^.5)
+  }
+  else if(transform == 'freemantukey'){
+    return(inp^.5 + (inp + 1)^.5)
+  }
+  else if(transform == 'anscombe'){
+    return(2 * (inp + 3/8)^.5)
+  }
+}
+
+
+#' Preprocess a matrix for SVD to perform Correspondence Analysis (CA)
+#'
+#' This function performs the row and column scaling pre-processing operations, prior to SVD, for the corral methods. See \code{\link{corral}} for single matrix correspondence analysis and \code{\link{corralm}} for multi-matrix correspondence analysis.
+#' 
+#' In addition to standard CA (SVD of Pearson residuals), which is the default setting, this function also provides options to customize processing steps -- including the variations described in the corresponding manuscript for \code{corral}. Parameters that may be changed:
+#' \describe{
+#'     \item{Residual (`rtype`)}{Which analytic residual should be calculated? The default is standardized Pearson residuals. Freeman-Tukey is a more robust choice for handling overdispersed scRNAseq counts.}
+#'     \item{Variance stabilization method (`vst_mth`)}{Should a variance stabilizing transformation be applied to the count matrix before computing residuals? Defaults to no.}
+#'     \item{Power deflation $\alpha$ (`powdef_alpha`)}{Should a power deflation transformation be applied after computing residuals? Defaults to no. If using, set $\alpha \in (0,1)$. For a "soft" smoothing effect, we suggest $\alpha \in [0.9,0.99]$}
+#'     \item{Trimming-based smoothing option (`smooth`)}{As an alternative to power deflation, this option provides a more subtle correction: the most extreme 1% of values (distributed equally between both tails) are set to the 0.5 percentile and 99.5 percentile values, respectively}
+#' }
+#'
+#' @param inp matrix, numeric, counts or logcounts; can be sparse Matrix or matrix
+#' @param rtype character indicating what type of residual should be computed; options are `"indexed"`, `"standardized"` (or `"pearson"` is equivalent), `"freemantukey"`, and `"hellinger"`; defaults to `"standardized"` for \code{\link{corral}} and `"indexed"` for \code{\link{corralm}}. `"indexed"`, `"standardized"`, and `"freemantukey"` compute the respective chi-squared residuals and are appropriate for count data. The `"hellinger"` option is appropriate for continuous data. 
+#' @param vst_mth character indicating whether a variance-stabilizing transform should be applied prior to calculating chi-squared residuals; defaults to `"none"`
+#' @param powdef_alpha numeric for the power that should be applied if using power deflation. Must be in (0,1), and if provided a number outside this range, will be ignored. Defaults to `NULL` which does not perform this step.
 #' @param row.w numeric vector; Default is \code{NULL}, to compute row.w based on \code{inp}. Use this parameter to replace computed row weights with custom row weights
 #' @param col.w numeric vector; Default is \code{NULL}, to compute col.w based on \code{inp}. Use this parameter to replace computed column weights with custom column weights
+#' @param smooth logical; Whether or not to perform the additional smoothing step with `trim_matdist`. Default is \code{FALSE}. Incompatible with `powdef_alpha`, so that parameter takes precedence over this one.
 #'
-#' @return sparse matrix, processed for input to \code{compsvd} to finish CA routine
+#' @return matrix, processed for input to \code{compsvd} to finish CA routine
 #' @export
 #' 
 #' @importFrom Matrix Matrix rowSums colSums
@@ -64,46 +107,74 @@ compsvd <- function(mat, method = c('irl','svd'), ncomp = 30, ...){
 #' mat <- matrix(sample(0:10, 500, replace=TRUE), ncol=25)
 #' mat_corral <- corral_preproc(mat)
 #' corral_output <- compsvd(mat_corral, ncomp = 5)
-corral_preproc <- function(inp, rtype = c('standardized','indexed','hellinger'), row.w = NULL, col.w = NULL){
-  rtype <- match.arg(rtype, c('standardized','indexed','hellinger'))
+corral_preproc <- function(inp, rtype = c('standardized','indexed','hellinger','freemantukey','pearson'), vst_mth = c('none','sqrt','freemantukey','anscombe'), powdef_alpha = NULL,  row.w = NULL, col.w = NULL, smooth = FALSE, ...){
+  rtype <- match.arg(rtype, c('standardized','indexed','hellinger','freemantukey','pearson'))
+  vst_mth <- match.arg(vst_mth, c('none','sqrt','freemantukey','anscombe'))
+  if(!is.null(powdef_alpha)){
+    if(powdef_alpha > 1 | powdef_alpha < 0){
+      powdef_alpha <- NULL
+      cat('Invalid choice for power deflation parameter alpha (powdef_alpha) so ignoring; should be in (0,1)')
+    }
+  }
   if(!is(inp, "dgCMatrix")){
-    sp_mat <- Matrix::Matrix(inp, sparse = TRUE)
-  } else {sp_mat <- inp}
-  N <- sum(sp_mat)
-  sp_mat <- sp_mat/N
-  if (is.null(row.w)){
-    row.w <- Matrix::rowSums(sp_mat)
-  } else {row.w <- row.w / sum(row.w)}
-  if (is.null(col.w)){
-    col.w <- Matrix::colSums(sp_mat)
-  } else {col.w <- col.w / sum(col.w)}
+    x_mat <- Matrix::Matrix(inp, sparse = TRUE)
+  } else {x_mat <- inp}
+  N <- sum(x_mat)
+  
+  if(vst_mth != 'none'){
+    x_mat <- var_stabilize(x_mat, transform = vst_mth)
+  }
+  
+  p_mat <- x_mat/N
+  w <- get_weights(inp)
+  if(is.null(row.w)) {row.w <- w$row.w}
+  if(is.null(col.w)) {col.w<- w$col.w}
+  else {col.w <- col.w / sum(col.w)}
+  
+  res <- NULL
+  
   if(rtype == 'hellinger'){
-   sp_mat <- sp_mat / row.w
-   return(sqrt(sp_mat))
+   p_mat <- p_mat / row.w
+   res <- sqrt(p_mat)
   }
-  sp_mat <- sp_mat/row.w
-  sp_mat <- sweep(sp_mat, 2, col.w, "/") - 1
-  if (any(is.na(sp_mat))) {
-    sp_mat <- na2zero(sp_mat)
+  if(rtype == 'freemantukey'){
+    expectedp <- row.w %*% t(col.w)
+    res <- p_mat^.5 + (p_mat + 1/N)^.5 - (4*expectedp + 1/N)^.5
   }
+  
+  p_mat <- p_mat/row.w
+  p_mat <- sweep(p_mat, 2, col.w, "/") - 1
+  if (any(is.na(p_mat))) {
+    p_mat <- na2zero(p_mat)
+  }
+  
   if (rtype == 'indexed'){
-    return(sp_mat)
+    res <- p_mat
   }
-  else if (rtype == 'standardized'){
-    sp_mat <- sp_mat * sqrt(row.w)
-    sp_mat <- sweep(sp_mat, 2, sqrt(col.w), "*")
-    return(sp_mat)
+  else if (rtype %in% c('standardized','pearson')){
+    p_mat <- p_mat * sqrt(row.w)
+    p_mat <- sweep(p_mat, 2, sqrt(col.w), "*")
+    res <- p_mat
+  }
+  
+  if(!is.null(powdef_alpha)){
+    return(res^powdef_alpha)
+  }
+  else if (smooth){
+    return(trim_matdist(res, ...))
   }
 }
 
+
 #' corral: Correspondence analysis on a single matrix
 #'
-#' corral can be used for dimensionality reduction to find a set of low-dimensional embeddings for a count matrix.
+#' corral can be used for dimension reduction to find a set of low-dimensional embeddings for a count matrix.
 #'
 #' @param inp matrix (or any matrix-like object that can be coerced using Matrix), numeric raw or lognormed counts (no negative values)
 #' @param row.w numeric vector; the row weights to use in chi-squared scaling. Defaults to `NULL`, in which case row weights are computed from the input matrix.
 #' @param col.w numeric vector; the column weights to use in chi-squared scaling. For instance, size factors could be given here. Defaults to `NULL`, in which case column weights are computed from the input matrix.
 #' @inheritParams compsvd
+#' @inheritParams corral_preproc
 #'
 #' @return When run on a matrix, a list with the correspondence analysis matrix decomposition result:
 #' \describe{
@@ -128,9 +199,11 @@ corral_preproc <- function(inp, rtype = c('standardized','indexed','hellinger'),
 #' result <- corral_mat(mat, method = 'svd')
 #' result <- corral_mat(mat, method = 'irl', ncomp = 5)
 #' 
-corral_mat <- function(inp, method = c('irl','svd'), ncomp = 30, row.w = NULL, col.w = NULL, ...){
+corral_mat <- function(inp, method = c('irl','svd'),ncomp = 30, row.w = NULL, col.w = NULL, rtype = c('standardized','indexed','hellinger','freemantukey','pearson'), vst_mth = c('none','sqrt','freemantukey','anscombe'), ...){
   method <- match.arg(method, c('irl','svd'))
-  preproc_mat <- corral_preproc(inp, row.w = row.w, col.w = col.w, ...)
+  rtype <- match.arg(rtype, c('standardized','indexed','hellinger','freemantukey','pearson'))
+  vst_mth <- match.arg(vst_mth, c('none','sqrt','freemantukey','anscombe'))
+  preproc_mat <- corral_preproc(inp, row.w = row.w, col.w = col.w, rtype = rtype, vst_mth = vst_mth, ...)
   result <- compsvd(preproc_mat, method, ncomp, ...)
   w <- get_weights(inp)
   if(is.null(row.w)) {row.w <- w$row.w}
@@ -242,10 +315,7 @@ corral <- function(inp,...){
 #' corral(mat)
 print.corral <- function(x,...){
   inp <- x
-  pct_var_exp <- t(data.frame('percent.Var.explained' = inp$d^2 / inp$eigsum))
-  ncomps <- length(pct_var_exp)
-  colnames(pct_var_exp) <- paste0(rep('PC',ncomps),seq(1,ncomps,1))
-  pct_var_exp <- rbind(pct_var_exp,t(data.frame('cumulative.Var.explained' = cumsum(pct_var_exp[1,]))))
+  pct_var_exp <- inp$pct_var_exp
   cat('corral output summary===========================================\n')
   cat('  Output "list" includes standard coordinates (SCu, SCv),\n')
   cat('  principal coordinates (PCu, PCv), & SVD output (u, d, v)\n')
@@ -263,3 +333,4 @@ print.corral <- function(x,...){
   cat('\n  Use plot_embedding to visualize; see docs for details.')
   cat('\n================================================================\n')
 }
+

@@ -189,3 +189,72 @@ plot_embedding_sce <- function(sce, which_embedding, color_attr = NULL, color_ti
     
   plot_embedding(embed_mat, color_vec = color_vec, color_title = color_title, ellipse_vec = ellipse_vec, facet_vec = facet_vec, ...)
 }
+
+
+#' Generate biplot for corral object
+#'
+#' @param corral_obj list outputted by the \code{corral} function
+#' @param color_vec vector; length should correspond to the number of rows in v of \code{corral_obj}, and each element of the vector classifies that cell (entry) in the embedding to that particular class, which will be colored the same. (e.g., cell type)
+#' @param text_vec vector; length should correspond to the number of rows in u of \code{corral_obj}, and each element of the vector is the label for the respective feature that would show on the biplot.
+#' @param feat_name char; the label will in the legend. Defaults to \code{(genes)}.
+#' @param nfeat int; the number of features to include. The function will first order them by distance from origin in the selected dimensions, then select the top n to be displayed.
+#' @param xpc int; which PC to put on the x-axis (defaults to 1)
+#' @param plot_title char; title of plot (defaults to *Biplot*)
+#' @param text_size numeric; size of the feature labels given in \code{text_vec} (defaults to 2; for \code{ggplot2})
+#' @param xjitter numeric; the amount of jitter for the text labels in x direction (defaults to .005; for \code{ggplot2})
+#' @param yjitter numeric; the amount of jitter for the text labels in y direction (defaults to .005; for \code{ggplot2})
+#' @param coords char; indicator for sets of coordinates to use. \code{svd} plots the left and right singular vectors as outputted by SVD (\code{u} and \code{v}), which \code{PC} and \code{SC} use the principal and standard coordinates, respectively (defaults to \code{svd})
+#'
+#' @return ggplot2 object of the biplot
+#' @export
+#'
+#' @import ggplot2
+#'
+#' @examples
+#' library(DuoClustering2018)
+#' zm4eq.sce <- sce_full_Zhengmix4eq()
+#' zm4eq.countmat <- assay(zm4eq.sce,'counts')
+#' zm4eq.corral_obj <- corral(zm4eq.countmat)
+#' gene_names <- rowData(zm4eq.sce)$symbol
+#' ctvec <- zm4eq.sce$phenoid
+#' 
+#' biplot_corral(corral_obj = zm4eq.corral_obj, color_vec = ctvec, text_vec = gene_names)
+biplot_corral <- function(corral_obj, color_vec, text_vec, feat_name = '(genes)', nfeat = 20, xpc = 1, plot_title = 'Biplot', text_size = 2, xjitter = .005, yjitter = .005, coords = c('svd','PC','SC')){
+  n <- nfeat
+  coords <- match.arg(coords, c('svd','PC','SC'))
+  
+  if(coords != 'svd'){
+    umat <- paste0(coords, umat)
+    vmat <- paste0(coords, vmat)
+  }
+  else{
+    umat <- 'u'
+    vmat <- 'v'
+  }
+  
+  gene_dists <- sqrt(corral_obj[[umat]][,xpc]^2 + corral_obj[[umat]][,xpc + 1]^2)
+  gene_dists_ordinds <- order(gene_dists, decreasing = TRUE)
+  
+  inflgenes <- corral_obj[[umat]][gene_dists_ordinds[1:n],]
+  rownames(inflgenes) <- text_vec[gene_dists_ordinds][1:n]
+  biplot_labs_filt <- c(color_vec, rep(feat_name,n))
+  biplot_dat_filt <- rbind(corral_obj[[vmat]], inflgenes)
+  bipfilt_gg <- plot_embedding(biplot_dat_filt, 
+                               color_vec = biplot_labs_filt, returngg = T,
+                               dimname = 'corral', xpc = xpc, showplot = F,
+                               plot_title = plot_title)
+  
+  bipfilt_gg$data$Name <- rownames(bipfilt_gg$data)
+  
+  bipfilt_gg <- bipfilt_gg + 
+    geom_text(aes(label=ifelse(color_vec == feat_name,as.character(Name),'')),
+              hjust=0,vjust=0, 
+              size = text_size, 
+              position=position_jitter(width=xjitter,height=yjitter))
+  
+  return(bipfilt_gg)
+}
+
+
+
+

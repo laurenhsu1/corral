@@ -1,12 +1,17 @@
 #' @keywords internal
-.check_mat <- function(mat){
+.check_vals <- function(mat){
   if(!is.numeric(mat)){
     stop('Matrix input should contain only numbers.')
   }
   else if (min(mat) < 0){
     stop('Matrix input should only contain positive values.')
   }
-  else if (min(dim(mat)) < 2){
+}
+
+#' @keywords internal
+.check_mat <- function(mat){
+  .check_vals(mat)
+  if (min(dim(mat)) < 2){
     stop('Matrix input must have more than 1 element and more than 1 feature.')
   }
 }

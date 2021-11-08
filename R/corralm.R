@@ -1,8 +1,10 @@
 #' Multi-table correspondence analysis (list of matrices)
 #'
 #' @param matlist (for \code{corralm_matlist}) list of input matrices; input matrices should be counts (raw or log). Matrices should be aligned row-wise by common features (either by sample or by gene)
+#' @param rw_contrib numeric vector, same length as the matlist. Indicates the weight that each dataset should contribute to the row weights. When set to NULL the row weights are *not* combined and each matrix is scaled independently (i.e., using their observed row weights, respectively). When set to a vector of all the same values, this is equivalent to taking the mean. Another option is to the number of observations per matrix to create a weighted mean. Regardless of input scale, row weights for each table must sum to 1 and thus are scaled. When this option is specified (i.e., not `NULL`), the `rtype` argument will automatically be set to `standardized`, and whatever argument is given will be ignored.
 #' @inheritParams compsvd
-#' @param rtype character indicating what type of residual should be computed. For corralm, defaults to \code{indexed}. Options are "indexed", "standardized", and "hellinger." \code{indexed} and \code{standardized} compute the respective chi-squared residuals and are appropriate for count data. The \code{hellinger} option is appropriate for continuous data.
+#' @inheritParams corral_preproc
+#' 
 #' @return When run on a list of matrices, a list with the correspondence analysis matrix decomposition result, with indices corresponding to the concatenated matrices (in order of the list):
 #' \describe{
 #'     \item{\code{d}}{a vector of the diagonal singular values of the input \code{mat} (from SVD output)}
@@ -10,7 +12,6 @@
 #'     \item{\code{v}}{a matrix of with the right singular vectors of \code{mat} in the columns. When cells are in the columns, these are the cell embeddings. (from SVD output)}
 #'     \item{\code{eigsum}}{sum of the eigenvalues for calculating percent variance explained}
 #' }
-#' @param rw_contrib numeric vector, same length as the matlist. Indicates the weight that each dataset should contribute to the row weights. When set to NULL the row weights are *not* combined and each matrix is scaled independently (i.e., using their observed row weights, respectively). When set to a vector of all the same values, this is equivalent to taking the mean. Another option is to the number of observations per matrix to create a weighted mean. Regardless of input scale, row weights for each table must sum to 1 and thus are scaled.
 #' @rdname corralm
 #' @export
 #' 
@@ -22,11 +23,14 @@
 #' listofmats <- list(matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 25),
 #'                    matrix(sample(seq(0,20,1),1000,replace = TRUE),nrow = 25))
 #' result <- corralm_matlist(listofmats)
-corralm_matlist <- function(matlist, method = c('irl','svd'), ncomp = 30, rtype = 'indexed', rw_contrib = NULL, ...){
+corralm_matlist <- function(matlist, method = c('irl','svd'), ncomp = 30, rtype = c('indexed','standardized','hellinger','freemantukey','pearson'), vst_mth = c('none','sqrt','freemantukey','anscombe'), rw_contrib = NULL, ...){
   method <- match.arg(method, c('irl','svd'))
+  rtype <- match.arg(rtype, c('indexed','standardized','hellinger','freemantukey','pearson'))
+  vst_mth <- match.arg(vst_mth, c('none','sqrt','freemantukey','anscombe'))
+  
   .check_dims(matlist)
   if(is.null(rw_contrib)){
-    preproc_mats <- lapply(matlist, corral_preproc, rtype = rtype, ...) 
+    preproc_mats <- lapply(matlist, corral_preproc, rtype = rtype, vst_mth = vst_mth, ...) 
   }
   else{
     rw_contrib <- .check_rw_contrib(matlist, rw_contrib)
@@ -37,7 +41,7 @@ corralm_matlist <- function(matlist, method = c('irl','svd'), ncomp = 30, rtype 
     row.ws <- row.ws %*% rw_contrib
     comp_rw <- rowSums(row.ws) / sum(row.ws)
     
-    preproc_mats <- lapply(matlist, corral_preproc, rtype = 'standardized', row.w = comp_rw, ...)
+    preproc_mats <- lapply(matlist, corral_preproc, rtype = 'standardized', row.w = comp_rw, vst_mth = vst_mth, ...)
     if(rtype != 'standardized'){
       cat('\nSwitched residual type to standardized; using shared row weights.\n')
     }
@@ -176,10 +180,7 @@ corralm <- function(inp, whichmat = 'counts', fullout = FALSE,...){
 #' # default print method for corralm objects
 print.corralm <- function(x,...){
   inp <- x
-  pct_var_exp <- t(data.frame('percent.Var.explained' = inp$d^2 / inp$eigsum))
-  ncomps <- length(pct_var_exp)
-  colnames(pct_var_exp) <- paste0(rep('PC',ncomps),seq(1,ncomps,1))
-  pct_var_exp <- rbind(pct_var_exp,t(data.frame('cumulative.Var.explained' = cumsum(pct_var_exp[1,]))))
+  pct_var_exp <- inp$pct_var_exp
   cat('corralm output summary==========================================\n')
   cat('  Output "list" includes SVD output (u, d, v) & a table of the\n')
   cat('  dimensions of the input matrices (batch_sizes)\n')
