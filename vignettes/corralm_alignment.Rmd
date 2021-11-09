@@ -163,6 +163,20 @@ As expected, we get the same results as above. (Note that in performing SVD,
 the direction of the axes doesn't matter and they may be flipped between runs, 
 as `corral` and `corralm` use `irlba` to perform fast approximation.)
 
+# Scaled variance plots to evaluate integration
+
+Scaled variance plots provide a simple and fast visual summary of the integration of embeddings. It can be called using the `scal_var` function, and works on both `corralm` objects and custom embeddings (with a vector indicating batch).
+
+When integrating embedding representations across batches, measures for cluster evaluation are effective for assessing group compactness and recovery of cell populations via clustering. However, they do not directly assess how well dataset embeddings are integrated across batches. To focus specifically on batch integration, we developed and applied a heuristic scaled variance metric, which captures the relative dispersion of each batch with respect to the entire dataset. The scaled variance of component dimension $d^*$ for the subset of observations in batch $b^*$, $SV_{b^*,d}$, is computed with:
+$$SV_{b^*,d} = \frac{\mathrm{Var}(\mathbf{E_{b=b^*,d=d^*}})}{\mathrm{Var}(\mathbf{E_{d=d^*}})}$$
+where $\mathbf{E}$ is the matrix of embeddings, and $b$ indexes the rows (observations by batch) while $d$ indexes the columns to indicate which component dimension to evaluate.
+
+```{r}
+scal_var(scmix_corralm)
+```
+
+When the datasets are well integrated, SV values for each batch are close to 1, indicating that each batch's subset has similar dispersion as compared to the entire embedding. In contrast, if there is poorer integration, the scaled variance values will be more extreme away from 1 because the variance within batches will differ more from the variance overall. This metric is appropriate when the types of cells represented in different datasets are expected to be similar, but cannot account for situations where the expected distribution of cell types (and therefore, embeddings) is fundamentally different between batches.
+
 # Session information
 
 ```{r}
