@@ -36,6 +36,7 @@ Imports:
     methods,
     MultiAssayExperiment,
     pals,
+    reshape2,
     SingleCellExperiment, 
     SummarizedExperiment,
     transport
@@ -46,9 +47,10 @@ Suggests:
     DuoClustering2018,
     knitr,
     rmarkdown,
+    scater,
     testthat
 License: GPL-2
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 VignetteBuilder: knitr
 biocViews: 
     BatchEffect,

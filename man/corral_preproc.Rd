@@ -2,29 +2,42 @@
 % Please edit documentation in R/corral.R
 \name{corral_preproc}
 \alias{corral_preproc}
-\title{Preprocess a matrix for Correspondence analysis}
+\title{Preprocess a matrix for SVD to perform Correspondence Analysis (CA)}
 \usage{
 corral_preproc(
   inp,
-  rtype = c("standardized", "indexed", "hellinger"),
+  rtype = c("standardized", "indexed", "hellinger", "freemantukey", "pearson"),
+  vst_mth = c("none", "sqrt", "freemantukey", "anscombe"),
+  powdef_alpha = NULL,
   row.w = NULL,
-  col.w = NULL
+  col.w = NULL,
+  smooth = FALSE,
+  ...
 )
 }
 \arguments{
 \item{inp}{matrix, numeric, counts or logcounts; can be sparse Matrix or matrix}
 
-\item{rtype}{character indicating what type of residual should be computed; options are "indexed", "standardized", and "hellinger"; defaults to "standardized." \code{indexed} and \code{standardized} compute the respective chi-squared residuals and are appropriate for count data. The \code{hellinger} option is appropriate for continuous data.}
+\item{rtype}{character indicating what type of residual should be computed; options are `"indexed"`, `"standardized"` (or `"pearson"` is equivalent), `"freemantukey"`, and `"hellinger"`; defaults to `"standardized"` for \code{\link{corral}} and `"indexed"` for \code{\link{corralm}}. `"indexed"`, `"standardized"`, and `"freemantukey"` compute the respective chi-squared residuals and are appropriate for count data. The `"hellinger"` option is appropriate for continuous data.}
+
+\item{vst_mth}{character indicating whether a variance-stabilizing transform should be applied prior to calculating chi-squared residuals; defaults to `"none"`}
+
+\item{powdef_alpha}{numeric for the power that should be applied if using power deflation. Must be in (0,1), and if provided a number outside this range, will be ignored. Defaults to `NULL` which does not perform this step.}
 
 \item{row.w}{numeric vector; Default is \code{NULL}, to compute row.w based on \code{inp}. Use this parameter to replace computed row weights with custom row weights}
 
 \item{col.w}{numeric vector; Default is \code{NULL}, to compute col.w based on \code{inp}. Use this parameter to replace computed column weights with custom column weights}
+
+\item{smooth}{logical; Whether or not to perform the additional smoothing step with `trim_matdist`. Default is \code{FALSE}. Incompatible with `powdef_alpha`, so that parameter takes precedence over this one.}
 }
 \value{
-sparse matrix, processed for input to \code{compsvd} to finish CA routine
+matrix, processed for input to \code{compsvd} to finish CA routine
 }
 \description{
 This function performs the row and column scaling pre-processing operations, prior to SVD, for the corral methods. See \code{\link{corral}} for single matrix correspondence analysis and \code{\link{corralm}} for multi-matrix correspondence analysis.
+}
+\details{
+
 }
 \examples{
 mat <- matrix(sample(0:10, 500, replace=TRUE), ncol=25)

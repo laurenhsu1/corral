@@ -55,6 +55,7 @@ library(SingleCellExperiment)
 library(ggplot2)
 library(DuoClustering2018)
 zm4eq.sce <- sce_full_Zhengmix4eq()
+zm8eq <- sce_full_Zhengmix8eq()
 ```
 
 This dataset includes approximately 4,000 pre-sorted and annotated cells of 
@@ -202,7 +203,7 @@ To apply a smoothing effect to the $\chi^2$ residuals, another approach is to tr
 
 ## Trimming extreme values (`smooth` mode)
 
-One adaptation (not described in the manuscript) that addresses unduly influential outliers is to apply an alternative smoothing procedure that narrows the range of the $\chi^2$-transformed values by symmetrically trimming the top $n$ fraction of extreme values ($n$ defaults to $.01$ and can be set with the `pct_trim` argument). Since the `corral` matrix pre-processing procedure transforms the values into standardized $\chi^2$ space, they can be considered proportional to the significance of difference between observed and expected abundance for a given gene in a given cell.
+One adaptation (not described in the manuscript) that addresses unduly influential outliers is to apply an alternative smoothing procedure that narrows the range of the $\chi^2$-transformed values by symmetrically trimming the top $n$ fraction of extreme values ($n$ defaults to $.01$ and can be set with the `pct_trim` argument). Since the `corral` matrix pre-processing procedure transforms the values into standardized $\chi^2$ space, they can be considered proportional to the significance of difference between observed and expected abundance for a given gene in a given cell. This approach differs from power deflation in that it only adjusts the most extreme values, and explicitly so, whereas power deflation shifts the distribution of all values to be less extreme.
 
 This additional pre-processing step can be applied in `corral` by setting the `smooth` argument to `TRUE` (it defaults to `FALSE`), and this mode only works with standardized and indexed residuals options.
 
@@ -210,40 +211,6 @@ This additional pre-processing step can be applied in `corral` by setting the `s
 zm8eq.corral <- corral(zm8eq, fullout = TRUE)
 zm8eq.corralsmooth <- corral(zm8eq, fullout = TRUE, smooth = TRUE)
 ```
-
-```{r, include = F, eval = F}
-# additional; remove
-
-zm4eq.corralsmooth <- corral(zm4eq.countmat, smooth = TRUE)
-
-cppmat <- corral::corral_preproc(counts(zm8eq))
-ppmat <- corral_preproc(counts(zm8eq))
-ppmattrim <- corral_preproc(counts(zm8eq), smooth = TRUE)
-
-# examining which values exactly are being changed by this procedure...
-mat <- ppmat
-pct_trim = .01
-up_qt <- 1-(pct_trim/2)
-upthresh <- quantile(mat, up_qt)
-downthresh <- quantile(mat, 1-up_qt)
-mat[which(mat > upthresh)] <- NA
-mat[which(mat < downthresh)] <- NA
-
-boxplot(nas ~ ct,data.frame(cbind(nas = colSums(is.na(mat)), ct = as.factor(zm8eq$phenoid))))
-hist(colSums(is.na(mat)))
-hist(rowSums(is.na(mat)))
-
-# Genes with values that are being trimmed for over half of the cells
-rowData(zm4eq.sce)$symbol[which(rowSums(is.na(mat)) > 2000)]
-
-# biplots comparison
-zm8eq.corral <- compsvd(ppmat)
-zm8eq.corralsmooth <- compsvd(ppmattrim)
-
-biplot_corral(zm8eq.corral, text_vec = text_vec, color_vec = ctvec, xpc = 1)
-biplot_corral(zm8eq.corralsmooth, text_vec = text_vec, color_vec = ctvec, xpc = 1)
-```
-
 
 # Visualizing links between features and sub-populations with biplots
 

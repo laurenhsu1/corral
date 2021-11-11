@@ -11,7 +11,8 @@ corralm_matlist(
   matlist,
   method = c("irl", "svd"),
   ncomp = 30,
-  rtype = "indexed",
+  rtype = c("indexed", "standardized", "hellinger", "freemantukey", "pearson"),
+  vst_mth = c("none", "sqrt", "freemantukey", "anscombe"),
   rw_contrib = NULL,
   ...
 )
@@ -38,9 +39,11 @@ corralm(inp, whichmat = "counts", fullout = FALSE, ...)
 
 \item{ncomp}{numeric, number of components; Default is 30}
 
-\item{rtype}{character indicating what type of residual should be computed. For corralm, defaults to \code{indexed}. Options are "indexed", "standardized", and "hellinger." \code{indexed} and \code{standardized} compute the respective chi-squared residuals and are appropriate for count data. The \code{hellinger} option is appropriate for continuous data.}
+\item{rtype}{character indicating what type of residual should be computed; options are `"indexed"`, `"standardized"` (or `"pearson"` is equivalent), `"freemantukey"`, and `"hellinger"`; defaults to `"standardized"` for \code{\link{corral}} and `"indexed"` for \code{\link{corralm}}. `"indexed"`, `"standardized"`, and `"freemantukey"` compute the respective chi-squared residuals and are appropriate for count data. The `"hellinger"` option is appropriate for continuous data.}
 
-\item{rw_contrib}{numeric vector, same length as the matlist. Indicates the weight that each dataset should contribute to the row weights. When set to NULL the row weights are *not* combined and each matrix is scaled independently (i.e., using their observed row weights, respectively). When set to a vector of all the same values, this is equivalent to taking the mean. Another option is to the number of observations per matrix to create a weighted mean. Regardless of input scale, row weights for each table must sum to 1 and thus are scaled.}
+\item{vst_mth}{character indicating whether a variance-stabilizing transform should be applied prior to calculating chi-squared residuals; defaults to `"none"`}
+
+\item{rw_contrib}{numeric vector, same length as the matlist. Indicates the weight that each dataset should contribute to the row weights. When set to NULL the row weights are *not* combined and each matrix is scaled independently (i.e., using their observed row weights, respectively). When set to a vector of all the same values, this is equivalent to taking the mean. Another option is to the number of observations per matrix to create a weighted mean. Regardless of input scale, row weights for each table must sum to 1 and thus are scaled. When this option is specified (i.e., not `NULL`), the `rtype` argument will automatically be set to `standardized`, and whatever argument is given will be ignored.}
 
 \item{...}{(additional arguments for methods)}
 

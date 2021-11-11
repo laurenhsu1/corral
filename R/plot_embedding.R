@@ -212,8 +212,9 @@ plot_embedding_sce <- function(sce, which_embedding, color_attr = NULL, color_ti
 #'
 #' @examples
 #' library(DuoClustering2018)
+#' library(SingleCellExperiment)
 #' zm4eq.sce <- sce_full_Zhengmix4eq()
-#' zm4eq.countmat <- assay(zm4eq.sce,'counts')
+#' zm4eq.countmat <- counts(zm4eq.sce)
 #' zm4eq.corral_obj <- corral(zm4eq.countmat)
 #' gene_names <- rowData(zm4eq.sce)$symbol
 #' ctvec <- zm4eq.sce$phenoid

@@ -20,8 +20,6 @@
 #'
 #' @examples
 #' mat <- matrix(sample(0:10, 2500, replace=TRUE), ncol=50)
-#' compsvd(mat)
-#' compsvd(mat, method = 'svd')
 #' compsvd(mat, method = 'irl', ncomp = 5)
 compsvd <- function(mat, method = c('irl','svd'), ncomp = 30, ...){
   method <- match.arg(method, c('irl','svd'))
@@ -163,6 +161,7 @@ corral_preproc <- function(inp, rtype = c('standardized','indexed','hellinger','
   else if (smooth){
     return(trim_matdist(res, ...))
   }
+  return(res)
 }
 
 
@@ -196,7 +195,6 @@ corral_preproc <- function(inp, rtype = c('standardized','indexed','hellinger','
 #' @examples
 #' mat <- matrix(sample(0:10, 5000, replace=TRUE), ncol=50)
 #' result <- corral_mat(mat)
-#' result <- corral_mat(mat, method = 'svd')
 #' result <- corral_mat(mat, method = 'irl', ncomp = 5)
 #' 
 corral_mat <- function(inp, method = c('irl','svd'),ncomp = 30, row.w = NULL, col.w = NULL, rtype = c('standardized','indexed','hellinger','freemantukey','pearson'), vst_mth = c('none','sqrt','freemantukey','anscombe'), ...){
@@ -316,15 +314,16 @@ corral <- function(inp,...){
 print.corral <- function(x,...){
   inp <- x
   pct_var_exp <- inp$pct_var_exp
+  ncomp <- length(inp$d)
   cat('corral output summary===========================================\n')
   cat('  Output "list" includes standard coordinates (SCu, SCv),\n')
   cat('  principal coordinates (PCu, PCv), & SVD output (u, d, v)\n')
   cat('Variance explained----------------------------------------------\n')
-  print(round(pct_var_exp[,seq(1,min(8,ncomps),1)],2))
+  print(round(pct_var_exp[,seq(1,min(8,ncomp),1)],2))
   cat('\n')
   cat('Dimensions of output elements-----------------------------------\n')
   cat('  Singular values (d) :: ')
-  cat(length(inp$d))
+  cat(ncomp)
   cat('\n  Left singular vectors & coordinates (u, SCu, PCu) :: ')
   cat(dim(inp$u))
   cat('\n  Right singular vectors & coordinates (v, SCv, PCv) :: ')

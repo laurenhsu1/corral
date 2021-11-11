@@ -29,7 +29,5 @@ Computes SVD.
 }
 \examples{
 mat <- matrix(sample(0:10, 2500, replace=TRUE), ncol=50)
-compsvd(mat)
-compsvd(mat, method = 'svd')
 compsvd(mat, method = 'irl', ncomp = 5)
 }

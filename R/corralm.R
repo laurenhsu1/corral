@@ -181,15 +181,16 @@ corralm <- function(inp, whichmat = 'counts', fullout = FALSE,...){
 print.corralm <- function(x,...){
   inp <- x
   pct_var_exp <- inp$pct_var_exp
+  ncomp <- length(inp$d)
   cat('corralm output summary==========================================\n')
   cat('  Output "list" includes SVD output (u, d, v) & a table of the\n')
   cat('  dimensions of the input matrices (batch_sizes)\n')
   cat('Variance explained----------------------------------------------\n')
-  print(round(pct_var_exp[,seq(1,min(8,ncomps),1)],2))
+  print(round(pct_var_exp[,seq(1,min(8,ncomp),1)],2))
   cat('\n')
   cat('Dimensions of output elements-----------------------------------\n')
   cat('  Singular values (d) :: ')
-  cat(length(inp$d))
+  cat(ncomp)
   cat('\n  Left singular vectors (u) :: ')
   cat(dim(inp$u))
   cat('\n  Right singular vectors (v) :: ')

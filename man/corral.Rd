@@ -13,6 +13,8 @@ corral_mat(
   ncomp = 30,
   row.w = NULL,
   col.w = NULL,
+  rtype = c("standardized", "indexed", "hellinger", "freemantukey", "pearson"),
+  vst_mth = c("none", "sqrt", "freemantukey", "anscombe"),
   ...
 )
 
@@ -40,6 +42,10 @@ corral(inp, ...)
 \item{row.w}{numeric vector; the row weights to use in chi-squared scaling. Defaults to `NULL`, in which case row weights are computed from the input matrix.}
 
 \item{col.w}{numeric vector; the column weights to use in chi-squared scaling. For instance, size factors could be given here. Defaults to `NULL`, in which case column weights are computed from the input matrix.}
+
+\item{rtype}{character indicating what type of residual should be computed; options are `"indexed"`, `"standardized"` (or `"pearson"` is equivalent), `"freemantukey"`, and `"hellinger"`; defaults to `"standardized"` for \code{\link{corral}} and `"indexed"` for \code{\link{corralm}}. `"indexed"`, `"standardized"`, and `"freemantukey"` compute the respective chi-squared residuals and are appropriate for count data. The `"hellinger"` option is appropriate for continuous data.}
+
+\item{vst_mth}{character indicating whether a variance-stabilizing transform should be applied prior to calculating chi-squared residuals; defaults to `"none"`}
 
 \item{...}{(additional arguments for methods)}
 
@@ -71,14 +77,13 @@ For \code{SummarizedExperiment} input, returns the same as for a matrix.
 .
 }
 \description{
-corral can be used for dimensionality reduction to find a set of low-dimensional embeddings for a count matrix.
+corral can be used for dimension reduction to find a set of low-dimensional embeddings for a count matrix.
 
 \code{corral} is a wrapper for \code{\link{corral_mat}} and \code{\link{corral_sce}}, and can be called on any of the acceptable input types.
 }
 \examples{
 mat <- matrix(sample(0:10, 5000, replace=TRUE), ncol=50)
 result <- corral_mat(mat)
-result <- corral_mat(mat, method = 'svd')
 result <- corral_mat(mat, method = 'irl', ncomp = 5)
 
 library(DuoClustering2018)
