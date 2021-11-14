@@ -93,6 +93,7 @@ var_stabilize <- function(inp, transform = c('sqrt','freemantukey','anscombe')){
 #' @param row.w numeric vector; Default is \code{NULL}, to compute row.w based on \code{inp}. Use this parameter to replace computed row weights with custom row weights
 #' @param col.w numeric vector; Default is \code{NULL}, to compute col.w based on \code{inp}. Use this parameter to replace computed column weights with custom column weights
 #' @param smooth logical; Whether or not to perform the additional smoothing step with `trim_matdist`. Default is \code{FALSE}. Incompatible with `powdef_alpha`, so that parameter takes precedence over this one.
+#' @param ... (additional arguments for methods)
 #'
 #' @return matrix, processed for input to \code{compsvd} to finish CA routine
 #' @export

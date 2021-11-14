@@ -29,6 +29,8 @@ corral_preproc(
 \item{col.w}{numeric vector; Default is \code{NULL}, to compute col.w based on \code{inp}. Use this parameter to replace computed column weights with custom column weights}
 
 \item{smooth}{logical; Whether or not to perform the additional smoothing step with `trim_matdist`. Default is \code{FALSE}. Incompatible with `powdef_alpha`, so that parameter takes precedence over this one.}
+
+\item{...}{(additional arguments for methods)}
 }
 \value{
 matrix, processed for input to \code{compsvd} to finish CA routine
