@@ -157,7 +157,7 @@ corral_preproc <- function(inp, rtype = c('standardized','indexed','hellinger','
   }
   
   if(!is.null(powdef_alpha)){
-    return(res^powdef_alpha)
+    return(sign(res) * (abs(res)^powdef_alpha))
   }
   else if (smooth){
     return(trim_matdist(res, ...))
