@@ -122,7 +122,7 @@ ggplot_tsne <- plot_embedding_sce(sce = zm4eq.sce,
                                   showplot = FALSE,
                                   saveplot = FALSE)
 
-multiplot(ggplot_umap, ggplot_tsne, cols = 2)
+gridExtra::grid.arrange(ggplot_umap, ggplot_tsne, ncol = 2)
 
 ```
 
